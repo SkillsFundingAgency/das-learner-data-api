@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35728.132
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D33EDB73-F3A4-4F6C-82A6-80F50FE84DF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerData.Api", "SFA.DAS.LearnerData.Api\SFA.DAS.LearnerData.Api.csproj", "{B6CCFBB4-FEBE-4156-AB87-3E99015E6474}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerData", "SFA.DAS.LearnerData\SFA.DAS.LearnerData.csproj", "{DA26B8B1-66A9-4E42-B419-5414C1046AED}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SFA.DAS.LearnerData.Database", "SFA.DAS.LearnerData.Database\SFA.DAS.LearnerData.Database.sqlproj", "{99A16401-B2B9-491C-A14D-BDEFA11B64EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerData.UnitTests", "SFA.DAS.LearnerData.UnitTests\SFA.DAS.LearnerData.UnitTests.csproj", "{F4EEAA26-E769-4941-82BE-FF9142950D98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerData.Api.UnitTests", "SFA.DAS.LearnerData.Api.UnitTests\SFA.DAS.LearnerData.Api.UnitTests.csproj", "{83FB3C44-5EDC-476D-8DAA-0F6CF923BD09}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6CCFBB4-FEBE-4156-AB87-3E99015E6474}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6CCFBB4-FEBE-4156-AB87-3E99015E6474}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6CCFBB4-FEBE-4156-AB87-3E99015E6474}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6CCFBB4-FEBE-4156-AB87-3E99015E6474}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA26B8B1-66A9-4E42-B419-5414C1046AED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA26B8B1-66A9-4E42-B419-5414C1046AED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA26B8B1-66A9-4E42-B419-5414C1046AED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA26B8B1-66A9-4E42-B419-5414C1046AED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99A16401-B2B9-491C-A14D-BDEFA11B64EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99A16401-B2B9-491C-A14D-BDEFA11B64EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99A16401-B2B9-491C-A14D-BDEFA11B64EB}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{99A16401-B2B9-491C-A14D-BDEFA11B64EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99A16401-B2B9-491C-A14D-BDEFA11B64EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99A16401-B2B9-491C-A14D-BDEFA11B64EB}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F4EEAA26-E769-4941-82BE-FF9142950D98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4EEAA26-E769-4941-82BE-FF9142950D98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4EEAA26-E769-4941-82BE-FF9142950D98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4EEAA26-E769-4941-82BE-FF9142950D98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83FB3C44-5EDC-476D-8DAA-0F6CF923BD09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83FB3C44-5EDC-476D-8DAA-0F6CF923BD09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83FB3C44-5EDC-476D-8DAA-0F6CF923BD09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83FB3C44-5EDC-476D-8DAA-0F6CF923BD09}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F4EEAA26-E769-4941-82BE-FF9142950D98} = {D33EDB73-F3A4-4F6C-82A6-80F50FE84DF9}
+		{83FB3C44-5EDC-476D-8DAA-0F6CF923BD09} = {D33EDB73-F3A4-4F6C-82A6-80F50FE84DF9}
+	EndGlobalSection
+EndGlobal
