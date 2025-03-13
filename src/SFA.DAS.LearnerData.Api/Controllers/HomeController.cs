@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SFA.DAS.LearnerData.Api.Controllers;
 
+// TODO: Remove this controller once dev work proper has started on this service.
 [Route("home")]
 [ApiVersion("1.0")]
 [ApiController]
