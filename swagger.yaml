@@ -1,0 +1,416 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: Learner data inner API
+paths:
+  /info:
+    get:
+      description: information regarding this API. The version will be returned
+      responses:
+        '200':
+          $ref: '#/components/responses/infoResponse'  
+  /liveness:
+    get:
+      description: The system is responsive and accepting incoming requests; however, this endpoint does not perform a dependency check, so the system may not be fully ready to process requests correctly.
+      responses:
+        '200':
+          $ref: '#/components/responses/okResponse'
+  /readiness:
+    get:
+      description: The system is fully ready to accept requests and all the dependencies are healthy
+      responses:
+        '200':
+          $ref: '#/components/responses/healthCheckResponse'
+        '503':
+          $ref: '#/components/responses/healthCheckResponse'
+
+  /providers/{ukprn}/learners:
+    post:
+      summary: Endpoint for creating specific learners
+      parameters:
+        - name: ukprn
+          in: path
+          required: true
+          description: The ukprn, ie provider filter
+          schema:
+            type: string
+        - name: academicYear
+          in: query
+          required: true
+          description: The academic year to sort by
+          schema:
+            type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/learnerRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/createUpdateResponse'
+        '201':
+          $ref: '#/components/responses/createUpdateResponse'
+        '400':
+          $ref: '#/components/responses/badRequest'
+    get:
+      summary: Returns a paged list of learners for this provider for the academic year
+      parameters:
+        - name: ukprn
+          in: path
+          required: true
+          description: The UK Provider Reference Number for the provider entering this learner
+          schema:
+            type: string
+        - name: academicYear
+          in: query
+          required: false
+          example: 2425
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          description: Default is 1
+          schema:
+            type: integer
+        - name: pagesize
+          in: query
+          required: false
+          example: 20
+          description: Default is 20, can be between 10 and 100
+          schema:
+            type: integer
+        - name: sortColumn
+          in: query
+          required: false
+          description: The column to sort on, default is surname
+          schema:
+            type: string
+        - name: sortDescending
+          in: query
+          required: false
+          description: Default is ascending
+          schema:
+            type: string
+        - name: filter
+          in: query
+          required: false
+          description: a filter to be used against the ULN or surname
+          schema:
+            type: string
+      responses:
+        '200':
+          $ref: '#/components/responses/pagedLearnersResponse' 
+  
+  /providers/{ukprn}/learners/{uln}/agreements/{agreementId}/academicyears/{academicYear}:
+    put:
+      summary: Endpoint for updating specific learners
+      parameters:
+        - name: ukprn
+          in: path
+          required: true
+          description: The ukprn, ie provider filter
+          schema:
+            type: string 
+        - name: agreementId
+          in: path
+          required: true
+          description: The agreement id
+          schema:
+            type: string        
+        - name: academicYear
+          in: path
+          required: true
+          description: The academic year of this apprenticeship
+          schema:
+            type: integer        
+        - name: uln
+          in: path
+          required: true
+          description: The uln for this learner doing the apprenticeship
+          schema:
+            type: integer 
+      requestBody:
+        $ref: '#/components/requestBodies/learnerRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/createUpdateResponse'
+        '201':
+          $ref: '#/components/responses/createUpdateResponse'
+        '400':
+          $ref: '#/components/responses/badRequest'
+    get:
+      summary: Returns the unique learner via the composite index
+      parameters:
+        - name: ukprn
+          in: path
+          required: true
+          description: The ukprn, ie provider filter
+          schema:
+            type: string 
+        - name: agreementId
+          in: path
+          required: true
+          description: The agreement id
+          schema:
+            type: string        
+        - name: academicYear
+          in: path
+          required: true
+          description: The academic year of this apprenticeship
+          schema:
+            type: integer        
+        - name: uln
+          in: path
+          required: true
+          description: The uln for this learner doing the apprenticeship
+          schema:
+            type: integer 
+      responses:
+        '200':
+          $ref: '#/components/responses/learnerResponse'  
+        '404':
+          $ref: '#/components/responses/notFound'
+  
+  /providers/{ukprn}/learners/{guid}:
+    get:
+      summary: Returns the unique learner
+      parameters:
+        - name: ukprn
+          in: path
+          required: true
+          description: The ukprn, ie provider filter
+          schema:
+            type: string 
+        - name: guid
+          in: path
+          required: true
+          description: The guid reference for this learner record. This is an internal id for the service
+          schema:
+            type: string        
+      responses:
+        '200':
+          $ref: '#/components/responses/learnerResponse'  
+        '404':
+          $ref: '#/components/responses/notFound'
+     
+components:  
+  headers:
+    location:
+      schema:
+        type: string
+        format: url
+        example: /learners/guid
+
+  requestBodies:
+    learnerRequest:
+      description: The ilr record to be submitted to AS
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/learnerRequest'
+
+  responses:
+    pagedLearnersResponse:
+      description: A paged learners response
+      headers:
+        Link:
+          description: Pagination links (next, prev, first, last)
+          schema:
+            type: string
+            format: url
+          example: '<https://api.example.com/items?page=2>; rel="next", <https://api.example.com/items?page=5>; rel="last"'
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/pagedLearners'
+
+    createUpdateResponse:
+      description: The update
+      headers:
+        Location:
+          $ref: '#/components/headers/location'
+
+    learnerResponse:
+      description: A single response to a specific learner
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/learnerResponse'
+
+    notFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+
+    okResponse:
+      description: OK
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: OK
+
+    badRequest:
+      description: A bad request was detected
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+    
+    healthCheckResponse:
+      description: Results of a health check
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/healthcheckResults'
+
+    infoResponse:
+      description: Information response
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: Leaner data APIM for the apprenticeship service - Version 3.0.2
+
+  schemas:
+    error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message
+    
+    pagedLearners:
+      type: object
+      properties:
+        learners:
+          type: array
+          items:
+              $ref: '#/components/schemas/learnerResponse'
+        lastSubmssionDate: 
+          description: This is the latest time that we have had an entry into the system. |
+            This date will be driven from the date the event was received from SLD
+          type: string
+          format: date
+        total:
+          type: integer
+          minimum: 0
+        page: 
+          type: integer
+          minimum: 1
+        pageSize: 
+          type: integer
+          minimum: 1
+          maximum: 20
+        totalPages: 
+          type: integer
+          minimum: 1
+      required:
+        - page
+        - total
+        - pageSize  
+        - totalPages  
+    
+    healthcheckResults:
+      type: array
+      items:
+        $ref: '#/components/schemas/healthcheck' 
+  
+    healthcheck:
+      type: object
+      properties:
+        description: 
+          type: string
+        result: 
+          type: string    
+    
+    learnerRequest:
+      type: object
+      properties:
+        uln:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        learnerEmail:
+          type: string
+        priorLearningPercent:
+          description: This is the percentage of learning already complete before this course starts
+          type: integer
+          example: 10
+        ukprn:
+          type: integer
+        agreementId:
+          type: integer
+        trainingPrice:
+          type: integer
+          description: This is the earliest price
+        epaoPrice:
+          type: integer
+          description: This is the earliest price
+        standardCode:
+          type: integer
+        startDate:
+          type: string
+          format: date
+        academicYear:
+          type: integer
+        plannedEndDate:
+          type: string
+          format: date
+        isFlexiJob: 
+          type: boolean
+        plannedOTJTrainingHours:
+          type: integer
+        submissionDate:
+          type: string
+          format: date
+          description: The date when the event was raised on the system (effectively the POST date from DC)
+      required:
+        - uln
+        - firstName
+        - lastName
+        - dateOfBirth
+        - learnerEmail
+        - priorLearningPercent
+        - ukprn
+        - agreementId
+        - trainingPrice
+        - epaoPrice
+        - standardCode
+        - startDate
+        - academicYear
+        - plannedEndDate
+        - submissionDate
+        - plannedOTJTrainingHours
+        - isFlexiJob
+
+    learnerResponse:
+      allOf:
+        - $ref: "#/components/schemas/learnerRequest"
+        - type: object
+          required:
+            - id
+            - createdDate
+            - updateDate
+          properties:
+            id:
+              type: string
+              format: guid
+            createdDate:
+              type: string
+              format: date
+            updatedDate:
+              type: string
+              format: date
