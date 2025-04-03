@@ -25,30 +25,6 @@ paths:
           $ref: '#/components/responses/healthCheckResponse'
 
   /providers/{ukprn}/learners:
-    post:
-      summary: Endpoint for creating specific learners
-      parameters:
-        - name: ukprn
-          in: path
-          required: true
-          description: The ukprn, ie provider filter
-          schema:
-            type: string
-        - name: academicYear
-          in: query
-          required: true
-          description: The academic year to sort by
-          schema:
-            type: integer
-      requestBody:
-        $ref: '#/components/requestBodies/learnerRequest'
-      responses:
-        '200':
-          $ref: '#/components/responses/createUpdateResponse'
-        '201':
-          $ref: '#/components/responses/createUpdateResponse'
-        '400':
-          $ref: '#/components/responses/badRequest'
     get:
       summary: Returns a paged list of learners for this provider for the academic year
       parameters:
@@ -169,7 +145,7 @@ paths:
         '404':
           $ref: '#/components/responses/notFound'
   
-  /providers/{ukprn}/learners/{guid}:
+  /providers/{ukprn}/learners/{id}:
     get:
       summary: Returns the unique learner
       parameters:
@@ -179,10 +155,10 @@ paths:
           description: The ukprn, ie provider filter
           schema:
             type: string 
-        - name: guid
+        - name: id
           in: path
           required: true
-          description: The guid reference for this learner record. This is an internal id for the service
+          description: The id reference for this learner record. This is an internal id for the service
           schema:
             type: string        
       responses:
@@ -352,7 +328,7 @@ components:
         ukprn:
           type: integer
         agreementId:
-          type: integer
+          type: string
         trainingPrice:
           type: integer
           description: This is the earliest price
@@ -373,10 +349,14 @@ components:
           type: boolean
         plannedOTJTrainingHours:
           type: integer
-        submissionDate:
+        receivedDate:
           type: string
           format: date
           description: The date when the event was raised on the system (effectively the POST date from DC)
+        correlationId:
+          type: string
+          format: /learners/guid
+          description: A unique identifier assigned on the request into the outer API
       required:
         - uln
         - firstName
@@ -392,9 +372,10 @@ components:
         - startDate
         - academicYear
         - plannedEndDate
-        - submissionDate
+        - receivedDate
         - plannedOTJTrainingHours
         - isFlexiJob
+        - corrrelationId
 
     learnerResponse:
       allOf:
