@@ -75,7 +75,7 @@ paths:
         '200':
           $ref: '#/components/responses/pagedLearnersResponse' 
   
-  /providers/{ukprn}/learners/{uln}/agreements/{agreementId}/academicyears/{academicYear}:
+  /providers/{ukprn}/learners/{uln}/academicyears/{academicYear}/standardcodes/{standardCode}:
     put:
       summary: Endpoint for updating specific learners
       parameters:
@@ -85,10 +85,10 @@ paths:
           description: The ukprn, ie provider filter
           schema:
             type: string 
-        - name: agreementId
+        - name: standardCode
           in: path
           required: true
-          description: The agreement id
+          description: The standard the apprentice is doing
           schema:
             type: string        
         - name: academicYear
@@ -121,10 +121,10 @@ paths:
           description: The ukprn, ie provider filter
           schema:
             type: string 
-        - name: agreementId
+        - name: standardCode
           in: path
           required: true
-          description: The agreement id
+          description: The standard code
           schema:
             type: string        
         - name: academicYear
