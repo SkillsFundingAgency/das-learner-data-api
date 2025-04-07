@@ -357,6 +357,10 @@ components:
           type: string
           format: /learners/guid
           description: A unique identifier assigned on the request into the outer API
+        consumerReference:
+          type: string
+          description: This allows the consumer to set a reference for the records being submitted
+          example: LR-10034925-2425-20250301-113951-04
       required:
         - uln
         - firstName
@@ -376,6 +380,7 @@ components:
         - plannedOTJTrainingHours
         - isFlexiJob
         - correlationId
+        - consumerReference
 
     learnerResponse:
       allOf:
