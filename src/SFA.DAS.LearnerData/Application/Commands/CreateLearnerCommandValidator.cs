@@ -6,6 +6,6 @@ public class CreateLearnerCommandValidator : AbstractValidator<CreateLearnerComm
 {
     public CreateLearnerCommandValidator()
     {
-        RuleFor(x => x.Id).NotEmpty();
+        RuleFor(x => x.Ukprn).NotEmpty();
     }
 }

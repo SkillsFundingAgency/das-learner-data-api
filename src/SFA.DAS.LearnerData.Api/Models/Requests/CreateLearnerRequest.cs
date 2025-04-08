@@ -1,8 +1,6 @@
-using MediatR;
+namespace SFA.DAS.LearnerData.Api.Models.Requests;
 
-namespace SFA.DAS.LearnerData.Application.Commands;
-
-public record CreateLearnerCommand : IRequest
+public record CreateLearnerRequest
 {
     public long Uln { get; set; }
     public long Ukprn { get; set; }

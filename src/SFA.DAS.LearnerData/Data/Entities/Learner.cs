@@ -1,3 +1,5 @@
+using SFA.DAS.LearnerData.Application.Commands;
+
 namespace SFA.DAS.LearnerData.Data.Entities;
 
 public class Learner
@@ -11,7 +13,7 @@ public class Learner
     public DateTime Dob { get; set; }
     public int AcademicYear { get; set; }
     public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
+    public DateTime PlannedEndDate { get; set; }
     public int PercentageLearningToBeDelivered { get; set; }
     public int EpaoPrice { get; set; }
     public int TrainingPrice { get; set; }
@@ -24,4 +26,30 @@ public class Learner
     public DateTime ReceivedDate { get; set; }
     public string CorrelationId { get; set; }
     public string ConsumerReference { get; set; }
+
+    public static Learner From(CreateLearnerCommand command)
+    {
+        return new Learner
+        {
+            Uln = command.Uln,
+            Ukprn = command.Ukprn,
+            FirstName = command.FirstName,
+            LastName = command.LastName,
+            Email = command.Email,
+            Dob = command.Dob,
+            AcademicYear = command.AcademicYear,
+            StartDate = command.StartDate,
+            PlannedEndDate = command.PlannedEndDate,
+            PercentageLearningToBeDelivered = command.PercentageLearningToBeDelivered,
+            EpaoPrice = command.EpaoPrice,
+            TrainingPrice = command.TrainingPrice,
+            AgreementId = command.AgreementId,
+            ConsumerReference = command.ConsumerReference,
+            CorrelationId = command.CorrelationId,
+            ReceivedDate = command.ReceivedDate,
+            StandardCode = command.StandardCode,
+            IsFlexiJob = command.IsFlexiJob,
+            PlannedOTJTrainingHours = command.PlannedOTJTrainingHours
+        };
+    }
 }

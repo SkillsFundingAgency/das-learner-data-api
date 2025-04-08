@@ -44,6 +44,7 @@ public class Startup
 
         services.AddConfigurationOptions(_configuration);
         services.AddSingleton(_configuration);
+        services.AddApplicationServices();
 
         if (!_environment.IsDevelopment())
         {
