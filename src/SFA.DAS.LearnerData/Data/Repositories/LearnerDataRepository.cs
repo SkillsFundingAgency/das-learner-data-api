@@ -7,7 +7,7 @@ public interface ILearnerDataRepository
 {
     Task Create(Learner? learner, CancellationToken cancellationToken);
     Task<Learner?> GetById(long id, CancellationToken cancellationToken);
-    Task<Learner?> Get(long ukPrn, long uln, string agreementId, int academicYear, CancellationToken cancellationToken);
+    Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
     Task<PagedResult<Learner>> GetByAcademicYear(long ukprn, int academicYear, int page, int? pageSize, int limit, int offset, CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, int academicYear, CancellationToken cancellationToken);
@@ -25,13 +25,13 @@ public class LearnerDataRepository(LearnerDataDbContext dbContext) : ILearnerDat
         return await dbContext.Learners.FindAsync(keyValues: [id], cancellationToken);
     }
 
-    public async Task<Learner?> Get(long ukPrn, long uln, string agreementId, int academicYear, CancellationToken cancellationToken)
+    public async Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken)
     {
         return await dbContext.Learners
             .AsNoTracking()
             .SingleOrDefaultAsync(learner => learner.Ukprn == ukPrn
                                              && learner.Uln == uln
-                                             && learner.AgreementId == agreementId
+                                             && learner.StandardCode == standardCode
                                              && learner.AcademicYear == academicYear
                 , cancellationToken);
     }

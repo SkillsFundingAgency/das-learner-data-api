@@ -3,13 +3,13 @@ using SFA.DAS.LearnerData.Data.Repositories;
 
 namespace SFA.DAS.LearnerData.Application.Queries.GetLearner;
 
-public record GetLearnerQuery(long Ukprn, long Uln, string AgreementId, int AcademicYear) : IRequest<GetLearnerResult>;
+public record GetLearnerQuery(long Ukprn, long Uln, int StandardCode, int AcademicYear) : IRequest<GetLearnerResult>;
 
 public class GetLearnerQueryHandler(ILearnerDataRepository repository): IRequestHandler<GetLearnerQuery, GetLearnerResult>
 {
     public async Task<GetLearnerResult> Handle(GetLearnerQuery request, CancellationToken cancellationToken)
     {
-        var learner = await repository.Get(request.Ukprn, request.Uln, request.AgreementId, request.AcademicYear, cancellationToken);
+        var learner = await repository.Get(request.Ukprn, request.Uln,request.StandardCode, request.AcademicYear, cancellationToken);
 
         if (learner == null)
         {

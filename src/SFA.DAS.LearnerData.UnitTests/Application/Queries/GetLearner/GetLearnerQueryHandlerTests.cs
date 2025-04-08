@@ -20,7 +20,7 @@ public class GetLearnerQueryHandlerTests
     )
     {
         repository
-            .Setup(x => x.Get(query.Ukprn, query.Uln, query.AgreementId, query.AcademicYear, It.IsAny<CancellationToken>())).ReturnsAsync(learner)
+            .Setup(x => x.Get(query.Ukprn, query.Uln, query.StandardCode, query.AcademicYear, It.IsAny<CancellationToken>())).ReturnsAsync(learner)
             .Verifiable();
 
         var result = await sut.Handle(query, CancellationToken.None);
@@ -39,7 +39,7 @@ public class GetLearnerQueryHandlerTests
     )
     {
         repository
-            .Setup(x => x.Get(query.Ukprn, query.Uln, query.AgreementId, query.AcademicYear, It.IsAny<CancellationToken>())).ReturnsAsync(() => null)
+            .Setup(x => x.Get(query.Ukprn, query.Uln, query.StandardCode, query.AcademicYear, It.IsAny<CancellationToken>())).ReturnsAsync(() => null)
             .Verifiable();
         
         var result = await sut.Handle(query, CancellationToken.None);

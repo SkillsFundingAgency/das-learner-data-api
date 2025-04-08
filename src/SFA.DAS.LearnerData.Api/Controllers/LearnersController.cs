@@ -98,10 +98,10 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [Route("{uln:long}/agreements/{agreementId}/academicyears/{academicYear:int}")]
-    public async Task<IActionResult> GetSingle(long ukprn, long uln, string agreementId, int academicYear)
+    [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode:int}")]
+    public async Task<IActionResult> GetSingle(long ukprn, long uln, int academicYear, int standardCode)
     {
-        var query = new GetLearnerQuery(ukprn, uln, agreementId, academicYear);
+        var query = new GetLearnerQuery(ukprn, uln, standardCode, academicYear);
 
         var result = await sender.Send(query);
 
@@ -139,7 +139,7 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
 
     [HttpPut]
     [ProducesResponseType((int)HttpStatusCode.OK)]
-    [Route("{uln:long}/agreements/{agreementId}/academicyears/{academicYear:int}")]
+    [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode}")]
     public async Task<IActionResult> Put()
     {
         throw new NotImplementedException();
