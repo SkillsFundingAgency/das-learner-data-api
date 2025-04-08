@@ -46,6 +46,7 @@ public class Startup
         services.AddConfigurationOptions(_configuration);
         services.AddSingleton(_configuration);
         services.AddApplicationServices();
+        services.AddHttpContextAccessor();
 
         if (!_environment.IsDevelopment())
         {

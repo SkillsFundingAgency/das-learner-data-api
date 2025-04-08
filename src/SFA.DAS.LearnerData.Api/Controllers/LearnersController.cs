@@ -6,15 +6,17 @@ using SFA.DAS.LearnerData.Api.Models.Requests;
 using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Commands.CreateLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetAll;
+using SFA.DAS.LearnerData.Application.Queries.GetByAcademicYear;
 using SFA.DAS.LearnerData.Application.Queries.GetLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
+using SFA.DAS.LearnerData.Services;
 
 namespace SFA.DAS.LearnerData.Api.Controllers;
 
 [Route("providers/{ukprn:long}/learners")]
 [ApiVersion("1.0")]
 [ApiController]
-public class LearnersController(ISender sender) : ControllerBase
+public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLinkHeaderService) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -181,8 +183,16 @@ public class LearnersController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [Route("academic-year")]
-    public async Task<IActionResult> GetByAcademicYear([FromQuery] int academicYear, [FromQuery] int page = 1, [FromQuery] int pageSize = Int32.MaxValue)
+    public async Task<IActionResult> GetByAcademicYear(long ukprn, [FromQuery] int academicYear, [FromQuery] int page = 1, [FromQuery] int? pageSize = null)
     {
-        throw new NotImplementedException();
+        var query = new GetByAcademicYearQuery(ukprn, academicYear, page, pageSize);
+
+        var result = await sender.Send(query);
+
+        var pageLinks = pagedLinkHeaderService.GetPageLinks(query, result);
+        
+        Response?.Headers.Add(pageLinks);
+
+        return Ok(result);
     }
 }

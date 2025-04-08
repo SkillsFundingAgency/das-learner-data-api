@@ -9,6 +9,7 @@ public interface ILearnerDataRepository
     Task<Learner?> GetById(long id, CancellationToken cancellationToken);
     Task<Learner?> Get(long ukPrn, long uln, string agreementId, int academicYear, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
+    Task<PagedResult<Learner>> GetByAcademicYear(long ukprn, int academicYear, int page, int? pageSize, int limit, int offset, CancellationToken cancellationToken);
 }
 
 public class LearnerDataRepository(LearnerDataDbContext dbContext) : ILearnerDataRepository
@@ -40,5 +41,29 @@ public class LearnerDataRepository(LearnerDataDbContext dbContext) : ILearnerDat
             .AsNoTracking()
             .Where(x => x.Ukprn == ukprn)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<PagedResult<Learner>> GetByAcademicYear(long ukprn, int academicYear, int page, int? pageSize, int limit, int offset, CancellationToken cancellationToken)
+    {
+        var query = dbContext.Learners
+            .AsNoTracking()
+            .Where(x => x.Ukprn == ukprn && x.AcademicYear == academicYear);
+
+        var totalItems = await query.CountAsync(cancellationToken);
+        var totalPages = (int)Math.Ceiling((double)totalItems / pageSize.GetValueOrDefault());
+
+        var result = await query
+            .Skip(offset)
+            .Take(limit)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<Learner>
+        {
+            Data = result,
+            TotalItems = totalItems,
+            TotalPages = totalPages,
+            PageSize = pageSize ?? int.MaxValue,
+            Page = page,
+        };
     }
 }
