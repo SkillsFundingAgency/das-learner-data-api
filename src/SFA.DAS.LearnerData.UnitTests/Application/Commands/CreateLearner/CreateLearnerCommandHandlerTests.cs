@@ -2,6 +2,7 @@ using AutoFixture.NUnit3;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.LearnerData.Application.Commands;
+using SFA.DAS.LearnerData.Application.Commands.CreateLearner;
 using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Data.Repositories;
 using SFA.DAS.Testing.AutoFixture;
@@ -38,7 +39,7 @@ public class CreateLearnerCommandHandlerTests
                 learner.ReceivedDate == request.ReceivedDate &&
                 learner.StandardCode == request.StandardCode &&
                 learner.IsFlexiJob == request.IsFlexiJob &&
-                learner.PlannedOTJTrainingHours == request.PlannedOTJTrainingHours))
+                learner.PlannedOTJTrainingHours == request.PlannedOTJTrainingHours), It.IsAny<CancellationToken>())
             , Times.Once);
     }
 }

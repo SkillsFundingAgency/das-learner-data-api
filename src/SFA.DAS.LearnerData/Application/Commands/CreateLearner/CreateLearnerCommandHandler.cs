@@ -2,7 +2,7 @@ using MediatR;
 using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Data.Repositories;
 
-namespace SFA.DAS.LearnerData.Application.Commands;
+namespace SFA.DAS.LearnerData.Application.Commands.CreateLearner;
 
 public class CreateLearnerCommandHandler(ILearnerDataRepository repository) : IRequestHandler<CreateLearnerCommand>
 {
@@ -10,6 +10,6 @@ public class CreateLearnerCommandHandler(ILearnerDataRepository repository) : IR
     {
         var learner = Learner.From(request);
         
-        await repository.Create(learner);
+        await repository.Create(learner, cancellationToken);
     }
 }

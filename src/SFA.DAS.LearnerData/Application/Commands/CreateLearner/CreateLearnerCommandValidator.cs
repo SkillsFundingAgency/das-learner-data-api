@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace SFA.DAS.LearnerData.Application.Commands;
+namespace SFA.DAS.LearnerData.Application.Commands.CreateLearner;
 
 public class CreateLearnerCommandValidator : AbstractValidator<CreateLearnerCommand>
 {

@@ -3,7 +3,9 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.LearnerData.Api.Models.Requests;
-using SFA.DAS.LearnerData.Application.Commands;
+using SFA.DAS.LearnerData.Api.Models.Responses;
+using SFA.DAS.LearnerData.Application.Commands.CreateLearner;
+using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
 
 namespace SFA.DAS.LearnerData.Api.Controllers;
 
@@ -70,10 +72,42 @@ public class LearnersController(ISender sender) : ControllerBase
 
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [Route("{id:long}")]
     public async Task<IActionResult> GetById(long id)
     {
-        throw new NotImplementedException();
+        var command = new GetLearnerByIdQuery(id);
+
+        var result = await sender.Send(command);
+
+        if (!result.Found)
+        {
+            return new NotFoundResult();
+        }
+
+        return new OkObjectResult(new GetLearnerByIdResponse
+        {
+            Id = result.Id,
+            Uln = result.Uln,
+            Ukprn = result.Ukprn,
+            FirstName = result.FirstName,
+            LastName = result.LastName,
+            Email = result.Email,
+            Dob = result.Dob,
+            AcademicYear = result.AcademicYear,
+            StartDate = result.StartDate,
+            PlannedEndDate = result.PlannedEndDate,
+            PercentageLearningToBeDelivered = result.PercentageLearningToBeDelivered,
+            EpaoPrice = result.EpaoPrice,
+            TrainingPrice = result.TrainingPrice,
+            AgreementId = result.AgreementId,
+            ConsumerReference = result.ConsumerReference,
+            CorrelationId = result.CorrelationId,
+            ReceivedDate = result.ReceivedDate,
+            StandardCode = result.StandardCode,
+            IsFlexiJob = result.IsFlexiJob,
+            PlannedOTJTrainingHours = result.PlannedOTJTrainingHours
+        });
     }
 
     [HttpGet]

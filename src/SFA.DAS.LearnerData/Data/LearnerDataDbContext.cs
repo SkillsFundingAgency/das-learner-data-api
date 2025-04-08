@@ -13,7 +13,7 @@ public class LearnerDataDbContext : DbContext
     private readonly LearnerDataApi _configuration;
     private readonly AzureServiceTokenProvider _azureServiceTokenProvider;
     
-    public DbSet<Learner> Learners { get; set; }
+    public DbSet<Learner?> Learners { get; set; }
 
     public LearnerDataDbContext(DbContextOptions<LearnerDataDbContext> options) : base(options)
     {

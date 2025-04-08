@@ -1,4 +1,5 @@
 using SFA.DAS.LearnerData.Application.Commands;
+using SFA.DAS.LearnerData.Application.Commands.CreateLearner;
 
 namespace SFA.DAS.LearnerData.Data.Entities;
 
