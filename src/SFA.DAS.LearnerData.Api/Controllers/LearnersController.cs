@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.LearnerData.Api.Models.Requests;
 using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Commands.CreateLearner;
+using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetAll;
 using SFA.DAS.LearnerData.Application.Queries.GetByAcademicYear;
 using SFA.DAS.LearnerData.Application.Queries.GetLearner;
@@ -65,7 +66,7 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
 
     [HttpPost]
     [ProducesResponseType((int)HttpStatusCode.Created)]
-    public async Task<IActionResult> Create([FromBody] CreateLearnerRequest request)
+    public async Task<IActionResult> Create([FromBody] SaveLearnerRequest request)
     {
         var command = new CreateLearnerCommand
         {
@@ -140,9 +141,37 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
     [HttpPut]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode}")]
-    public async Task<IActionResult> Put()
+    public async Task<IActionResult> Save([FromBody] SaveLearnerRequest request)
     {
-        throw new NotImplementedException();
+        var command = new SaveLearnerCommand
+        {
+            Uln = request.Uln,
+            Ukprn = request.Ukprn,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            Dob = request.Dob,
+            AcademicYear = request.AcademicYear,
+            StartDate = request.StartDate,
+            PlannedEndDate = request.PlannedEndDate,
+            PercentageLearningToBeDelivered = request.PercentageLearningToBeDelivered,
+            EpaoPrice = request.EpaoPrice,
+            TrainingPrice = request.TrainingPrice,
+            AgreementId = request.AgreementId,
+            ConsumerReference = request.ConsumerReference,
+            CorrelationId = request.CorrelationId,
+            ReceivedDate = request.ReceivedDate,
+            StandardCode = request.StandardCode,
+            IsFlexiJob = request.IsFlexiJob,
+            PlannedOTJTrainingHours = request.PlannedOTJTrainingHours
+        };
+
+        var learnerId = await sender.Send(command);
+
+        return Ok(new
+        {
+            Location = $"providers/{request.Ukprn}/learners/{learnerId}"
+        });
     }
 
     [HttpGet]

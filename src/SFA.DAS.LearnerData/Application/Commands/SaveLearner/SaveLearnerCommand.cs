@@ -1,6 +1,8 @@
-namespace SFA.DAS.LearnerData.Api.Models.Requests;
+using MediatR;
 
-public record CreateLearnerRequest
+namespace SFA.DAS.LearnerData.Application.Commands.SaveLearner;
+
+public record SaveLearnerCommand : IRequest<long>
 {
     public long Uln { get; set; }
     public long Ukprn { get; set; }

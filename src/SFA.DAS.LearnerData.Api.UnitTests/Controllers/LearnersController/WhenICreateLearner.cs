@@ -11,7 +11,7 @@ public class WhenICreateLearner
 {
     [Test, MoqAutoData]
     public async Task Then_Created_Result_Is_Returned(
-        CreateLearnerRequest request,
+        SaveLearnerRequest request,
         [Greedy] Api.Controllers.LearnersController sut
         )
     {
