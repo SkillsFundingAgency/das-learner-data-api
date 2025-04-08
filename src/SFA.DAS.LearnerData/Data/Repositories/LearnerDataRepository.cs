@@ -8,6 +8,7 @@ public interface ILearnerDataRepository
     Task Create(Learner? learner, CancellationToken cancellationToken);
     Task<Learner?> GetById(long id, CancellationToken cancellationToken);
     Task<Learner?> Get(long ukPrn, long uln, string agreementId, int academicYear, CancellationToken cancellationToken);
+    Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
 }
 
 public class LearnerDataRepository(LearnerDataDbContext dbContext) : ILearnerDataRepository
@@ -31,5 +32,13 @@ public class LearnerDataRepository(LearnerDataDbContext dbContext) : ILearnerDat
                                              && learner.AgreementId == agreementId
                                              && learner.AcademicYear == academicYear
                 , cancellationToken);
+    }
+
+    public async Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken)
+    {
+        return await dbContext.Learners
+            .AsNoTracking()
+            .Where(x => x.Ukprn == ukprn)
+            .ToListAsync(cancellationToken);
     }
 }

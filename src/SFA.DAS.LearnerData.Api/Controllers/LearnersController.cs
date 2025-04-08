@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.LearnerData.Api.Models.Requests;
 using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Commands.CreateLearner;
+using SFA.DAS.LearnerData.Application.Queries.GetAll;
 using SFA.DAS.LearnerData.Application.Queries.GetLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
 
@@ -18,9 +19,43 @@ public class LearnersController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetAll(long ukprn)
+    public async Task<IActionResult> GetForProvider(long ukprn)
     {
-        throw new NotImplementedException();
+        var query = new GetForProviderQuery(ukprn);
+
+        var result = await sender.Send(query);
+
+        if (!result.Found)
+        {
+            return new NotFoundResult();
+        }
+
+        return new OkObjectResult(new GetForProviderResponse
+        {
+            Learners = result.Learners.Select(learner => new GetForProviderResponseItem
+            {
+                Id = learner.Id,
+                Uln = learner.Uln,
+                Ukprn = learner.Ukprn,
+                FirstName = learner.FirstName,
+                LastName = learner.LastName,
+                Email = learner.Email,
+                Dob = learner.Dob,
+                AcademicYear = learner.AcademicYear,
+                StartDate = learner.StartDate,
+                PlannedEndDate = learner.PlannedEndDate,
+                PercentageLearningToBeDelivered = learner.PercentageLearningToBeDelivered,
+                EpaoPrice = learner.EpaoPrice,
+                TrainingPrice = learner.TrainingPrice,
+                AgreementId = learner.AgreementId,
+                ConsumerReference = learner.ConsumerReference,
+                CorrelationId = learner.CorrelationId,
+                ReceivedDate = learner.ReceivedDate,
+                StandardCode = learner.StandardCode,
+                IsFlexiJob = learner.IsFlexiJob,
+                PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours
+            })
+        });
     }
 
     [HttpPost]
