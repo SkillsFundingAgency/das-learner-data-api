@@ -14,8 +14,6 @@ using SFA.DAS.LearnerData.Api.HttpResponseExtensions;
 using SFA.DAS.LearnerData.Api.Middleware;
 using SFA.DAS.LearnerData.Api.Models;
 using SFA.DAS.LearnerData.Api.StartupExtensions;
-using SFA.DAS.LearnerData.Application.Commands;
-using SFA.DAS.LearnerData.Application.Commands.CreateLearner;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Configuration;
 using SFA.DAS.LearnerData.Data;
