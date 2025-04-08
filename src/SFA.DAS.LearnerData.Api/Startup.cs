@@ -158,6 +158,7 @@ public class Startup
 
     public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
     {
+        return;
         var config = _configuration.GetSection<LearnerDataApi>();
         serviceProvider.StartNServiceBus(config);
 
