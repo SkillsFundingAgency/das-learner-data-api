@@ -1,9 +1,8 @@
 namespace SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
 
-public record GetLearnerByIdResult
+public record GetLearnerByIdResult : LearnerResult
 {
     public bool Found => Id > 0;
-    public long Id { get; set; }
     public long Uln { get; set; }
     public long Ukprn { get; set; }
     public string FirstName { get; set; }

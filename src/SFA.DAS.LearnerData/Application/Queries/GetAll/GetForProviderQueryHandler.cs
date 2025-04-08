@@ -21,6 +21,8 @@ public class GetForProviderQueryHandler(ILearnerDataRepository repository): IReq
             Learners = result.Select(learner => new GetForProviderResultItem
             {
                 Id = learner.Id,
+                CreatedDate = learner.CreatedDate,
+                UpdatedDate = learner.UpdatedDate,
                 Uln = learner.Uln,
                 Ukprn = learner.Ukprn,
                 FirstName = learner.FirstName,

@@ -1,6 +1,11 @@
 namespace SFA.DAS.LearnerData.Api.Models.Responses;
 
-public record GetLearnerByIdResponse : LearnerResponse
+public record GetByAcademicYearResponse : PagedResponse<GetByAcademicYearResponseItem>
+{
+    public DateTime? LastSubmissionDate { get; set; }
+}
+
+public record GetByAcademicYearResponseItem : LearnerResponse
 {
     public long Uln { get; set; }
     public long Ukprn { get; set; }

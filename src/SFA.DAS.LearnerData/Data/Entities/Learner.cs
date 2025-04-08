@@ -1,11 +1,9 @@
-using SFA.DAS.LearnerData.Application.Commands;
 using SFA.DAS.LearnerData.Application.Commands.CreateLearner;
 
 namespace SFA.DAS.LearnerData.Data.Entities;
 
-public class Learner
+public class Learner : Entity
 {
-    public long Id { get; set; }
     public long Uln { get; set; }
     public long Ukprn { get; set; }
     public string FirstName { get; set; }
@@ -22,8 +20,6 @@ public class Learner
     public int StandardCode { get; set; }
     public bool IsFlexiJob { get; set; }
     public int PlannedOTJTrainingHours { get; set; }
-    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-    public DateTime? UpdatedDate { get; set; }
     public DateTime ReceivedDate { get; set; }
     public string CorrelationId { get; set; }
     public string ConsumerReference { get; set; }

@@ -1,8 +1,11 @@
 namespace SFA.DAS.LearnerData.Application.Queries.GetByAcademicYear;
 
-public record GetByAcademicYearResult : PagedQueryResult<GetByAcademicYearResultItem>;
+public record GetByAcademicYearResult : PagedQueryResult<GetByAcademicYearResultItem>
+{
+    public DateTime? LastSubmissionDate { get; set; }
+}
 
-public record GetByAcademicYearResultItem
+public record GetByAcademicYearResultItem : LearnerResult
 {
     public long Id { get; set; }
     public long Uln { get; set; }

@@ -30,11 +30,16 @@ public class GetByAcademicYearQueryHandler(ILearnerDataRepository repository): I
             request.Offset,
             cancellationToken);
 
+        var lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, request.AcademicYear, cancellationToken);
+
         return new GetByAcademicYearResult
         {
+            LastSubmissionDate = lastSubmissionDate,
             Items = result.Data.Select(learner => new GetByAcademicYearResultItem
             {
                 Id = learner.Id,
+                CreatedDate = learner.CreatedDate,
+                UpdatedDate = learner.UpdatedDate,
                 Uln = learner.Uln,
                 Ukprn = learner.Ukprn,
                 FirstName = learner.FirstName,

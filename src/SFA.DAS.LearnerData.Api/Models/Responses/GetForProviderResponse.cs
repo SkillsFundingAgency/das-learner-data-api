@@ -3,13 +3,13 @@ using SFA.DAS.LearnerData.Application.Queries.GetAll;
 namespace SFA.DAS.LearnerData.Api.Models.Responses;
 
 public record GetForProviderResponse
-{
-    public IEnumerable<GetForProviderResponseItem> Learners { get; set; }
-}
+ {
+     public IEnumerable<GetForProviderResponseItem> Learners { get; set; }
+     public DateTime LastSubmissionDate { get; set; }
+ }
 
-public record GetForProviderResponseItem
+public record GetForProviderResponseItem : LearnerResponse
 {
-    public long Id { get; set; }
     public long Uln { get; set; }
     public long Ukprn { get; set; }
     public string FirstName { get; set; }

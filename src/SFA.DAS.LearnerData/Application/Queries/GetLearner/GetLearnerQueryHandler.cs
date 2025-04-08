@@ -19,6 +19,8 @@ public class GetLearnerQueryHandler(ILearnerDataRepository repository): IRequest
         return new GetLearnerResult
         {
             Id = learner.Id,
+            CreatedDate = learner.CreatedDate,
+            UpdatedDate = learner.UpdatedDate,
             Uln = learner.Uln,
             Ukprn = learner.Ukprn,
             FirstName = learner.FirstName,

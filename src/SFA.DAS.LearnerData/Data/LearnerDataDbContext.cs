@@ -40,4 +40,31 @@ public class LearnerDataDbContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(LearnerDataDbContext).Assembly);
     }
+    
+    
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        PopulateModificationHistoryValues();
+
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+    
+    private void PopulateModificationHistoryValues()
+    {
+        var entries = ChangeTracker.Entries();
+
+        var modificationHistoryList = entries.Where(e => e.Entity is IModificationHistory && (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+        foreach (var history in modificationHistoryList)
+        {
+            var modificationHistory = (IModificationHistory)history.Entity;
+
+            modificationHistory.UpdatedDate = DateTime.UtcNow;
+
+            if (history.State == EntityState.Added)
+            {
+                modificationHistory.CreatedDate = DateTime.UtcNow;
+            }
+        }
+    }
 }

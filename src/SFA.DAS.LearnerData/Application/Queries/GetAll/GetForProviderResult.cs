@@ -4,11 +4,11 @@ public record GetForProviderResult
 {
     public bool Found => Learners.Count != 0;
     public List<GetForProviderResultItem> Learners { get; set; } = new();
+    public DateTime LastSubmissionDate { get; set; }
 }
 
-public record GetForProviderResultItem
+public record GetForProviderResultItem : LearnerResult
 {
-    public long Id { get; set; }
     public long Uln { get; set; }
     public long Ukprn { get; set; }
     public string FirstName { get; set; }

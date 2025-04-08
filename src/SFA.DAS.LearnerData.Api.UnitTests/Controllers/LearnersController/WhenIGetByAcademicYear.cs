@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using NUnit.Framework;
+using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Queries;
 using SFA.DAS.LearnerData.Application.Queries.GetByAcademicYear;
 using SFA.DAS.LearnerData.Services;
@@ -43,7 +44,7 @@ public class WhenIGetByAcademicYear
         var okResult = result as OkObjectResult;
         okResult.Should().NotBeNull();
 
-        var response = okResult.Value as GetByAcademicYearResult;
+        var response = okResult.Value as GetByAcademicYearResponse;
         response.Should().BeEquivalentTo(queryResult, options => options.ExcludingMissingMembers());
 
         sender.Verify();

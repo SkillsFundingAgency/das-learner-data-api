@@ -29,14 +29,17 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
 
         if (!result.Found)
         {
-            return new NotFoundResult();
+            return NotFound();
         }
 
-        return new OkObjectResult(new GetForProviderResponse
+        return Ok(new GetForProviderResponse
         {
+            LastSubmissionDate = result.LastSubmissionDate,
             Learners = result.Learners.Select(learner => new GetForProviderResponseItem
             {
                 Id = learner.Id,
+                CreatedDate = learner.CreatedDate,
+                UpdatedDate = learner.UpdatedDate,
                 Uln = learner.Uln,
                 Ukprn = learner.Ukprn,
                 FirstName = learner.FirstName,
@@ -89,7 +92,7 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
 
         await sender.Send(command);
 
-        return new CreatedResult();
+        return Created();
     }
 
     [HttpGet]
@@ -104,12 +107,14 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
 
         if (!result.Found)
         {
-            return new NotFoundResult();
+            return NotFound();
         }
 
-        return new OkObjectResult(new GetLearnerResponse
+        return Ok(new GetLearnerResponse
         {
             Id = result.Id,
+            CreatedDate = result.CreatedDate,
+            UpdatedDate = result.UpdatedDate,
             Uln = result.Uln,
             Ukprn = result.Ukprn,
             FirstName = result.FirstName,
@@ -155,9 +160,11 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
             return new NotFoundResult();
         }
 
-        return new OkObjectResult(new GetLearnerByIdResponse
+        return Ok(new GetLearnerByIdResponse
         {
             Id = result.Id,
+            CreatedDate = result.CreatedDate,
+            UpdatedDate = result.UpdatedDate,
             Uln = result.Uln,
             Ukprn = result.Ukprn,
             FirstName = result.FirstName,
@@ -193,6 +200,40 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
         
         Response?.Headers.Add(pageLinks);
 
-        return Ok(result);
+        var response = new GetByAcademicYearResponse
+        {
+            LastSubmissionDate = result.LastSubmissionDate,
+            Data = result.Items.Select(item => new GetByAcademicYearResponseItem
+            {
+                Id = item.Id,
+                CreatedDate = item.CreatedDate,
+                UpdatedDate = item.UpdatedDate,
+                Uln = item.Uln,
+                Ukprn = item.Ukprn,
+                FirstName = item.FirstName,
+                LastName = item.LastName,
+                Email = item.Email,
+                Dob = item.Dob,
+                AcademicYear = item.AcademicYear,
+                StartDate = item.StartDate,
+                PlannedEndDate = item.PlannedEndDate,
+                PercentageLearningToBeDelivered = item.PercentageLearningToBeDelivered,
+                EpaoPrice = item.EpaoPrice,
+                TrainingPrice = item.TrainingPrice,
+                AgreementId = item.AgreementId,
+                ConsumerReference = item.ConsumerReference,
+                CorrelationId = item.CorrelationId,
+                ReceivedDate = item.ReceivedDate,
+                StandardCode = item.StandardCode,
+                IsFlexiJob = item.IsFlexiJob,
+                PlannedOTJTrainingHours = item.PlannedOTJTrainingHours
+            }),
+            Page = result.Page,
+            PageSize = result.PageSize,
+            TotalItems = result.TotalItems,
+            TotalPages = result.TotalPages
+        };
+
+        return Ok(response);
     }
 }

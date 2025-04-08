@@ -1,8 +1,7 @@
 namespace SFA.DAS.LearnerData.Api.Models.Responses;
 
-public record GetLearnerResponse
+public record GetLearnerResponse: LearnerResponse
 {
-    public long Id { get; set; }
     public long Uln { get; set; }
     public long Ukprn { get; set; }
     public string FirstName { get; set; }

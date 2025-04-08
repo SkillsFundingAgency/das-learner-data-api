@@ -16,6 +16,7 @@ public class GetByAcademicYearQueryHandlerTests
     public async Task Handle_GetForProvider_When_Learners_Exist(
         GetByAcademicYearQuery query,
         PagedResult<Learner> learners,
+        DateTime? lastSubmissionDate,
         [Frozen] Mock<ILearnerDataRepository> repository,
         GetByAcademicYearQueryHandler sut
     )
@@ -29,6 +30,10 @@ public class GetByAcademicYearQueryHandlerTests
         repository
             .Setup(x => x.GetByAcademicYear(query.UkPrn, query.AcademicYear, query.Page, query.PageSize, query.Limit, query.Offset, It.IsAny<CancellationToken>())).ReturnsAsync(learners)
             .Verifiable();
+        
+        repository
+            .Setup(x => x.GetLastSubmissionDate(query.UkPrn, query.AcademicYear, It.IsAny<CancellationToken>())).ReturnsAsync(lastSubmissionDate)
+            .Verifiable();
 
         var result = await sut.Handle(query, CancellationToken.None);
         result.Should().NotBeNull();
@@ -37,6 +42,7 @@ public class GetByAcademicYearQueryHandlerTests
         result.Page.Should().Be(query.Page);
         result.PageSize.Should().Be(query.PageSize);
         result.TotalItems.Should().Be(learners.TotalItems);
+        result.LastSubmissionDate.Should().Be(lastSubmissionDate);
 
         repository.Verify();
     }

@@ -18,7 +18,9 @@ public class GetLearnerByIdQueryHandler(ILearnerDataRepository repository) : IRe
 
         return new GetLearnerByIdResult
         {
-            Id = learner.Id,
+            Id = learner.Id,                
+            CreatedDate = learner.CreatedDate,
+            UpdatedDate = learner.UpdatedDate,
             Uln = learner.Uln,
             Ukprn = learner.Ukprn,
             FirstName = learner.FirstName,
