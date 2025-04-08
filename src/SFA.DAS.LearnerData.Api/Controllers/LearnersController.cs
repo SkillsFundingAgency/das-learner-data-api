@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.LearnerData.Api.Models.Requests;
 using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Commands.CreateLearner;
+using SFA.DAS.LearnerData.Application.Queries.GetLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
 
 namespace SFA.DAS.LearnerData.Api.Controllers;
@@ -17,7 +18,7 @@ public class LearnersController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(long ukprn)
     {
         throw new NotImplementedException();
     }
@@ -56,10 +57,42 @@ public class LearnersController(ISender sender) : ControllerBase
 
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [Route("{uln:long}/agreements/{agreementId}/academicyears/{academicYear:int}")]
-    public async Task<IActionResult> GetSingle(long uln, string agreementId, int academicYear)
+    public async Task<IActionResult> GetSingle(long ukprn, long uln, string agreementId, int academicYear)
     {
-        throw new NotImplementedException();
+        var query = new GetLearnerQuery(ukprn, uln, agreementId, academicYear);
+
+        var result = await sender.Send(query);
+
+        if (!result.Found)
+        {
+            return new NotFoundResult();
+        }
+
+        return new OkObjectResult(new GetLearnerResponse
+        {
+            Id = result.Id,
+            Uln = result.Uln,
+            Ukprn = result.Ukprn,
+            FirstName = result.FirstName,
+            LastName = result.LastName,
+            Email = result.Email,
+            Dob = result.Dob,
+            AcademicYear = result.AcademicYear,
+            StartDate = result.StartDate,
+            PlannedEndDate = result.PlannedEndDate,
+            PercentageLearningToBeDelivered = result.PercentageLearningToBeDelivered,
+            EpaoPrice = result.EpaoPrice,
+            TrainingPrice = result.TrainingPrice,
+            AgreementId = result.AgreementId,
+            ConsumerReference = result.ConsumerReference,
+            CorrelationId = result.CorrelationId,
+            ReceivedDate = result.ReceivedDate,
+            StandardCode = result.StandardCode,
+            IsFlexiJob = result.IsFlexiJob,
+            PlannedOTJTrainingHours = result.PlannedOTJTrainingHours
+        });
     }
 
     [HttpPut]

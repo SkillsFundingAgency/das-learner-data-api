@@ -5,32 +5,33 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.LearnerData.Api.Models.Responses;
-using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
+using SFA.DAS.LearnerData.Application.Queries.GetLearner;
 using SFA.DAS.Testing.AutoFixture;
 
 namespace SFA.DAS.LearnerData.Api.UnitTests.Controllers.LearnersController;
 
-public class WhenIGetById
+public class WhenIGet
 {
     [Test, MoqAutoData]
     public async Task Then_Ok_Response_Is_Returned_When_Learner_Exists(
-        int id,
-        GetLearnerByIdResult queryResult,
+        GetLearnerQuery query,
+        GetLearnerResult queryResult,
         [Frozen] Mock<ISender> sender,
         [Greedy] Api.Controllers.LearnersController sut
     )
     {
         sender
-            .Setup(x => x.Send(It.Is<GetLearnerByIdQuery>(ctx => ctx.Id == id), It.IsAny<CancellationToken>())).ReturnsAsync(queryResult)
+            .Setup(x => x.Send(It.Is<GetLearnerQuery>(ctx => ctx.Ukprn == query.Ukprn && ctx.Uln == query.Uln && ctx.AcademicYear == query.AcademicYear && ctx.AgreementId == query.AgreementId), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(queryResult)
             .Verifiable();
 
-        var result = await sut.GetById(id);
+        var result = await sut.GetSingle(query.Ukprn, query.Uln, query.AgreementId, query.AcademicYear);
         result.Should().NotBeNull();
 
         var okResult = result as OkObjectResult;
         okResult.Should().NotBeNull();
         
-        var response = okResult.Value as GetLearnerByIdResponse;
+        var response = okResult.Value as GetLearnerResponse;
         response.Should().BeEquivalentTo(queryResult, options => options.ExcludingMissingMembers());
         
         sender.Verify();
@@ -38,17 +39,17 @@ public class WhenIGetById
     
     [Test, MoqAutoData]
     public async Task Then_NotFound_Response_Is_Returned_When_Learner_Does_Not_Exist(
-        int id,
-        GetLearnerByIdResult queryResult,
+        GetLearnerQuery query,
         [Frozen] Mock<ISender> sender,
         [Greedy] Api.Controllers.LearnersController sut
     )
     {
         sender
-            .Setup(x => x.Send(It.Is<GetLearnerByIdQuery>(ctx => ctx.Id == id), It.IsAny<CancellationToken>())).ReturnsAsync(new GetLearnerByIdResult())
+            .Setup(x => x.Send(It.Is<GetLearnerQuery>(ctx => ctx.Ukprn == query.Ukprn && ctx.Uln == query.Uln && ctx.AcademicYear == query.AcademicYear && ctx.AgreementId == query.AgreementId), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetLearnerResult())
             .Verifiable();
 
-        var result = await sut.GetById(id);
+        var result = await sut.GetSingle(query.Ukprn, query.Uln, query.AgreementId, query.AcademicYear);
         result.Should().NotBeNull();
 
         var okResult = result as NotFoundResult;
