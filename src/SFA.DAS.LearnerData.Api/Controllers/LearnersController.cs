@@ -107,7 +107,7 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
     }
 
     [HttpPut]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode}")]
     public async Task<IActionResult> Save([FromBody] SaveLearnerRequest request)
     {
