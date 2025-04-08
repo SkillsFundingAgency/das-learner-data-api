@@ -2,9 +2,9 @@ using System.Net;
 using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using SFA.DAS.LearnerData.Api.Models.Requests;
 using SFA.DAS.LearnerData.Api.Models.Responses;
-using SFA.DAS.LearnerData.Application.Commands.CreateLearner;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetAll;
 using SFA.DAS.LearnerData.Application.Queries.GetByAcademicYear;
@@ -63,39 +63,7 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
             })
         });
     }
-
-    [HttpPost]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
-    public async Task<IActionResult> Create([FromBody] SaveLearnerRequest request)
-    {
-        var command = new CreateLearnerCommand
-        {
-            Uln = request.Uln,
-            Ukprn = request.Ukprn,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email,
-            Dob = request.Dob,
-            AcademicYear = request.AcademicYear,
-            StartDate = request.StartDate,
-            PlannedEndDate = request.PlannedEndDate,
-            PercentageLearningToBeDelivered = request.PercentageLearningToBeDelivered,
-            EpaoPrice = request.EpaoPrice,
-            TrainingPrice = request.TrainingPrice,
-            AgreementId = request.AgreementId,
-            ConsumerReference = request.ConsumerReference,
-            CorrelationId = request.CorrelationId,
-            ReceivedDate = request.ReceivedDate,
-            StandardCode = request.StandardCode,
-            IsFlexiJob = request.IsFlexiJob,
-            PlannedOTJTrainingHours = request.PlannedOTJTrainingHours
-        };
-
-        await sender.Send(command);
-
-        return Created();
-    }
-
+    
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -167,11 +135,11 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
         };
 
         var learnerId = await sender.Send(command);
+        var location = $"providers/{request.Ukprn}/learners/{learnerId}";
+        
+        Response?.Headers.Add(new KeyValuePair<string, StringValues>("location", location));
 
-        return Ok(new
-        {
-            Location = $"providers/{request.Ukprn}/learners/{learnerId}"
-        });
+        return Created();
     }
 
     [HttpGet]

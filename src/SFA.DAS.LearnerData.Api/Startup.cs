@@ -16,6 +16,7 @@ using SFA.DAS.LearnerData.Api.Models;
 using SFA.DAS.LearnerData.Api.StartupExtensions;
 using SFA.DAS.LearnerData.Application.Commands;
 using SFA.DAS.LearnerData.Application.Commands.CreateLearner;
+using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Configuration;
 using SFA.DAS.LearnerData.Data;
 using SFA.DAS.NServiceBus.Features.ClientOutbox.Data;
@@ -77,9 +78,9 @@ public class Startup
 
         services.AddFluentValidationAutoValidation()
             .AddValidatorsFromAssemblyContaining<Startup>()
-            .AddValidatorsFromAssemblyContaining<CreateLearnerCommandValidator>();
+            .AddValidatorsFromAssemblyContaining<SaveLearnerCommand>();
 
-        services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<CreateLearnerCommand>());
+        services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<SaveLearnerCommand>());
 
         var config = _configuration.GetSection<LearnerDataApi>();
 
