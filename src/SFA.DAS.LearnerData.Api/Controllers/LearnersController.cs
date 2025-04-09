@@ -37,41 +37,7 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
 
         Response?.Headers.Add(pageLinks);
 
-        var response = new GetSearchResponse
-        {
-            LastSubmissionDate = result.LastSubmissionDate,
-            Data = result.Items.Select(item => new GetSearchResponseItem
-            {
-                Id = item.Id,
-                CreatedDate = item.CreatedDate,
-                UpdatedDate = item.UpdatedDate,
-                Uln = item.Uln,
-                Ukprn = item.Ukprn,
-                FirstName = item.FirstName,
-                LastName = item.LastName,
-                Email = item.Email,
-                Dob = item.Dob,
-                AcademicYear = item.AcademicYear,
-                StartDate = item.StartDate,
-                PlannedEndDate = item.PlannedEndDate,
-                PercentageLearningToBeDelivered = item.PercentageLearningToBeDelivered,
-                EpaoPrice = item.EpaoPrice,
-                TrainingPrice = item.TrainingPrice,
-                AgreementId = item.AgreementId,
-                ConsumerReference = item.ConsumerReference,
-                CorrelationId = item.CorrelationId,
-                ReceivedDate = item.ReceivedDate,
-                StandardCode = item.StandardCode,
-                IsFlexiJob = item.IsFlexiJob,
-                PlannedOTJTrainingHours = item.PlannedOTJTrainingHours
-            }),
-            Page = result.Page,
-            PageSize = result.PageSize,
-            TotalItems = result.TotalItems,
-            TotalPages = result.TotalPages
-        };
-
-        return Ok(response);
+        return Ok(GetSearchResponse.MapFrom(result));
     }
 
     [HttpPut]
@@ -126,33 +92,8 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
             return NotFound();
         }
 
-        return Ok(new GetLearnerResponse
-        {
-            Id = result.Id,
-            CreatedDate = result.CreatedDate,
-            UpdatedDate = result.UpdatedDate,
-            Uln = result.Uln,
-            Ukprn = result.Ukprn,
-            FirstName = result.FirstName,
-            LastName = result.LastName,
-            Email = result.Email,
-            Dob = result.Dob,
-            AcademicYear = result.AcademicYear,
-            StartDate = result.StartDate,
-            PlannedEndDate = result.PlannedEndDate,
-            PercentageLearningToBeDelivered = result.PercentageLearningToBeDelivered,
-            EpaoPrice = result.EpaoPrice,
-            TrainingPrice = result.TrainingPrice,
-            AgreementId = result.AgreementId,
-            ConsumerReference = result.ConsumerReference,
-            CorrelationId = result.CorrelationId,
-            ReceivedDate = result.ReceivedDate,
-            StandardCode = result.StandardCode,
-            IsFlexiJob = result.IsFlexiJob,
-            PlannedOTJTrainingHours = result.PlannedOTJTrainingHours
-        });
+        return Ok(GetLearnerResponse.MapFrom(result));
     }
-
 
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -169,30 +110,6 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
             return new NotFoundResult();
         }
 
-        return Ok(new GetLearnerByIdResponse
-        {
-            Id = result.Id,
-            CreatedDate = result.CreatedDate,
-            UpdatedDate = result.UpdatedDate,
-            Uln = result.Uln,
-            Ukprn = result.Ukprn,
-            FirstName = result.FirstName,
-            LastName = result.LastName,
-            Email = result.Email,
-            Dob = result.Dob,
-            AcademicYear = result.AcademicYear,
-            StartDate = result.StartDate,
-            PlannedEndDate = result.PlannedEndDate,
-            PercentageLearningToBeDelivered = result.PercentageLearningToBeDelivered,
-            EpaoPrice = result.EpaoPrice,
-            TrainingPrice = result.TrainingPrice,
-            AgreementId = result.AgreementId,
-            ConsumerReference = result.ConsumerReference,
-            CorrelationId = result.CorrelationId,
-            ReceivedDate = result.ReceivedDate,
-            StandardCode = result.StandardCode,
-            IsFlexiJob = result.IsFlexiJob,
-            PlannedOTJTrainingHours = result.PlannedOTJTrainingHours
-        });
+        return Ok(GetLearnerByIdResponse.MapFrom(result));
     }
 }

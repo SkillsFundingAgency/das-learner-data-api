@@ -1,8 +1,47 @@
+using SFA.DAS.LearnerData.Application.Queries.GetSearch;
+
 namespace SFA.DAS.LearnerData.Api.Models.Responses;
 
 public record GetSearchResponse : PagedResponse<GetSearchResponseItem>
 {
     public DateTime? LastSubmissionDate { get; set; }
+    
+    public static GetSearchResponse MapFrom(GetSearchResult result)
+    {
+        return new GetSearchResponse
+        {
+            LastSubmissionDate = result.LastSubmissionDate,
+            Data = result.Items.Select(item => new GetSearchResponseItem
+            {
+                Id = item.Id,
+                CreatedDate = item.CreatedDate,
+                UpdatedDate = item.UpdatedDate,
+                Uln = item.Uln,
+                Ukprn = item.Ukprn,
+                FirstName = item.FirstName,
+                LastName = item.LastName,
+                Email = item.Email,
+                Dob = item.Dob,
+                AcademicYear = item.AcademicYear,
+                StartDate = item.StartDate,
+                PlannedEndDate = item.PlannedEndDate,
+                PercentageLearningToBeDelivered = item.PercentageLearningToBeDelivered,
+                EpaoPrice = item.EpaoPrice,
+                TrainingPrice = item.TrainingPrice,
+                AgreementId = item.AgreementId,
+                ConsumerReference = item.ConsumerReference,
+                CorrelationId = item.CorrelationId,
+                ReceivedDate = item.ReceivedDate,
+                StandardCode = item.StandardCode,
+                IsFlexiJob = item.IsFlexiJob,
+                PlannedOTJTrainingHours = item.PlannedOTJTrainingHours
+            }),
+            Page = result.Page,
+            PageSize = result.PageSize,
+            TotalItems = result.TotalItems,
+            TotalPages = result.TotalPages
+        };
+    }
 }
 
 public record GetSearchResponseItem : LearnerResponse
@@ -27,3 +66,4 @@ public record GetSearchResponseItem : LearnerResponse
     public string CorrelationId { get; set; }
     public string ConsumerReference { get; set; }
 }
+
