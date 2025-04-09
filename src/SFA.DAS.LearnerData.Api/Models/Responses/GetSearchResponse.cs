@@ -1,14 +1,11 @@
-using SFA.DAS.LearnerData.Application.Queries.GetAll;
-
 namespace SFA.DAS.LearnerData.Api.Models.Responses;
 
-public record GetForProviderResponse
- {
-     public IEnumerable<GetForProviderResponseItem> Learners { get; set; }
-     public DateTime LastSubmissionDate { get; set; }
- }
+public record GetSearchResponse : PagedResponse<GetSearchResponseItem>
+{
+    public DateTime? LastSubmissionDate { get; set; }
+}
 
-public record GetForProviderResponseItem : LearnerResponse
+public record GetSearchResponseItem : LearnerResponse
 {
     public long Uln { get; set; }
     public long Ukprn { get; set; }

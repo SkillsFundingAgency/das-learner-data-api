@@ -1,12 +1,13 @@
-namespace SFA.DAS.LearnerData.Api.Models.Responses;
+namespace SFA.DAS.LearnerData.Application.Queries.GetSearch;
 
-public record GetByAcademicYearResponse : PagedResponse<GetByAcademicYearResponseItem>
+public record GetSearchResult : PagedQueryResult<GetByAcademicYearResultItem>
 {
     public DateTime? LastSubmissionDate { get; set; }
 }
 
-public record GetByAcademicYearResponseItem : LearnerResponse
+public record GetByAcademicYearResultItem : LearnerResult
 {
+    public long Id { get; set; }
     public long Uln { get; set; }
     public long Ukprn { get; set; }
     public string FirstName { get; set; }

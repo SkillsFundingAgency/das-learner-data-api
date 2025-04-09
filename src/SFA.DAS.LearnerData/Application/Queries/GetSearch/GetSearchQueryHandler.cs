@@ -1,25 +1,31 @@
 using MediatR;
 using SFA.DAS.LearnerData.Data.Repositories;
 
-namespace SFA.DAS.LearnerData.Application.Queries.GetByAcademicYear;
+namespace SFA.DAS.LearnerData.Application.Queries.GetSearch;
 
-public record GetByAcademicYearQuery : PagedQuery, IRequest<GetByAcademicYearResult>
+public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
 {
     public long UkPrn { get; }
     public int AcademicYear { get; }
+    public string SortColumn { get; }
+    public bool SortDescending { get; }
+    public string Filter { get; }
 
-    public GetByAcademicYearQuery(long ukPrn, int academicYear, int page, int? pageSize)
+    public GetSearchQuery(long ukPrn, int academicYear, int page, int? pageSize, string sortColumn, bool sortDescending, string filter)
     {
         UkPrn = ukPrn;
         AcademicYear = academicYear;
+        SortColumn = sortColumn;
+        SortDescending = sortDescending;
+        Filter = filter;
         Page = page;
         PageSize = pageSize;
     }
 }
 
-public class GetByAcademicYearQueryHandler(ILearnerDataRepository repository): IRequestHandler<GetByAcademicYearQuery, GetByAcademicYearResult>
+public class GetSearchQueryHandler(ILearnerDataRepository repository): IRequestHandler<GetSearchQuery, GetSearchResult>
 {
-    public async Task<GetByAcademicYearResult> Handle(GetByAcademicYearQuery request, CancellationToken cancellationToken)
+    public async Task<GetSearchResult> Handle(GetSearchQuery request, CancellationToken cancellationToken)
     {
         var result = await repository.GetByAcademicYear(
             request.UkPrn,
@@ -32,7 +38,7 @@ public class GetByAcademicYearQueryHandler(ILearnerDataRepository repository): I
 
         var lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, request.AcademicYear, cancellationToken);
 
-        return new GetByAcademicYearResult
+        return new GetSearchResult
         {
             LastSubmissionDate = lastSubmissionDate,
             Items = result.Data.Select(learner => new GetByAcademicYearResultItem

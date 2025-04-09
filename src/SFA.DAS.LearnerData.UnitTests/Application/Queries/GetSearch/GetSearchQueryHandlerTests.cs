@@ -2,23 +2,23 @@ using AutoFixture.NUnit3;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using SFA.DAS.LearnerData.Application.Queries.GetByAcademicYear;
+using SFA.DAS.LearnerData.Application.Queries.GetSearch;
 using SFA.DAS.LearnerData.Data;
 using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Data.Repositories;
 using SFA.DAS.Testing.AutoFixture;
 
-namespace SFA.DAS.LearnerData.UnitTests.Application.Queries.GetByAcademicYear;
+namespace SFA.DAS.LearnerData.UnitTests.Application.Queries.GetSearch;
 
-public class GetByAcademicYearQueryHandlerTests
+public class GetSearchQueryHandlerTests
 {
     [Test, MoqAutoData]
     public async Task Handle_GetForProvider_When_Learners_Exist(
-        GetByAcademicYearQuery query,
+        GetSearchQuery query,
         PagedResult<Learner> learners,
         DateTime? lastSubmissionDate,
         [Frozen] Mock<ILearnerDataRepository> repository,
-        GetByAcademicYearQueryHandler sut
+        GetSearchQueryHandler sut
     )
     {
         query.Page = 1;

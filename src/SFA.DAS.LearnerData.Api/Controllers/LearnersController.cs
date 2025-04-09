@@ -6,10 +6,9 @@ using Microsoft.Extensions.Primitives;
 using SFA.DAS.LearnerData.Api.Models.Requests;
 using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
-using SFA.DAS.LearnerData.Application.Queries.GetAll;
-using SFA.DAS.LearnerData.Application.Queries.GetByAcademicYear;
 using SFA.DAS.LearnerData.Application.Queries.GetLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
+using SFA.DAS.LearnerData.Application.Queries.GetSearch;
 using SFA.DAS.LearnerData.Services;
 
 namespace SFA.DAS.LearnerData.Api.Controllers;
@@ -21,49 +20,90 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
 {
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<IActionResult> GetForProvider(long ukprn)
+    public async Task<IActionResult> Search(long ukprn, [FromQuery] int academicYear, [FromQuery] int page, [FromQuery] int? pageSize, string sortColumn, bool sortDescending, string filter)
     {
-        var query = new GetForProviderQuery(ukprn);
+        var query = new GetSearchQuery(ukprn, academicYear, page, pageSize, sortColumn, sortDescending, filter);
 
         var result = await sender.Send(query);
 
-        if (!result.Found)
-        {
-            return NotFound();
-        }
+        var pageLinks = pagedLinkHeaderService.GetPageLinks(query, result);
 
-        return Ok(new GetForProviderResponse
+        Response?.Headers.Add(pageLinks);
+
+        var response = new GetSearchResponse
         {
             LastSubmissionDate = result.LastSubmissionDate,
-            Learners = result.Learners.Select(learner => new GetForProviderResponseItem
+            Data = result.Items.Select(item => new GetSearchResponseItem
             {
-                Id = learner.Id,
-                CreatedDate = learner.CreatedDate,
-                UpdatedDate = learner.UpdatedDate,
-                Uln = learner.Uln,
-                Ukprn = learner.Ukprn,
-                FirstName = learner.FirstName,
-                LastName = learner.LastName,
-                Email = learner.Email,
-                Dob = learner.Dob,
-                AcademicYear = learner.AcademicYear,
-                StartDate = learner.StartDate,
-                PlannedEndDate = learner.PlannedEndDate,
-                PercentageLearningToBeDelivered = learner.PercentageLearningToBeDelivered,
-                EpaoPrice = learner.EpaoPrice,
-                TrainingPrice = learner.TrainingPrice,
-                AgreementId = learner.AgreementId,
-                ConsumerReference = learner.ConsumerReference,
-                CorrelationId = learner.CorrelationId,
-                ReceivedDate = learner.ReceivedDate,
-                StandardCode = learner.StandardCode,
-                IsFlexiJob = learner.IsFlexiJob,
-                PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours
-            })
-        });
+                Id = item.Id,
+                CreatedDate = item.CreatedDate,
+                UpdatedDate = item.UpdatedDate,
+                Uln = item.Uln,
+                Ukprn = item.Ukprn,
+                FirstName = item.FirstName,
+                LastName = item.LastName,
+                Email = item.Email,
+                Dob = item.Dob,
+                AcademicYear = item.AcademicYear,
+                StartDate = item.StartDate,
+                PlannedEndDate = item.PlannedEndDate,
+                PercentageLearningToBeDelivered = item.PercentageLearningToBeDelivered,
+                EpaoPrice = item.EpaoPrice,
+                TrainingPrice = item.TrainingPrice,
+                AgreementId = item.AgreementId,
+                ConsumerReference = item.ConsumerReference,
+                CorrelationId = item.CorrelationId,
+                ReceivedDate = item.ReceivedDate,
+                StandardCode = item.StandardCode,
+                IsFlexiJob = item.IsFlexiJob,
+                PlannedOTJTrainingHours = item.PlannedOTJTrainingHours
+            }),
+            Page = result.Page,
+            PageSize = result.PageSize,
+            TotalItems = result.TotalItems,
+            TotalPages = result.TotalPages
+        };
+
+        return Ok(response);
     }
-    
+
+    [HttpPut]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode}")]
+    public async Task<IActionResult> Save([FromBody] SaveLearnerRequest request)
+    {
+        var command = new SaveLearnerCommand
+        {
+            Uln = request.Uln,
+            Ukprn = request.Ukprn,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            Dob = request.Dob,
+            AcademicYear = request.AcademicYear,
+            StartDate = request.StartDate,
+            PlannedEndDate = request.PlannedEndDate,
+            PercentageLearningToBeDelivered = request.PercentageLearningToBeDelivered,
+            EpaoPrice = request.EpaoPrice,
+            TrainingPrice = request.TrainingPrice,
+            AgreementId = request.AgreementId,
+            ConsumerReference = request.ConsumerReference,
+            CorrelationId = request.CorrelationId,
+            ReceivedDate = request.ReceivedDate,
+            StandardCode = request.StandardCode,
+            IsFlexiJob = request.IsFlexiJob,
+            PlannedOTJTrainingHours = request.PlannedOTJTrainingHours
+        };
+
+        var learnerId = await sender.Send(command);
+        var location = $"providers/{request.Ukprn}/learners/{learnerId}";
+
+        Response?.Headers.Add(new KeyValuePair<string, StringValues>("location", location));
+
+        return Created();
+    }
+
+
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -106,41 +146,6 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
         });
     }
 
-    [HttpPut]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
-    [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode}")]
-    public async Task<IActionResult> Save([FromBody] SaveLearnerRequest request)
-    {
-        var command = new SaveLearnerCommand
-        {
-            Uln = request.Uln,
-            Ukprn = request.Ukprn,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email,
-            Dob = request.Dob,
-            AcademicYear = request.AcademicYear,
-            StartDate = request.StartDate,
-            PlannedEndDate = request.PlannedEndDate,
-            PercentageLearningToBeDelivered = request.PercentageLearningToBeDelivered,
-            EpaoPrice = request.EpaoPrice,
-            TrainingPrice = request.TrainingPrice,
-            AgreementId = request.AgreementId,
-            ConsumerReference = request.ConsumerReference,
-            CorrelationId = request.CorrelationId,
-            ReceivedDate = request.ReceivedDate,
-            StandardCode = request.StandardCode,
-            IsFlexiJob = request.IsFlexiJob,
-            PlannedOTJTrainingHours = request.PlannedOTJTrainingHours
-        };
-
-        var learnerId = await sender.Send(command);
-        var location = $"providers/{request.Ukprn}/learners/{learnerId}";
-        
-        Response?.Headers.Add(new KeyValuePair<string, StringValues>("location", location));
-
-        return Created();
-    }
 
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -182,55 +187,5 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
             IsFlexiJob = result.IsFlexiJob,
             PlannedOTJTrainingHours = result.PlannedOTJTrainingHours
         });
-    }
-
-    [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [Route("academic-year")]
-    public async Task<IActionResult> GetByAcademicYear(long ukprn, [FromQuery] int academicYear, [FromQuery] int page = 1, [FromQuery] int? pageSize = null)
-    {
-        var query = new GetByAcademicYearQuery(ukprn, academicYear, page, pageSize);
-
-        var result = await sender.Send(query);
-
-        var pageLinks = pagedLinkHeaderService.GetPageLinks(query, result);
-        
-        Response?.Headers.Add(pageLinks);
-
-        var response = new GetByAcademicYearResponse
-        {
-            LastSubmissionDate = result.LastSubmissionDate,
-            Data = result.Items.Select(item => new GetByAcademicYearResponseItem
-            {
-                Id = item.Id,
-                CreatedDate = item.CreatedDate,
-                UpdatedDate = item.UpdatedDate,
-                Uln = item.Uln,
-                Ukprn = item.Ukprn,
-                FirstName = item.FirstName,
-                LastName = item.LastName,
-                Email = item.Email,
-                Dob = item.Dob,
-                AcademicYear = item.AcademicYear,
-                StartDate = item.StartDate,
-                PlannedEndDate = item.PlannedEndDate,
-                PercentageLearningToBeDelivered = item.PercentageLearningToBeDelivered,
-                EpaoPrice = item.EpaoPrice,
-                TrainingPrice = item.TrainingPrice,
-                AgreementId = item.AgreementId,
-                ConsumerReference = item.ConsumerReference,
-                CorrelationId = item.CorrelationId,
-                ReceivedDate = item.ReceivedDate,
-                StandardCode = item.StandardCode,
-                IsFlexiJob = item.IsFlexiJob,
-                PlannedOTJTrainingHours = item.PlannedOTJTrainingHours
-            }),
-            Page = result.Page,
-            PageSize = result.PageSize,
-            TotalItems = result.TotalItems,
-            TotalPages = result.TotalPages
-        };
-
-        return Ok(response);
     }
 }
