@@ -5,7 +5,7 @@ namespace SFA.DAS.LearnerData.Application.Queries.GetAll;
 
 public record GetForProviderQuery(long Ukprn): IRequest<GetForProviderResult>;
 
-public class GetForProviderQueryHandler(ILearnerDataRepository repository): IRequestHandler<GetForProviderQuery, GetForProviderResult>
+public class GetForProviderQueryHandler(ILearnerRepository repository): IRequestHandler<GetForProviderQuery, GetForProviderResult>
 {
     public async Task<GetForProviderResult> Handle(GetForProviderQuery request, CancellationToken cancellationToken)
     {

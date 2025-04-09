@@ -5,7 +5,7 @@ namespace SFA.DAS.LearnerData.Application.Queries.GetLearner;
 
 public record GetLearnerQuery(long Ukprn, long Uln, int StandardCode, int AcademicYear) : IRequest<GetLearnerResult>;
 
-public class GetLearnerQueryHandler(ILearnerDataRepository repository): IRequestHandler<GetLearnerQuery, GetLearnerResult>
+public class GetLearnerQueryHandler(ILearnerRepository repository): IRequestHandler<GetLearnerQuery, GetLearnerResult>
 {
     public async Task<GetLearnerResult> Handle(GetLearnerQuery request, CancellationToken cancellationToken)
     {

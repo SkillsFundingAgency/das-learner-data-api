@@ -15,7 +15,7 @@ public class GetLearnerByIdQueryHandlerTests
     public async Task Handle_GetById_When_Learner_Exists(
         GetLearnerByIdQuery query,
         Learner learner,
-        [Frozen] Mock<ILearnerDataRepository> repository,
+        [Frozen] Mock<ILearnerRepository> repository,
         GetLearnerByIdQueryHandler sut
     )
     {
@@ -34,7 +34,7 @@ public class GetLearnerByIdQueryHandlerTests
     [Test, MoqAutoData]
     public async Task Handle_GetById_When_Learner_Does_Not_Exist(
         GetLearnerByIdQuery query,
-        [Frozen] Mock<ILearnerDataRepository> repository,
+        [Frozen] Mock<ILearnerRepository> repository,
         GetLearnerByIdQueryHandler sut
     )
     {

@@ -23,7 +23,7 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
     }
 }
 
-public class GetSearchQueryHandler(ILearnerDataRepository repository): IRequestHandler<GetSearchQuery, GetSearchResult>
+public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandler<GetSearchQuery, GetSearchResult>
 {
     public async Task<GetSearchResult> Handle(GetSearchQuery request, CancellationToken cancellationToken)
     {

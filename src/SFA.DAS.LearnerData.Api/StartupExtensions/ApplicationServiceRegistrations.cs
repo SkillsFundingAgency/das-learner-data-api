@@ -7,7 +7,7 @@ public static class ApplicationServiceRegistrations
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddTransient<ILearnerDataRepository, LearnerDataRepository>();
+        services.AddTransient<ILearnerRepository, LearnerRepository>();
         services.AddTransient<IPagedLinkHeaderService, PagedLinkHeaderService>();
 
         return services;

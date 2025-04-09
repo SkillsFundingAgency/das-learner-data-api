@@ -17,7 +17,7 @@ public class GetSearchQueryHandlerTests
         GetSearchQuery query,
         PagedResult<Learner> learners,
         DateTime? lastSubmissionDate,
-        [Frozen] Mock<ILearnerDataRepository> repository,
+        [Frozen] Mock<ILearnerRepository> repository,
         GetSearchQueryHandler sut
     )
     {

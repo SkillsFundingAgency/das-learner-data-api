@@ -5,7 +5,7 @@ using SFA.DAS.LearnerData.Data.Entities;
 
 namespace SFA.DAS.LearnerData.Data.Repositories;
 
-public interface ILearnerDataRepository
+public interface ILearnerRepository
 {
     Task<Learner> GetById(long id, CancellationToken cancellationToken);
     Task<Learner> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
@@ -15,7 +15,7 @@ public interface ILearnerDataRepository
     Task<long> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
 }
 
-public class LearnerDataRepository(LearnerDataDbContext dbContext) : ILearnerDataRepository
+public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerRepository
 {
     public async Task<Learner> GetById(long id, CancellationToken cancellationToken)
     {
@@ -78,41 +78,25 @@ public class LearnerDataRepository(LearnerDataDbContext dbContext) : ILearnerDat
 
     private static Expression<Func<Learner, object>> GetOrderByField(string fieldName)
     {
-        switch (fieldName)
+        return fieldName switch
         {
-            case nameof(Learner.AgreementId):
-                return learner => learner.AgreementId;
-            case nameof(Learner.Dob):
-                return learner => learner.Dob;
-            case nameof(Learner.Email):
-                return learner => learner.Email;
-            case nameof(Learner.EpaoPrice):
-                return learner => learner.EpaoPrice;
-            case nameof(Learner.FirstName):
-                return learner => learner.FirstName;
-            case nameof(Learner.IsFlexiJob):
-                return learner => learner.IsFlexiJob;
-            case nameof(Learner.LastName):
-                return learner => learner.LastName;
-            case nameof(Learner.PercentageLearningToBeDelivered):
-                return learner => learner.PercentageLearningToBeDelivered;
-            case nameof(Learner.PlannedOTJTrainingHours):
-                return learner => learner.PlannedOTJTrainingHours;
-            case nameof(Learner.PlannedEndDate):
-                return learner => learner.PlannedEndDate;
-            case nameof(Learner.ReceivedDate):
-                return learner => learner.ReceivedDate;
-            case nameof(Learner.StandardCode):
-                return learner => learner.StandardCode;
-            case nameof(Learner.StartDate):
-                return learner => learner.StartDate;
-            case nameof(Learner.TrainingPrice):
-                return learner => learner.TrainingPrice;
-            case nameof(Learner.Uln):
-                return learner => learner.Uln;
-            default:
-                return learner => learner.LastName;
-        }
+            nameof(Learner.AgreementId) => learner => learner.AgreementId,
+            nameof(Learner.Dob) => learner => learner.Dob,
+            nameof(Learner.Email) => learner => learner.Email,
+            nameof(Learner.EpaoPrice) => learner => learner.EpaoPrice,
+            nameof(Learner.FirstName) => learner => learner.FirstName,
+            nameof(Learner.IsFlexiJob) => learner => learner.IsFlexiJob,
+            nameof(Learner.LastName) => learner => learner.LastName,
+            nameof(Learner.PercentageLearningToBeDelivered) => learner => learner.PercentageLearningToBeDelivered,
+            nameof(Learner.PlannedOTJTrainingHours) => learner => learner.PlannedOTJTrainingHours,
+            nameof(Learner.PlannedEndDate) => learner => learner.PlannedEndDate,
+            nameof(Learner.ReceivedDate) => learner => learner.ReceivedDate,
+            nameof(Learner.StandardCode) => learner => learner.StandardCode,
+            nameof(Learner.StartDate) => learner => learner.StartDate,
+            nameof(Learner.TrainingPrice) => learner => learner.TrainingPrice,
+            nameof(Learner.Uln) => learner => learner.Uln,
+            _ => learner => learner.LastName
+        };
     }
 
     public async Task<DateTime?> GetLastSubmissionDate(long ukprn, int academicYear, CancellationToken cancellationToken)

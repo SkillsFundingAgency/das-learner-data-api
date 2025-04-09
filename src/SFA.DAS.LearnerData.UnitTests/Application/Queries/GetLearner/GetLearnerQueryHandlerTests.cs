@@ -15,7 +15,7 @@ public class GetLearnerQueryHandlerTests
     public async Task Handle_Get_When_Learner_Exists(
         GetLearnerQuery query,
         Learner learner,
-        [Frozen] Mock<ILearnerDataRepository> repository,
+        [Frozen] Mock<ILearnerRepository> repository,
         GetLearnerQueryHandler sut
     )
     {
@@ -34,7 +34,7 @@ public class GetLearnerQueryHandlerTests
     [Test, MoqAutoData]
     public async Task Handle_Get_When_Learner_Does_Not_Exist(
         GetLearnerQuery query,
-        [Frozen] Mock<ILearnerDataRepository> repository,
+        [Frozen] Mock<ILearnerRepository> repository,
         GetLearnerQueryHandler sut
     )
     {
