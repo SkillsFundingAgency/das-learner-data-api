@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Data.Entities;
@@ -6,22 +7,16 @@ namespace SFA.DAS.LearnerData.Data.Repositories;
 
 public interface ILearnerDataRepository
 {
-    Task Create(Learner? learner, CancellationToken cancellationToken);
     Task<Learner> GetById(long id, CancellationToken cancellationToken);
     Task<Learner> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
-    Task<PagedResult<Learner>> GetByAcademicYear(long ukprn, int academicYear, int page, int? pageSize, int limit, int offset, CancellationToken cancellationToken);
+    Task<PagedResult<Learner>> Search(long ukprn, int academicYear, int page, int? pageSize, int limit, int offset, string sortColumn, bool sortDescending, string filter, CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, int academicYear, CancellationToken cancellationToken);
     Task<long> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
 }
 
 public class LearnerDataRepository(LearnerDataDbContext dbContext) : ILearnerDataRepository
 {
-    public async Task Create(Learner? learner, CancellationToken cancellationToken)
-    {
-        await dbContext.Learners.AddAsync(learner, cancellationToken);
-    }
-
     public async Task<Learner> GetById(long id, CancellationToken cancellationToken)
     {
         return await dbContext.Learners.FindAsync(keyValues: [id], cancellationToken);
@@ -45,11 +40,23 @@ public class LearnerDataRepository(LearnerDataDbContext dbContext) : ILearnerDat
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<PagedResult<Learner>> GetByAcademicYear(long ukprn, int academicYear, int page, int? pageSize, int limit, int offset, CancellationToken cancellationToken)
+    public async Task<PagedResult<Learner>> Search(long ukprn, int academicYear, int page, int? pageSize, int limit, int offset, string sortColumn, bool sortDescending, string filter, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
             .Where(x => x.Ukprn == ukprn && x.AcademicYear == academicYear);
+
+        if (!string.IsNullOrEmpty(filter))
+        {
+            query = query.Where(x => x.LastName == filter | x.Uln.ToString() == filter);
+        }
+
+        if (string.IsNullOrEmpty(sortColumn))
+        {
+            sortColumn = nameof(Learner.LastName);
+        }
+
+        query = sortDescending ? query.OrderByDescending(GetOrderByField(sortColumn)) : query.OrderBy(GetOrderByField(sortColumn));
 
         var totalItems = await query.CountAsync(cancellationToken);
         var totalPages = (int)Math.Ceiling((double)totalItems / pageSize.GetValueOrDefault());
@@ -69,12 +76,53 @@ public class LearnerDataRepository(LearnerDataDbContext dbContext) : ILearnerDat
         };
     }
 
+    private static Expression<Func<Learner, object>> GetOrderByField(string fieldName)
+    {
+        switch (fieldName)
+        {
+            case nameof(Learner.AgreementId):
+                return learner => learner.AgreementId;
+            case nameof(Learner.Dob):
+                return learner => learner.Dob;
+            case nameof(Learner.Email):
+                return learner => learner.Email;
+            case nameof(Learner.EpaoPrice):
+                return learner => learner.EpaoPrice;
+            case nameof(Learner.FirstName):
+                return learner => learner.FirstName;
+            case nameof(Learner.IsFlexiJob):
+                return learner => learner.IsFlexiJob;
+            case nameof(Learner.LastName):
+                return learner => learner.LastName;
+            case nameof(Learner.PercentageLearningToBeDelivered):
+                return learner => learner.PercentageLearningToBeDelivered;
+            case nameof(Learner.PlannedOTJTrainingHours):
+                return learner => learner.PlannedOTJTrainingHours;
+            case nameof(Learner.PlannedEndDate):
+                return learner => learner.PlannedEndDate;
+            case nameof(Learner.ReceivedDate):
+                return learner => learner.ReceivedDate;
+            case nameof(Learner.StandardCode):
+                return learner => learner.StandardCode;
+            case nameof(Learner.StartDate):
+                return learner => learner.StartDate;
+            case nameof(Learner.TrainingPrice):
+                return learner => learner.TrainingPrice;
+            case nameof(Learner.Uln):
+                return learner => learner.Uln;
+            default:
+                return learner => learner.LastName;
+        }
+    }
+
     public async Task<DateTime?> GetLastSubmissionDate(long ukprn, int academicYear, CancellationToken cancellationToken)
     {
         return await dbContext.Learners
             .AsNoTracking()
             .Where(x => x.Ukprn == ukprn && x.AcademicYear == academicYear)
-            .MaxAsync(x => x.ReceivedDate, cancellationToken);
+            .Select(x=> x.ReceivedDate)
+            .OrderByDescending(x=> x)
+            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
     }
 
     public async Task<long> Save(SaveLearnerCommand request, CancellationToken cancellationToken)
@@ -86,7 +134,7 @@ public class LearnerDataRepository(LearnerDataDbContext dbContext) : ILearnerDat
             var learner = Learner.From(request);
             await dbContext.Learners.AddAsync(learner, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
-            
+
             return learner.Id;
         }
 
@@ -109,6 +157,8 @@ public class LearnerDataRepository(LearnerDataDbContext dbContext) : ILearnerDat
         existingLearner.StandardCode = request.StandardCode;
         existingLearner.IsFlexiJob = request.IsFlexiJob;
         existingLearner.PlannedOTJTrainingHours = request.PlannedOTJTrainingHours;
+
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         return existingLearner.Id;
     }

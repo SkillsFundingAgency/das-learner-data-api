@@ -27,16 +27,24 @@ public class GetSearchQueryHandler(ILearnerDataRepository repository): IRequestH
 {
     public async Task<GetSearchResult> Handle(GetSearchQuery request, CancellationToken cancellationToken)
     {
-        var result = await repository.GetByAcademicYear(
+        var result = await repository.Search(
             request.UkPrn,
             request.AcademicYear,
             request.Page,
             request.PageSize,
             request.Limit,
             request.Offset,
+            request.SortColumn,
+            request.SortDescending,
+            request.Filter,
             cancellationToken);
 
-        var lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, request.AcademicYear, cancellationToken);
+        DateTime? lastSubmissionDate = null;
+
+        if (result.TotalItems > 0)
+        {
+            lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, request.AcademicYear, cancellationToken);            
+        }
 
         return new GetSearchResult
         {

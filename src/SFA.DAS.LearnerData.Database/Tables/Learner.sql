@@ -1,5 +1,5 @@
 CREATE TABLE [dbo].[LearnerData](
-    [Id] [bigint] NOT NULL,
+    [Id] [bigint] IDENTITY(1,1) NOT NULL,
     [ULN] [bigint] NOT NULL,
     [UKPRN] [bigint] NOT NULL,
     [Firstname] [nvarchar](200) NOT NULL,
@@ -21,17 +21,31 @@ CREATE TABLE [dbo].[LearnerData](
     [ReceivedDate] [date] NOT NULL,
     [CorrelationId] [nvarchar](max) NOT NULL,
     [ConsumerReference] [nvarchar](max) NOT NULL,
-    CONSTRAINT [pk_learnerData] PRIMARY KEY CLUSTERED
+    CONSTRAINT [PK_LearnerData] PRIMARY KEY CLUSTERED
 (
 [Id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+    ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+    GO
+    SET ANSI_PADDING ON
+    GO
+
+CREATE NONCLUSTERED INDEX [idx_learnerData] ON [dbo].[LearnerData]
+(
+	[ULN] ASC,
+	[UKPRN] ASC,
+	[Firstname] ASC,
+	[Lastname] ASC,
+	[AcademicYear] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
 
-CREATE  NONCLUSTERED INDEX idx_learnerData ON dbo.learnerData ( ULN  asc, UKPRN  asc, firstname  asc, lastname  asc, academicYear );
+CREATE NONCLUSTERED INDEX [idx_learnerData_0] ON [dbo].[LearnerData]
+(
+	[UKPRN] ASC,
+	[ReceivedDate] DESC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 GO
-
-CREATE  INDEX idx_learnerData_0 ON dbo.learnerData ( UKPRN, receivedDate DESC );
-GO
-
-execute sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date the record was received in AS' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'learnerData', @level2type=N'COLUMN',@level2name=N'receivedDate';
+       
+EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date the record was received in AS' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'LearnerData', @level2type=N'COLUMN',@level2name=N'ReceivedDate'
 GO
