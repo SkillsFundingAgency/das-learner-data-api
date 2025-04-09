@@ -76,7 +76,6 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
         return Created();
     }
 
-
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
