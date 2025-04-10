@@ -3,27 +3,12 @@ info:
   version: '1.0'
   title: Learner data inner API
 paths:
-  /info:
+  /health:
     get:
       description: information regarding this API. The version will be returned
       responses:
         '200':
-          $ref: '#/components/responses/infoResponse'  
-  /liveness:
-    get:
-      description: The system is responsive and accepting incoming requests; however, this endpoint does not perform a dependency check, so the system may not be fully ready to process requests correctly.
-      responses:
-        '200':
-          $ref: '#/components/responses/okResponse'
-  /readiness:
-    get:
-      description: The system is fully ready to accept requests and all the dependencies are healthy
-      responses:
-        '200':
-          $ref: '#/components/responses/healthCheckResponse'
-        '503':
-          $ref: '#/components/responses/healthCheckResponse'
-
+          $ref: '#/components/responses/healthResponse'  
   /providers/{ukprn}/learners:
     get:
       summary: Returns a paged list of learners for this provider for the academic year
@@ -236,20 +221,13 @@ components:
           schema:
             $ref: '#/components/schemas/error'
     
-    healthCheckResponse:
-      description: Results of a health check
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/healthcheckResults'
-
-    infoResponse:
-      description: Information response
+    healthResponse:
+      description: Health response
       content:
         text/plain:
           schema:
             type: string
-            example: Leaner data APIM for the apprenticeship service - Version 3.0.2
+            example: Learner data inner API - Version 3.0.2
 
   schemas:
     error:
@@ -293,19 +271,6 @@ components:
         - total
         - pageSize  
         - totalPages  
-    
-    healthcheckResults:
-      type: array
-      items:
-        $ref: '#/components/schemas/healthcheck' 
-  
-    healthcheck:
-      type: object
-      properties:
-        description: 
-          type: string
-        result: 
-          type: string    
     
     learnerRequest:
       type: object
@@ -357,10 +322,6 @@ components:
           type: string
           format: /learners/guid
           description: A unique identifier assigned on the request into the outer API
-        consumerReference:
-          type: string
-          description: This allows the consumer to set a reference for the records being submitted
-          example: LR-10034925-2425-20250301-113951-04
       required:
         - uln
         - firstName
@@ -379,8 +340,7 @@ components:
         - receivedDate
         - plannedOTJTrainingHours
         - isFlexiJob
-        - correlationId
-        - consumerReference
+        - corrrelationId
 
     learnerResponse:
       allOf:
