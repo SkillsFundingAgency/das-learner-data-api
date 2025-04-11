@@ -9,7 +9,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/infoResponse'  
-  /healthcheck:
+  /health:
     get:
       description: The system is fully ready to accept requests and all the dependencies are healthy
       responses:
