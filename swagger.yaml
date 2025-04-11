@@ -3,12 +3,20 @@ info:
   version: '1.0'
   title: Learner data inner API
 paths:
-  /health:
+  /info:
     get:
       description: information regarding this API. The version will be returned
       responses:
         '200':
-          $ref: '#/components/responses/healthResponse'  
+          $ref: '#/components/responses/infoResponse'  
+  /healthcheck:
+    get:
+      description: The system is fully ready to accept requests and all the dependencies are healthy
+      responses:
+        '200':
+          $ref: '#/components/responses/healthCheckResponse'
+        '503':
+          $ref: '#/components/responses/healthCheckResponse'
   /providers/{ukprn}/learners:
     get:
       summary: Returns a paged list of learners for this provider for the academic year
@@ -221,15 +229,26 @@ components:
           schema:
             $ref: '#/components/schemas/error'
     
-    healthResponse:
-      description: Health response
+    healthCheckResponse:
+      description: Results of a health check
       content:
-        text/plain:
+        application/json:
           schema:
-            type: string
-            example: Learner data inner API - Version 3.0.2
+            $ref: '#/components/schemas/healthcheckResults'
 
   schemas:
+    healthcheckResults:
+      type: array
+      items:
+        $ref: '#/components/schemas/healthcheck' 
+  
+    healthcheck:
+      type: object
+      properties:
+        description: 
+          type: string
+        result: 
+          type: string
     error:
       type: object
       properties:
