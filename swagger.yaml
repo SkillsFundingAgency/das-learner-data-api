@@ -14,8 +14,10 @@ paths:
       description: The system is fully ready to accept requests and all the dependencies are healthy
       responses:
         '200':
+          description: All health checks have passed
           $ref: '#/components/responses/healthCheckResponse'
         '503':
+          description: A health check has failed
           $ref: '#/components/responses/healthCheckResponse'
   /providers/{ukprn}/learners:
     get:
