@@ -229,6 +229,14 @@ components:
           schema:
             $ref: '#/components/schemas/error'
     
+    infoResponse:
+      description: Information response
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: Leaner data APIM for the apprenticeship service - Version 3.0.2
+      
     healthCheckResponse:
       description: Results of a health check
       content:
