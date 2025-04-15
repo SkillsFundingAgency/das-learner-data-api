@@ -82,7 +82,7 @@ public class Startup
 
         var config = _configuration.GetSection<LearnerDataApi>();
 
-        services.AddDasHealthChecks(config);
+        services.AddDasHealthChecks();
 
         services.AddEntityFrameworkForLearnerData(config)
             .AddEntityFrameworkUnitOfWork<LearnerDataDbContext>()
@@ -108,13 +108,13 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
+        app.UseDasHealthChecks();
         app.UseMiddleware<SecurityHeadersMiddleware>();
 
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthentication();
-        app.UseDasHealthChecks();
-
+        
         app.Use(async (context, next) =>
         {
             context.Response.OnStarting(() =>
