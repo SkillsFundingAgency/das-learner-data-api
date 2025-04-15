@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SFA.DAS.LearnerData.Api.Models.Responses;
 
 namespace SFA.DAS.LearnerData.Api.Controllers;
 [Route("api")]
@@ -11,7 +12,7 @@ public class InfoController(IConfiguration config) : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetInfo()
     {
-        var info = new
+        var info = new GetAppInfoResponse
         {
             Version = config["ApiVersion"] ?? "1.0.0",
             Name = "Learner Data API"

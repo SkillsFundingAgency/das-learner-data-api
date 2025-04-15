@@ -12,8 +12,8 @@ public static class HealthCheckStartupExtensions
     {
         services
             .AddHealthChecks()
-            .AddDbContextCheck<LearnerDataDbContext>("Sql Health Check")
-            .AddCheck<NServiceBusHealthCheck>("NService Bus health check");
+            .AddDbContextCheck<LearnerDataDbContext>("Sql Health Check");
+            //.AddCheck<NServiceBusHealthCheck>("NService Bus health check");
 
         return services;
     }
