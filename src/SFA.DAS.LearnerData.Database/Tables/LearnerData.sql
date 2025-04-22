@@ -20,7 +20,7 @@ CREATE TABLE [dbo].[LearnerData](
     [UpdatedDate] [datetime] NULL,
     [ReceivedDate] [date] NOT NULL,
     [CorrelationId] [nvarchar](max) NOT NULL,
-    [ConsumerReference] [nvarchar](max) NULL,
+    [ConsumerReference] [nvarchar](max) NOT NULL,
     CONSTRAINT [PK_LearnerData] PRIMARY KEY CLUSTERED
 (
 [Id] ASC
