@@ -1,59 +1,49 @@
-using System.Data;
 using Microsoft.Data.SqlClient;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.EntityFrameworkCore;
 using SFA.DAS.LearnerData.Configuration;
 using SFA.DAS.LearnerData.Data.Entities;
 
 namespace SFA.DAS.LearnerData.Data;
 
-public class LearnerDataDbContext : DbContext
+public class LearnerDataDbContext(LearnerDataApi configuration, DbContextOptions options) : DbContext(options)
 {
-    private readonly IDbConnection _connection;
-    private readonly LearnerDataApi _configuration;
-    private readonly AzureServiceTokenProvider _azureServiceTokenProvider;
-    
     public DbSet<Learner?> Learners { get; set; }
 
-    public LearnerDataDbContext(DbContextOptions<LearnerDataDbContext> options) : base(options)
-    {
-    }
-
-    public LearnerDataDbContext(IDbConnection connection, LearnerDataApi configuration, AzureServiceTokenProvider azureServiceTokenProvider, DbContextOptions options):base(options)
-    {
-        _connection = connection;
-        _configuration = configuration;
-        _azureServiceTokenProvider = azureServiceTokenProvider;
-    }
-    
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (_configuration is null || _azureServiceTokenProvider is null)
+        if (configuration is null)
         {
             return;
         }
 
-        optionsBuilder.UseSqlServer(_connection as SqlConnection);
+        optionsBuilder.UseSqlServer(new SqlConnection
+        {
+            ConnectionString = configuration.DatabaseConnectionString,
+        }, options => options
+            .EnableRetryOnFailure(
+                5,
+                TimeSpan.FromSeconds(20),
+                null
+            ));
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(LearnerDataDbContext).Assembly);
     }
-    
-    
+
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         PopulateModificationHistoryValues();
 
         return await base.SaveChangesAsync(cancellationToken);
     }
-    
+
     private void PopulateModificationHistoryValues()
     {
         var entries = ChangeTracker.Entries();
 
-        var modificationHistoryList = entries.Where(e => e.Entity is IModificationHistory && (e.State == EntityState.Added || e.State == EntityState.Modified));
+        var modificationHistoryList = entries.Where(entry => entry is { Entity: IModificationHistory, State: EntityState.Added or EntityState.Modified });
 
         foreach (var history in modificationHistoryList)
         {
