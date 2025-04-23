@@ -1,32 +1,12 @@
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using SFA.DAS.LearnerData.Configuration;
 using SFA.DAS.LearnerData.Data.Entities;
 
 namespace SFA.DAS.LearnerData.Data;
 
-public class LearnerDataDbContext(LearnerDataApi configuration, DbContextOptions options) : DbContext(options)
+public class LearnerDataDbContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<Learner?> Learners { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (configuration is null)
-        {
-            return;
-        }
-
-        optionsBuilder.UseSqlServer(new SqlConnection
-        {
-            ConnectionString = configuration.DatabaseConnectionString,
-        }, options => options
-            .EnableRetryOnFailure(
-                5,
-                TimeSpan.FromSeconds(20),
-                null
-            ));
-    }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(LearnerDataDbContext).Assembly);
