@@ -22,9 +22,9 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
     [ProducesResponseType((int)HttpStatusCode.OK)]
     public async Task<IActionResult> Search(
         long ukprn,
-        [FromQuery] int academicYear,
+        [FromQuery] int? academicYear,
         [FromQuery] int page = 1,
-        [FromQuery] int? pageSize = int.MaxValue,
+        [FromQuery] int? pageSize = 20,
         [FromQuery] string sortColumn = "",
         [FromQuery] bool sortDescending = false,
         [FromQuery] string filter = "")
@@ -43,8 +43,13 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
     [HttpPut]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode}")]
-    public async Task<IActionResult> Save([FromBody] SaveLearnerRequest request)
+    public async Task<IActionResult> Save(long ukprn, long uln, int academicYear, [FromBody] SaveLearnerRequest request)
     {
+        if (ukprn != request.Ukprn | uln != request.Uln | academicYear != request.AcademicYear)
+        {
+            return BadRequest();
+        }
+
         var command = new SaveLearnerCommand
         {
             Uln = request.Uln,
@@ -68,12 +73,17 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
             PlannedOTJTrainingHours = request.PlannedOTJTrainingHours
         };
 
-        var learnerId = await sender.Send(command);
-        var location = $"providers/{request.Ukprn}/learners/{learnerId}";
+        var response = await sender.Send(command);
 
+        if (response.Result == SaveLearnerResult.Created)
+        {
+            return CreatedAtAction(nameof(GetById), new { ukprn, id = response.Id }, command);
+        }
+
+        var location = $"{Request?.Scheme}://{Request?.Host}/providers/{request.Ukprn}/learners/{response.Id}";
         Response?.Headers.Add(new KeyValuePair<string, StringValues>("location", location));
 
-        return Created();
+        return Ok();
     }
 
     [HttpGet]

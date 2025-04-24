@@ -2,7 +2,7 @@ using MediatR;
 
 namespace SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 
-public record SaveLearnerCommand : IRequest<long>
+public record SaveLearnerCommand : IRequest<SaveLearnerCommandResponse>
 {
     public long Uln { get; set; }
     public long Ukprn { get; set; }

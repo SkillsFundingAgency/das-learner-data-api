@@ -6,12 +6,12 @@ namespace SFA.DAS.LearnerData.Application.Queries.GetSearch;
 public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
 {
     public long UkPrn { get; }
-    public int AcademicYear { get; }
+    public int? AcademicYear { get; }
     public string SortColumn { get; }
     public bool SortDescending { get; }
     public string Filter { get; }
 
-    public GetSearchQuery(long ukPrn, int academicYear, int page, int? pageSize, string sortColumn, bool sortDescending, string filter)
+    public GetSearchQuery(long ukPrn, int? academicYear, int page, int? pageSize, string sortColumn, bool sortDescending, string filter)
     {
         UkPrn = ukPrn;
         AcademicYear = academicYear;

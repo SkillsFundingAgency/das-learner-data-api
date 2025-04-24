@@ -10,9 +10,9 @@ public interface ILearnerRepository
     Task<Learner> GetById(long id, CancellationToken cancellationToken);
     Task<Learner> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
-    Task<PagedResult<Learner>> Search(long ukprn, int academicYear, int page, int? pageSize, int limit, int offset, string sortColumn, bool sortDescending, string filter, CancellationToken cancellationToken);
-    Task<DateTime?> GetLastSubmissionDate(long ukprn, int academicYear, CancellationToken cancellationToken);
-    Task<long> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
+    Task<PagedResult<Learner>> Search(long ukprn, int? academicYear, int page, int? pageSize, int limit, int offset, string sortColumn, bool sortDescending, string filter, CancellationToken cancellationToken);
+    Task<DateTime?> GetLastSubmissionDate(long ukprn, int? academicYear, CancellationToken cancellationToken);
+    Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
 }
 
 public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerRepository
@@ -40,11 +40,16 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<PagedResult<Learner>> Search(long ukprn, int academicYear, int page, int? pageSize, int limit, int offset, string sortColumn, bool sortDescending, string filter, CancellationToken cancellationToken)
+    public async Task<PagedResult<Learner>> Search(long ukprn, int? academicYear, int page, int? pageSize, int limit, int offset, string sortColumn, bool sortDescending, string filter, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
-            .Where(x => x.Ukprn == ukprn && x.AcademicYear == academicYear);
+            .Where(x => x.Ukprn == ukprn);
+
+        if (academicYear.HasValue)
+        {
+            query = query.Where(x => x.AcademicYear == academicYear);
+        }
 
         if (!string.IsNullOrEmpty(filter))
         {
@@ -99,17 +104,24 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
         };
     }
 
-    public async Task<DateTime?> GetLastSubmissionDate(long ukprn, int academicYear, CancellationToken cancellationToken)
+    public async Task<DateTime?> GetLastSubmissionDate(long ukprn, int? academicYear, CancellationToken cancellationToken)
     {
-        return await dbContext.Learners
-            .AsNoTracking()
-            .Where(x => x.Ukprn == ukprn && x.AcademicYear == academicYear)
-            .Select(x=> x.ReceivedDate)
-            .OrderByDescending(x=> x)
+        var query = dbContext.Learners
+            .Where(x => x.Ukprn == ukprn)
+            .AsNoTracking();
+
+        if (academicYear.HasValue)
+        {
+            query = query.Where(x => x.AcademicYear == academicYear.Value);
+        }
+
+        return await query
+            .Select(x => x.ReceivedDate)
+            .OrderByDescending(x => x)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
     }
 
-    public async Task<long> Save(SaveLearnerCommand request, CancellationToken cancellationToken)
+    public async Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken)
     {
         var existingLearner = await Get(request.Ukprn, request.Uln, request.StandardCode, request.AcademicYear, cancellationToken);
 
@@ -119,7 +131,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
             await dbContext.Learners.AddAsync(learner, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
 
-            return learner.Id;
+            return new SaveLearnerCommandResponse { Id = learner.Id, Result = SaveLearnerResult.Created };
         }
 
         existingLearner.Uln = request.Uln;
@@ -144,6 +156,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return existingLearner.Id;
+        return new SaveLearnerCommandResponse { Id = existingLearner.Id, Result = SaveLearnerResult.Updated };
     }
 }
