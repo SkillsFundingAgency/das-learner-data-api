@@ -8,6 +8,6 @@ public class LearnerConfiguration : IEntityTypeConfiguration<Learner>
 {
     public void Configure(EntityTypeBuilder<Learner> builder)
     {
-        
+        builder.ToTable("LearnerData");
     }
 }

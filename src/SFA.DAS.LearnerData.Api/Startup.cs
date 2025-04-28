@@ -6,7 +6,6 @@ using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.OpenApi.Models;
-using NServiceBus.ObjectBuilder.MSDependencyInjection;
 using SFA.DAS.Api.Common.AppStart;
 using SFA.DAS.Api.Common.Configuration;
 using SFA.DAS.Api.Common.Infrastructure;
@@ -14,12 +13,8 @@ using SFA.DAS.LearnerData.Api.HttpResponseExtensions;
 using SFA.DAS.LearnerData.Api.Middleware;
 using SFA.DAS.LearnerData.Api.Models;
 using SFA.DAS.LearnerData.Api.StartupExtensions;
-using SFA.DAS.LearnerData.Application.Commands;
+using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Configuration;
-using SFA.DAS.LearnerData.Data;
-using SFA.DAS.NServiceBus.Features.ClientOutbox.Data;
-using SFA.DAS.UnitOfWork.EntityFrameworkCore.DependencyResolution.Microsoft;
-using SFA.DAS.UnitOfWork.NServiceBus.Features.ClientOutbox.DependencyResolution.Microsoft;
 
 namespace SFA.DAS.LearnerData.Api;
 
@@ -44,6 +39,8 @@ public class Startup
 
         services.AddConfigurationOptions(_configuration);
         services.AddSingleton(_configuration);
+        services.AddApplicationServices();
+        services.AddHttpContextAccessor();
 
         if (!_environment.IsDevelopment())
         {
@@ -74,17 +71,15 @@ public class Startup
 
         services.AddFluentValidationAutoValidation()
             .AddValidatorsFromAssemblyContaining<Startup>()
-            .AddValidatorsFromAssemblyContaining<CreateLearnerCommandValidator>();
+            .AddValidatorsFromAssemblyContaining<SaveLearnerCommand>();
 
-        services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<CreateLearnerCommand>());
+        services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<SaveLearnerCommand>());
 
         var config = _configuration.GetSection<LearnerDataApi>();
 
-        services.AddDasHealthChecks(config);
+        services.AddDasHealthChecks();
 
-        services.AddEntityFrameworkForLearnerData(config)
-            .AddEntityFrameworkUnitOfWork<LearnerDataDbContext>()
-            .AddNServiceBusClientUnitOfWork();
+        services.AddEntityFrameworkForLearnerData(config);
 
         services.AddDasDataProtection(config, _environment)
             .AddSwaggerGen(options =>
@@ -106,13 +101,13 @@ public class Startup
             app.UseDeveloperExceptionPage();
         }
 
+        app.UseDasHealthChecks();
         app.UseMiddleware<SecurityHeadersMiddleware>();
 
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthentication();
-        app.UseDasHealthChecks();
-
+        
         app.Use(async (context, next) =>
         {
             context.Response.OnStarting(() =>
@@ -154,18 +149,5 @@ public class Startup
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "LearnerData v1");
             options.RoutePrefix = string.Empty;
         });
-    }
-
-    public void ConfigureContainer(UpdateableServiceProvider serviceProvider)
-    {
-        var config = _configuration.GetSection<LearnerDataApi>();
-        serviceProvider.StartNServiceBus(config);
-
-        // Replacing ClientOutboxPersisterV2 with a local version to fix unit of work issue due to propagating Task up the chain rather than awaiting on DB Command.
-        // not clear why this fixes the issue. Attempted to make the change in SFA.DAS.Nservicebus.SqlServer however it conflicts when upgraded with SFA.DAS.UnitOfWork.Nservicebus
-        // which would require upgrading to NET6 to resolve.
-        var serviceDescriptor = serviceProvider.FirstOrDefault(serv => serv.ServiceType == typeof(IClientOutboxStorageV2));
-        serviceProvider.Remove(serviceDescriptor);
-        serviceProvider.AddScoped<IClientOutboxStorageV2, ClientOutboxPersisterV2>();
     }
 }

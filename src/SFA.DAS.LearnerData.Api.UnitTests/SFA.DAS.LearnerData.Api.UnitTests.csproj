@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SFA.DAS.Testing.AutoFixture" Version="17.1.103" />
     <ProjectReference Include="..\SFA.DAS.LearnerData.Api\SFA.DAS.LearnerData.Api.csproj" />
 
     <PackageReference Include="AutoFixture" Version="4.18.1" />

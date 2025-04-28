@@ -64,6 +64,6 @@
     <Folder Include="Views" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Tables\Learner.sql" />
+    <Build Include="Tables\LearnerData.sql" />
   </ItemGroup>
 </Project>

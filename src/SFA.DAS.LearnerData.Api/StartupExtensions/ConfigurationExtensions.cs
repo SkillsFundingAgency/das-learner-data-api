@@ -19,8 +19,7 @@ public static class ConfigurationExtensions
 #if DEBUG
         if (configuration["EnvironmentName"].Equals("Development", StringComparison.CurrentCultureIgnoreCase))
         {
-            config.AddJsonFile("appsettings.json", true)
-                .AddJsonFile("appsettings.Development.json", true);
+            config.AddJsonFile("appsettings.json", true);
         }
 #endif
         config.AddEnvironmentVariables();
