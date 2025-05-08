@@ -41,7 +41,7 @@
         "keyVaultCertificateName": {
             "type": "string"
         },
-        "sharedBackEndAppServicePlanName": { 
+        "sharedBackEndAppServicePlanName": {
             "type": "string"
         },
         "sharedBackEndSubnetResourceId": {
@@ -75,6 +75,9 @@
         "utcValue": {
             "type": "string",
             "defaultValue": "[utcNow()]"
+        },
+        "deployPrivateLinkedScopedResource": {
+            "type": "bool"
         }
     },
     "variables": {
@@ -83,7 +86,8 @@
         "resourceGroupName": "[concat(variables('resourceNamePrefix'), '-rg')]",
         "appServiceName": "[concat(variables('resourceNamePrefix'), '-as')]",
         "databaseName": "[concat(replace(variables('resourceNamePrefix'), 'api', ''), '-db')]",
-        "configNames": "SFA.DAS.LearnerData.Api"
+        "configNames": "SFA.DAS.LearnerData.Api",
+        "privateLinkScopeName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-shared-ampls'))]"
     },
     "resources": [
         {
@@ -253,6 +257,31 @@
                     },
                     "logAnalyticsWorkspaceName": {
                         "value": "[parameters('logAnalyticsWorkspaceName')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[parameters('deployPrivateLinkedScopedResource')]",
+            "apiVersion": "2021-04-01",
+            "name": "[concat(variables('appServiceName'), '-private-link-scoped-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'private-linked-scoped-resource.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "privateLinkScopeName": {
+                        "value": "[variables('privateLinkScopeName')]"
+                    },
+                    "scopedResourceName": {
+                        "value": "[variables('appServiceName')]"
+                    },
+                    "scopedResourceId": {
+                        "value": "[reference(concat(variables('appServiceName'), '-application-insights-', parameters('utcValue'))).outputs.AppInsightsResourceId.value]"
                     }
                 }
             }
