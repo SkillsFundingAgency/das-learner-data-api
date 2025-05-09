@@ -57,5 +57,14 @@ CREATE NONCLUSTERED INDEX [IX_LearnerData_AcademicYear] ON [dbo].[LearnerData]
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF)
 GO
 
+CREATE UNIQUE NONCLUSTERED INDEX [IX_LearnerData_NaturalKey] ON [dbo].[LearnerData]
+(
+	[UKPRN] ASC,
+	[ULN] ASC,
+	[AcademicYear] ASC,
+	[StandardCode] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The date the record was received in AS' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'LearnerData', @level2type=N'COLUMN',@level2name=N'ReceivedDate'
 GO
