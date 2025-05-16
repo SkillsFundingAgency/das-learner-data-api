@@ -53,15 +53,16 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
 
         if (!string.IsNullOrEmpty(filter))
         {
-            query = query.Where(x => x.LastName == filter | x.Uln.ToString() == filter);
+            query = query.Where(x => x.LastName.Contains(filter) || x.FirstName.Contains(filter) || x.Uln.ToString() == filter);
         }
 
         if (string.IsNullOrEmpty(sortColumn))
         {
-            sortColumn = nameof(Learner.LastName);
+            sortColumn = nameof(Learner.FirstName);
         }
 
-        query = sortDescending ? query.OrderByDescending(GetOrderByField(sortColumn)) : query.OrderBy(GetOrderByField(sortColumn));
+        query = sortDescending ? query.OrderByDescending(GetOrderByField(sortColumn)).ThenByDescending(GetSecondarySortByField(sortColumn)) 
+            : query.OrderBy(GetOrderByField(sortColumn)).ThenBy(GetSecondarySortByField(sortColumn));
 
         var totalItems = await query.CountAsync(cancellationToken);
         var totalPages = (int)Math.Ceiling((double)totalItems / pageSize.GetValueOrDefault());
@@ -157,5 +158,16 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return new SaveLearnerCommandResponse { Id = existingLearner.Id, Result = SaveLearnerResult.Updated };
+    }
+
+    protected static Expression<Func<Learner, object>> GetSecondarySortByField(string fieldName)
+    {
+        switch (fieldName)
+        {
+            case nameof(Learner.FirstName):
+                return apprenticeship => apprenticeship.LastName;
+            default:
+                return GetOrderByField(fieldName);
+        }
     }
 }
