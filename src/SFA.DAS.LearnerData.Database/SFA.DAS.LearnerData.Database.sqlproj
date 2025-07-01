@@ -62,8 +62,12 @@
     <Folder Include="Tables\" />
     <Folder Include="Scripts" />
     <Folder Include="Views" />
+    <Folder Include="PostDeployment" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\LearnerData.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="PostDeployment\Script.PostDeployment.sql" />
   </ItemGroup>
 </Project>
