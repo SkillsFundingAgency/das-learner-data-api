@@ -9,6 +9,7 @@ public static class ApplicationServiceRegistrations
     {
         services.AddTransient<ILearnerRepository, LearnerRepository>();
         services.AddTransient<IPagedLinkHeaderService, PagedLinkHeaderService>();
+        services.AddTransient<IChangeTrackingService, ChangeTrackingService>();
 
         return services;
     }
