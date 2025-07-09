@@ -18,16 +18,11 @@ using SFA.DAS.LearnerData.Configuration;
 
 namespace SFA.DAS.LearnerData.Api;
 
-public class Startup
+public class Startup(IConfiguration configuration, IWebHostEnvironment environment)
 {
-    private readonly IHostEnvironment _environment;
-    private readonly IConfiguration _configuration;
-
-    public Startup(IConfiguration configuration, IWebHostEnvironment environment)
-    {
-        _environment = environment;
-        _configuration = configuration.BuildDasConfiguration();
-    }
+    private readonly IHostEnvironment _environment = environment;
+    private readonly IConfiguration _configuration = configuration.BuildDasConfiguration();
+    private IEndpointInstance? _endpointInstance;
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -92,9 +87,11 @@ public class Startup
         services.AddApiVersioning(opt => { opt.ApiVersionReader = new HeaderApiVersionReader("X-Version"); });
 
         services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions { EnableAdaptiveSampling = false });
+
+        _endpointInstance = services.AddNServiceBus(_configuration);
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime appLifetime)
     {
         if (env.IsDevelopment())
         {
@@ -127,7 +124,7 @@ public class Startup
         {
             builder.Run(async context =>
             {
-                var exception = context.Features.Get<IExceptionHandlerPathFeature>().Error;
+                var exception = context.Features.Get<IExceptionHandlerPathFeature>()?.Error;
                 if (exception is ValidationException validationException)
                 {
                     var errorResponse = new FluentValidationErrorResponse
@@ -149,5 +146,7 @@ public class Startup
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "LearnerData v1");
             options.RoutePrefix = string.Empty;
         });
+
+        appLifetime.ApplicationStopping.Register(() => _endpointInstance?.StopNServiceBus());
     }
 }
