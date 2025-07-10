@@ -2,9 +2,9 @@ using NServiceBus;
 
 namespace SFA.DAS.LearnerData.Messages;
 
-public class ChangeSummary : IMessage
+public class ChangeSummary
 {
-    public List<FieldChange> Changes { get; set; } = new();
+    public List<FieldChange> Changes { get; init; } = new();
     public bool HasChanges => Changes.Count > 0;
 }
 
