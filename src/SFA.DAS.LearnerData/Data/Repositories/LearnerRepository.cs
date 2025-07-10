@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Data.Entities;
 
@@ -7,17 +8,18 @@ namespace SFA.DAS.LearnerData.Data.Repositories;
 
 public interface ILearnerRepository
 {
-    Task<Learner> GetById(long id, CancellationToken cancellationToken);
+    Task<Learner?> GetById(long id, CancellationToken cancellationToken);
     Task<Learner> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
     Task<PagedResult<Learner>> Search(long ukprn, int? academicYear, int page, int? pageSize, int limit, int offset, string sortColumn, bool sortDescending, string filter, CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, int? academicYear, CancellationToken cancellationToken);
     Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
+    Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken);
 }
 
 public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerRepository
 {
-    public async Task<Learner> GetById(long id, CancellationToken cancellationToken)
+    public async Task<Learner?> GetById(long id, CancellationToken cancellationToken)
     {
         return await dbContext.Learners.FindAsync(keyValues: [id], cancellationToken);
     }
@@ -158,6 +160,27 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return new SaveLearnerCommandResponse { Id = existingLearner.Id, Result = SaveLearnerResult.Updated };
+    }
+
+    public async Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken)
+    {
+        var learner = await GetById(request.LearnerDataId, cancellationToken);
+        if (learner == null)
+        {
+            throw new KeyNotFoundException($"Learner with ID {request.LearnerDataId} not found.");
+        }
+        if (learner.Ukprn != request.Ukprn)
+        {
+            throw new KeyNotFoundException($"Learner with ID {request.LearnerDataId} not found for UKPRN {request.Ukprn}");
+        }
+
+        if (learner.ApprenticeshipId != null)
+        {
+            throw new InvalidOperationException($"Learner with ID {request.LearnerDataId} already has an ApprenticeshipId assigned.");
+        }
+
+        learner.ApprenticeshipId = request.ApprenticeshipId;
+        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     protected static Expression<Func<Learner, object>> GetSecondarySortByField(string fieldName)

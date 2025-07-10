@@ -3,7 +3,7 @@ using SFA.DAS.LearnerData.Data.Repositories;
 
 namespace SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
 
-public record GetLearnerByIdQuery(long Id): IRequest<GetLearnerByIdResult>;
+public record GetLearnerByIdQuery(long ukprn, long Id) : IRequest<GetLearnerByIdResult>;
 
 public class GetLearnerByIdQueryHandler(ILearnerRepository repository) : IRequestHandler<GetLearnerByIdQuery, GetLearnerByIdResult>
 {
@@ -11,7 +11,7 @@ public class GetLearnerByIdQueryHandler(ILearnerRepository repository) : IReques
     {
         var learner = await repository.GetById(request.Id, cancellationToken);
 
-        if (learner == null)
+        if (learner == null || learner.Ukprn != request.ukprn)
         {
             return new GetLearnerByIdResult();
         }
@@ -39,7 +39,8 @@ public class GetLearnerByIdQueryHandler(ILearnerRepository repository) : IReques
             ReceivedDate = learner.ReceivedDate,
             StandardCode = learner.StandardCode,
             IsFlexiJob = learner.IsFlexiJob,
-            PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours
+            PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours,
+            ApprenticeshipId = learner.ApprenticeshipId
         };
     }
 }

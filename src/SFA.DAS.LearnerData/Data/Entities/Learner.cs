@@ -1,3 +1,4 @@
+using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 
 namespace SFA.DAS.LearnerData.Data.Entities;
@@ -23,7 +24,8 @@ public class Learner : Entity
     public DateTime ReceivedDate { get; set; }
     public Guid CorrelationId { get; set; }
     public string ConsumerReference { get; set; }
-    
+    public long? ApprenticeshipId { get; set; }
+
     public static Learner From(SaveLearnerCommand command)
     {
         return new Learner
