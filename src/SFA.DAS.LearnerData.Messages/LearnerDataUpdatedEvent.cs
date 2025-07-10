@@ -2,7 +2,7 @@ using NServiceBus;
 
 namespace SFA.DAS.LearnerData.Messages;
 
-public class LearnerDataUpdatedEvent : IEvent
+public class LearnerDataUpdatedEvent
 {
     public long LearnerId { get; set; }
     public ChangeSummary ChangeSummary { get; set; } = new();
