@@ -96,6 +96,27 @@ public class LearnerRepositoryTests
         _dbContext.Learners.Add(learner);
 
         var ex = () => _repository.AssignApprenticeshipId(command, _cancellationToken);
-        await ex.Should().ThrowAsync<InvalidOperationException>().WithMessage($"Learner with ID {command.LearnerDataId} already has an ApprenticeshipId assigned.");
+        await ex.Should().ThrowAsync<InvalidOperationException>().WithMessage($"Learner with ID {command.LearnerDataId} already has a different ApprenticeshipId assigned.");
     }
+
+    [Test, MoqAutoData]
+    public async Task AssignApprenticeshipId_Updates_ApprenticeshipId_When_Learner_Matches_And_ApprenticeshipId_Matches_the_incoming_Id(
+        AssignApprenticeshipIdCommand command,
+        Learner learner,
+        [Frozen] Mock<ILearnerRepository> repository)
+    {
+        learner.Id = command.LearnerDataId;
+        learner.Ukprn = command.Ukprn;
+        learner.ApprenticeshipId = command.ApprenticeshipId;
+        _dbContext.Learners.Add(learner);
+
+        await _repository.AssignApprenticeshipId(command, _cancellationToken);
+
+        var updatedLearner = await _dbContext.Learners
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Id == command.LearnerDataId, _cancellationToken);
+        updatedLearner.Should().NotBeNull();
+        updatedLearner.ApprenticeshipId.Should().Be(command.ApprenticeshipId);
+    }
+
 }
