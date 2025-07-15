@@ -119,4 +119,49 @@ public class LearnerRepositoryTests
         updatedLearner.ApprenticeshipId.Should().Be(command.ApprenticeshipId);
     }
 
+    [Test, MoqAutoData]
+    public async Task When_Learner_Search_Should_Exclude_Learners_With_ApprenticeshipId_Assigned(
+        AssignApprenticeshipIdCommand command,
+        long providerId,
+        List<Learner> learners,
+        [Frozen] Mock<ILearnerRepository> repository)
+    {
+        int academicYear = 2425;
+        learners.ForEach(x =>
+        {
+            x.Ukprn = providerId;
+            x.AcademicYear = academicYear;
+        });
+        learners[0].ApprenticeshipId = null;
+
+        _dbContext.Learners.AddRange(learners);
+        await _dbContext.SaveChangesAsync();
+
+        var response = await _repository.Search(providerId, academicYear, 1, 10, 1000, 0, null, false, "", true, _cancellationToken);
+        var results = response.Data.ToList();
+        results.Count.Should().Be(1);
+        results.First().Should().BeEquivalentTo(learners[0]);
+    }
+
+    [Test, MoqAutoData]
+    public async Task When_Learner_Search_Should_Include_Learners_With_ApprenticeshipId_Assigned(
+        AssignApprenticeshipIdCommand command,
+        long providerId,
+        List<Learner> learners,
+        [Frozen] Mock<ILearnerRepository> repository)
+    {
+        int academicYear = 2425;
+        learners.ForEach(x =>
+        {
+            x.Ukprn = providerId;
+            x.AcademicYear = academicYear;
+        });
+
+        _dbContext.Learners.AddRange(learners);
+        await _dbContext.SaveChangesAsync();
+
+        var response = await _repository.Search(providerId, academicYear, 1, 10, 1000, 0, null, false, "", false, _cancellationToken);
+        var results = response.Data.ToList();
+        results.Count.Should().Be(3);
+    }
 }

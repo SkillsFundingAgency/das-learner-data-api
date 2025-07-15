@@ -13,7 +13,7 @@ public interface ILearnerRepository
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> Search(long ukprn, int? academicYear, int page, int? pageSize, int limit, int offset,
-        string sortColumn, bool sortDescending, string filter, bool excludeUnapproved,
+        string sortColumn, bool sortDescending, string filter, bool excludeApproved,
         CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, int? academicYear, CancellationToken cancellationToken);
     Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
@@ -46,13 +46,13 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
     }
 
     public async Task<PagedResult<Learner>> Search(long ukprn, int? academicYear, int page, int? pageSize, int limit, int offset, string sortColumn, 
-        bool sortDescending, string filter, bool excludeUnapproved, CancellationToken cancellationToken)
+        bool sortDescending, string filter, bool excludeApproved, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
             .Where(x => x.Ukprn == ukprn);
 
-        if (excludeUnapproved)
+        if (excludeApproved)
         {
             query = query.Where(x => x.ApprenticeshipId == null);
         }

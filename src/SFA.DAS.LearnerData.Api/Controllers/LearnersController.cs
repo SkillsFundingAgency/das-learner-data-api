@@ -32,9 +32,9 @@ public class LearnersController(
         [FromQuery] string sortColumn = "",
         [FromQuery] bool sortDescending = false,
         [FromQuery] string filter = "",
-        [FromQuery] bool excludeUnapproved = true)
+        [FromQuery] bool excludeApproved = true)
     {
-        var query = new GetSearchQuery(ukprn, academicYear, page, pageSize, sortColumn, sortDescending, filter, excludeUnapproved);
+        var query = new GetSearchQuery(ukprn, academicYear, page, pageSize, sortColumn, sortDescending, filter, excludeApproved);
 
         var result = await sender.Send(query);
 
