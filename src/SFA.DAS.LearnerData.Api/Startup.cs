@@ -1,7 +1,6 @@
 using System.Net;
 using Asp.Versioning;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.ApplicationInsights.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.Logging.ApplicationInsights;
@@ -63,10 +62,6 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
             .AddNewtonsoftJson();
 
         services.AddControllers();
-
-        services.AddFluentValidationAutoValidation()
-            .AddValidatorsFromAssemblyContaining<Startup>()
-            .AddValidatorsFromAssemblyContaining<SaveLearnerCommand>();
 
         services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<SaveLearnerCommand>());
 
