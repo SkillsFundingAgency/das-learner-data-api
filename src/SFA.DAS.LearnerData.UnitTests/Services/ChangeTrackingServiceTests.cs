@@ -103,7 +103,7 @@ public class ChangeTrackingServiceTests
         {
             Id = 1,
             Uln = 1234567890,
-            Ukprn = 10000002,
+            Ukprn = 10000001, // Keep Ukprn the same since it's the natural key
             FirstName = "Jane",
             LastName = "Smith",
             Email = "jane.smith@example.com",
@@ -129,28 +129,19 @@ public class ChangeTrackingServiceTests
         // Assert
         result.Should().NotBeNull();
         result.HasChanges.Should().BeTrue();
-        result.Changes.Should().HaveCount(15);
+        result.Changes.Should().HaveCount(8);
 
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.Ukprn) && c.OldValue.Equals(10000001L) && c.NewValue.Equals(10000002L));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.FirstName) && c.OldValue.Equals("John") && c.NewValue.Equals("Jane"));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.LastName) && c.OldValue.Equals("Doe") && c.NewValue.Equals("Smith"));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.Email) && c.OldValue.Equals("john.doe@example.com") && c.NewValue.Equals("jane.smith@example.com"));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.Dob) && c.OldValue.Equals(new DateTime(1990, 1, 1)) && c.NewValue.Equals(new DateTime(1991, 2, 2)));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.AcademicYear) && c.OldValue.Equals(2024) && c.NewValue.Equals(2025));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.StartDate) && c.OldValue.Equals(new DateTime(2024, 9, 1)) && c.NewValue.Equals(new DateTime(2025, 9, 1)));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.PlannedEndDate) && c.OldValue.Equals(new DateTime(2026, 8, 31)) && c.NewValue.Equals(new DateTime(2027, 8, 31)));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.PercentageLearningToBeDelivered) && c.OldValue.Equals(100) && c.NewValue.Equals(80));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.EpaoPrice) && c.OldValue.Equals(500) && c.NewValue.Equals(600));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.TrainingPrice) && c.OldValue.Equals(15000) && c.NewValue.Equals(16000));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.AgreementId) && c.OldValue.Equals("ABC123") && c.NewValue.Equals("XYZ789"));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.StandardCode) && c.OldValue.Equals(123) && c.NewValue.Equals(456));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.IsFlexiJob) && c.OldValue.Equals(false) && c.NewValue.Equals(true));
-        result.Changes.Should().Contain(c => c.FieldName == nameof(Learner.PlannedOTJTrainingHours) && c.OldValue.Equals(1200) && c.NewValue.Equals(1400));
+        // Verify each change type
+        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.FirstNameChange);
+        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.LastNameChange);
+        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.EmailChange);
+        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.DobChange);
+        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.StartDateChange);
+        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.PlannedEndDateChange);
+        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.EpaoPriceChange);
+        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.TrainingPriceChange);
 
-        result.Changes.Should().NotContain(c => c.FieldName == nameof(Learner.Uln));
-        result.Changes.Should().NotContain(c => c.FieldName == nameof(Learner.ReceivedDate));
-        result.Changes.Should().NotContain(c => c.FieldName == nameof(Learner.CorrelationId));
-        result.Changes.Should().NotContain(c => c.FieldName == nameof(Learner.ConsumerReference));
+        // All tracked fields should have changes since we changed all of them
     }
 
     [Test, AutoData]
@@ -274,9 +265,7 @@ public class ChangeTrackingServiceTests
         result.HasChanges.Should().BeTrue();
         result.Changes.Should().HaveCount(1);
         result.Changes.Should().ContainSingle(c => 
-            c.FieldName == nameof(Learner.FirstName) && 
-            c.OldValue.Equals("John") && 
-            c.NewValue.Equals("Jane"));
+            c.ChangeType == ChangeType.FirstNameChange);
     }
 
     [Test, AutoData]
@@ -339,20 +328,14 @@ public class ChangeTrackingServiceTests
         result.HasChanges.Should().BeTrue();
         result.Changes.Should().HaveCount(3);
 
-        result.Changes.Should().Contain(c => 
-            c.FieldName == nameof(Learner.FirstName) && 
-            c.OldValue.Equals("John") && 
-            c.NewValue.Equals("Jane"));
+        result.Changes.Should().ContainSingle(c => 
+            c.ChangeType == ChangeType.FirstNameChange);
         
-        result.Changes.Should().Contain(c => 
-            c.FieldName == nameof(Learner.LastName) && 
-            c.OldValue.Equals("Doe") && 
-            c.NewValue.Equals("Smith"));
+        result.Changes.Should().ContainSingle(c => 
+            c.ChangeType == ChangeType.LastNameChange);
         
-        result.Changes.Should().Contain(c => 
-            c.FieldName == nameof(Learner.Email) && 
-            c.OldValue.Equals("john.doe@example.com") && 
-            c.NewValue.Equals("jane.smith@example.com"));
+        result.Changes.Should().ContainSingle(c => 
+            c.ChangeType == ChangeType.EmailChange);
     }
 
     [Test, AutoData]
@@ -413,17 +396,10 @@ public class ChangeTrackingServiceTests
         // Assert
         result.Should().NotBeNull();
         result.HasChanges.Should().BeTrue();
-        result.Changes.Should().HaveCount(2);
+        result.Changes.Should().HaveCount(1);
 
         result.Changes.Should().Contain(c => 
-            c.FieldName == nameof(Learner.Email) && 
-            c.OldValue == null && 
-            c.NewValue.Equals("john.doe@example.com"));
-        
-        result.Changes.Should().Contain(c => 
-            c.FieldName == nameof(Learner.PercentageLearningToBeDelivered) && 
-            c.OldValue == null && 
-            c.NewValue.Equals(80));
+            c.ChangeType == ChangeType.EmailChange);
     }
 
     [Test, AutoData]
@@ -484,16 +460,9 @@ public class ChangeTrackingServiceTests
         // Assert
         result.Should().NotBeNull();
         result.HasChanges.Should().BeTrue();
-        result.Changes.Should().HaveCount(2);
+        result.Changes.Should().HaveCount(1);
 
         result.Changes.Should().Contain(c => 
-            c.FieldName == nameof(Learner.Email) && 
-            c.OldValue.Equals("john.doe@example.com") && 
-            c.NewValue == null);
-        
-        result.Changes.Should().Contain(c => 
-            c.FieldName == nameof(Learner.PercentageLearningToBeDelivered) && 
-            c.OldValue.Equals(100) && 
-            c.NewValue == null);
+            c.ChangeType == ChangeType.EmailChange);
     }
 } 

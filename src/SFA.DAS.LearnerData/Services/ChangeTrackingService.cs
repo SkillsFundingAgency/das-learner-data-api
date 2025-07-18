@@ -5,54 +5,53 @@ namespace SFA.DAS.LearnerData.Services;
 
 public class ChangeTrackingService : IChangeTrackingService
 {
-    private static readonly string[] FieldsToCompare =
-    [
-        nameof(Learner.Ukprn),
-        nameof(Learner.FirstName),
-        nameof(Learner.LastName),
-        nameof(Learner.Email),
-        nameof(Learner.Dob),
-        nameof(Learner.AcademicYear),
-        nameof(Learner.StartDate),
-        nameof(Learner.PlannedEndDate),
-        nameof(Learner.PercentageLearningToBeDelivered),
-        nameof(Learner.EpaoPrice),
-        nameof(Learner.TrainingPrice),
-        nameof(Learner.AgreementId),
-        nameof(Learner.StandardCode),
-        nameof(Learner.IsFlexiJob),
-        nameof(Learner.PlannedOTJTrainingHours)
-    ];
-
     public ChangeSummary DetectChanges(Learner existingLearner, Learner newLearner)
     {
-        var changes = new List<FieldChange>();
+        var changes = new List<IChange>();
 
-        foreach (var fieldName in FieldsToCompare)
+        if (!Equals(existingLearner.FirstName, newLearner.FirstName))
         {
-            var existingValue = GetPropertyValue(existingLearner, fieldName);
-            var newValue = GetPropertyValue(newLearner, fieldName);
+            changes.Add(new FirstNameChange { OldValue = existingLearner.FirstName, NewValue = newLearner.FirstName });
+        }
 
-            if (!Equals(existingValue, newValue))
-            {
-                changes.Add(new FieldChange
-                {
-                    FieldName = fieldName,
-                    OldValue = existingValue,
-                    NewValue = newValue
-                });
-            }
+        if (!Equals(existingLearner.LastName, newLearner.LastName))
+        {
+            changes.Add(new LastNameChange { OldValue = existingLearner.LastName, NewValue = newLearner.LastName });
+        }
+
+        if (!Equals(existingLearner.Email, newLearner.Email))
+        {
+            changes.Add(new EmailChange { OldValue = existingLearner.Email, NewValue = newLearner.Email });
+        }
+
+        if (!Equals(existingLearner.Dob, newLearner.Dob))
+        {
+            changes.Add(new DobChange { OldValue = existingLearner.Dob, NewValue = newLearner.Dob });
+        }
+
+        if (!Equals(existingLearner.StartDate, newLearner.StartDate))
+        {
+            changes.Add(new StartDateChange { OldValue = existingLearner.StartDate, NewValue = newLearner.StartDate });
+        }
+
+        if (!Equals(existingLearner.PlannedEndDate, newLearner.PlannedEndDate))
+        {
+            changes.Add(new PlannedEndDateChange { OldValue = existingLearner.PlannedEndDate, NewValue = newLearner.PlannedEndDate });
+        }
+
+        if (!Equals(existingLearner.EpaoPrice, newLearner.EpaoPrice))
+        {
+            changes.Add(new EpaoPriceChange { OldValue = existingLearner.EpaoPrice, NewValue = newLearner.EpaoPrice });
+        }
+
+        if (!Equals(existingLearner.TrainingPrice, newLearner.TrainingPrice))
+        {
+            changes.Add(new TrainingPriceChange { OldValue = existingLearner.TrainingPrice, NewValue = newLearner.TrainingPrice });
         }
 
         return new ChangeSummary
         {
             Changes = changes
         };
-    }
-
-    private static object? GetPropertyValue(Learner learner, string propertyName)
-    {
-        var property = typeof(Learner).GetProperty(propertyName);
-        return property?.GetValue(learner);
     }
 } 
