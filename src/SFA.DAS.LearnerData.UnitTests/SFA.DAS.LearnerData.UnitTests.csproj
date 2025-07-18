@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.22" />
     <PackageReference Include="SFA.DAS.Testing.AutoFixture" Version="17.1.103" />
     <ProjectReference Include="..\SFA.DAS.LearnerData\SFA.DAS.LearnerData.csproj" />
 
