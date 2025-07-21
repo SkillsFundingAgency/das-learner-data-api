@@ -97,8 +97,7 @@ public class SaveLearnerCommandHandlerTests
         
         eventPublisher.Verify(x => x.PublishLearnerDataUpdatedEventAsync(
             It.Is<LearnerDataUpdatedEvent>(e => 
-                e.LearnerId == response.Id && 
-                e.ChangeSummary.HasChanges)), Times.Once);
+                e.LearnerId == response.Id)), Times.Once);
         
         repository.Verify();
         changeTrackingService.Verify();
@@ -146,8 +145,7 @@ public class SaveLearnerCommandHandlerTests
         
         eventPublisher.Verify(x => x.PublishLearnerDataUpdatedEventAsync(
             It.Is<LearnerDataUpdatedEvent>(e => 
-                e.LearnerId == response.Id && 
-                e.ChangeSummary.HasChanges)), Times.Once);
+                e.LearnerId == response.Id)), Times.Once);
         
         repository.Verify();
         changeTrackingService.Verify();
@@ -197,8 +195,7 @@ public class SaveLearnerCommandHandlerTests
         
         eventPublisher.Verify(x => x.PublishLearnerDataUpdatedEventAsync(
             It.Is<LearnerDataUpdatedEvent>(e => 
-                e.LearnerId == response.Id && 
-                e.ChangeSummary.HasChanges)), Times.Once);
+                e.LearnerId == response.Id)), Times.Once);
         
         repository.Verify();
         changeTrackingService.Verify();
@@ -246,8 +243,7 @@ public class SaveLearnerCommandHandlerTests
         
         eventPublisher.Verify(x => x.PublishLearnerDataUpdatedEventAsync(
             It.Is<LearnerDataUpdatedEvent>(e => 
-                e.LearnerId == response.Id && 
-                e.ChangeSummary.HasChanges)), Times.Once);
+                e.LearnerId == response.Id)), Times.Once);
         
         repository.Verify();
         changeTrackingService.Verify();
@@ -297,8 +293,7 @@ public class SaveLearnerCommandHandlerTests
         
         eventPublisher.Verify(x => x.PublishLearnerDataUpdatedEventAsync(
             It.Is<LearnerDataUpdatedEvent>(e => 
-                e.LearnerId == response.Id && 
-                e.ChangeSummary.HasChanges)), Times.Once);
+                e.LearnerId == response.Id)), Times.Once);
         
         repository.Verify();
         changeTrackingService.Verify();

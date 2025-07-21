@@ -39,7 +39,7 @@ public class SaveLearnerCommandHandler(
                 var @event = new LearnerDataUpdatedEvent
                 {
                     LearnerId = response.Id,
-                    ChangeSummary = changeSummary
+                    ChangedAt = DateTime.UtcNow
                 };
                 
                 await eventPublisher.PublishLearnerDataUpdatedEventAsync(@event);
