@@ -58,7 +58,8 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
 
         if (string.IsNullOrEmpty(sortColumn))
         {
-            sortColumn = nameof(Learner.FirstName);
+            sortColumn = nameof(Learner.StartDate);
+            sortDescending = true;
         }
 
         query = query.OrderBy(GetOrderNamesByField(sortColumn, sortDescending));
