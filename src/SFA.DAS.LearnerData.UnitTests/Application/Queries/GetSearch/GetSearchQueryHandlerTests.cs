@@ -28,11 +28,11 @@ public class GetSearchQueryHandlerTests
         learners.PageSize = query.PageSize.Value;
 
         repository
-            .Setup(x => x.Search(query.UkPrn, query.AcademicYear, query.Page, query.PageSize, query.Limit, query.Offset, query.SortColumn, query.SortDescending, query.Filter, It.IsAny<CancellationToken>())).ReturnsAsync(learners)
+            .Setup(x => x.Search(query.UkPrn, query.Page, query.PageSize, query.Limit, query.Offset, query.SortColumn, query.SortDescending, query.Filter, It.IsAny<CancellationToken>())).ReturnsAsync(learners)
             .Verifiable();
 
         repository
-            .Setup(x => x.GetLastSubmissionDate(query.UkPrn, query.AcademicYear, It.IsAny<CancellationToken>())).ReturnsAsync(lastSubmissionDate)
+            .Setup(x => x.GetLastSubmissionDate(query.UkPrn, It.IsAny<CancellationToken>())).ReturnsAsync(lastSubmissionDate)
             .Verifiable();
 
         var result = await sut.Handle(query, CancellationToken.None);

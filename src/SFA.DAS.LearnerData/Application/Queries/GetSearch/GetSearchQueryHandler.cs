@@ -6,15 +6,13 @@ namespace SFA.DAS.LearnerData.Application.Queries.GetSearch;
 public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
 {
     public long UkPrn { get; }
-    public int? AcademicYear { get; }
     public string SortColumn { get; }
     public bool SortDescending { get; }
     public string Filter { get; }
 
-    public GetSearchQuery(long ukPrn, int? academicYear, int page, int? pageSize, string sortColumn, bool sortDescending, string filter)
+    public GetSearchQuery(long ukPrn, int page, int? pageSize, string sortColumn, bool sortDescending, string filter)
     {
         UkPrn = ukPrn;
-        AcademicYear = academicYear;
         SortColumn = sortColumn;
         SortDescending = sortDescending;
         Filter = filter;
@@ -29,7 +27,6 @@ public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandl
     {
         var result = await repository.Search(
             request.UkPrn,
-            request.AcademicYear,
             request.Page,
             request.PageSize,
             request.Limit,
@@ -43,7 +40,7 @@ public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandl
 
         if (result.TotalItems > 0)
         {
-            lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, request.AcademicYear, cancellationToken);            
+            lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, cancellationToken);            
         }
 
         return new GetSearchResult
