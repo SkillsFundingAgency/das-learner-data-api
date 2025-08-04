@@ -12,10 +12,10 @@ public interface ILearnerRepository
     Task<Learner> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
 
-    Task<PagedResult<Learner>> Search(long ukprn, int? academicYear, int page, int? pageSize, int limit, int offset,
+    Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
         string sortColumn, bool sortDescending, string filter, bool excludeApproved,
         CancellationToken cancellationToken);
-    Task<DateTime?> GetLastSubmissionDate(long ukprn, int? academicYear, CancellationToken cancellationToken);
+    Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
     Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
     Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken);
 }
@@ -45,7 +45,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<PagedResult<Learner>> Search(long ukprn, int? academicYear, int page, int? pageSize, int limit, int offset, string sortColumn, 
+    public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn, 
         bool sortDescending, string filter, bool excludeApproved, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
@@ -55,11 +55,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
         if (excludeApproved)
         {
             query = query.Where(x => x.ApprenticeshipId == null);
-        }
-
-        if (academicYear.HasValue)
-        {
-            query = query.Where(x => x.AcademicYear == academicYear);
         }
 
         if (!string.IsNullOrEmpty(filter))
@@ -116,16 +111,11 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
         };
     }
 
-    public async Task<DateTime?> GetLastSubmissionDate(long ukprn, int? academicYear, CancellationToken cancellationToken)
+    public async Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .Where(x => x.Ukprn == ukprn)
             .AsNoTracking();
-
-        if (academicYear.HasValue)
-        {
-            query = query.Where(x => x.AcademicYear == academicYear.Value);
-        }
 
         return await query
             .Select(x => x.ReceivedDate)

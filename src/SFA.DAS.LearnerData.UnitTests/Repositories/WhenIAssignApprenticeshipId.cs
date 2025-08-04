@@ -126,18 +126,16 @@ public class LearnerRepositoryTests
         List<Learner> learners,
         [Frozen] Mock<ILearnerRepository> repository)
     {
-        int academicYear = 2425;
         learners.ForEach(x =>
         {
             x.Ukprn = providerId;
-            x.AcademicYear = academicYear;
         });
         learners[0].ApprenticeshipId = null;
 
         _dbContext.Learners.AddRange(learners);
         await _dbContext.SaveChangesAsync();
 
-        var response = await _repository.Search(providerId, academicYear, 1, 10, 1000, 0, null, false, "", true, _cancellationToken);
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", true, _cancellationToken);
         var results = response.Data.ToList();
         results.Count.Should().Be(1);
         results.First().Should().BeEquivalentTo(learners[0]);
@@ -150,17 +148,15 @@ public class LearnerRepositoryTests
         List<Learner> learners,
         [Frozen] Mock<ILearnerRepository> repository)
     {
-        int academicYear = 2425;
         learners.ForEach(x =>
         {
             x.Ukprn = providerId;
-            x.AcademicYear = academicYear;
         });
 
         _dbContext.Learners.AddRange(learners);
         await _dbContext.SaveChangesAsync();
 
-        var response = await _repository.Search(providerId, academicYear, 1, 10, 1000, 0, null, false, "", false, _cancellationToken);
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, _cancellationToken);
         var results = response.Data.ToList();
         results.Count.Should().Be(3);
     }
