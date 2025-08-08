@@ -1,8 +1,9 @@
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Data.Entities;
+using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 
 namespace SFA.DAS.LearnerData.Data.Repositories;
 
@@ -64,11 +65,11 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
 
         if (string.IsNullOrEmpty(sortColumn))
         {
-            sortColumn = nameof(Learner.FirstName);
+            sortColumn = nameof(Learner.StartDate);
+            sortDescending = true;
         }
 
-        query = sortDescending ? query.OrderByDescending(GetOrderByField(sortColumn)).ThenByDescending(GetSecondarySortByField(sortColumn)) 
-            : query.OrderBy(GetOrderByField(sortColumn)).ThenBy(GetSecondarySortByField(sortColumn));
+        query = query.OrderBy(GetOrderNamesByField(sortColumn, sortDescending));
 
         var totalItems = await query.CountAsync(cancellationToken);
         var totalPages = (int)Math.Ceiling((double)totalItems / pageSize.GetValueOrDefault());
@@ -88,26 +89,28 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
         };
     }
 
-    private static Expression<Func<Learner, object>> GetOrderByField(string fieldName)
+    private static string GetOrderNamesByField(string fieldName, bool sortDescending)
     {
+        var sort = sortDescending ? "descending" : "ascending";
+
         return fieldName switch
         {
-            nameof(Learner.AgreementId) => learner => learner.AgreementId,
-            nameof(Learner.Dob) => learner => learner.Dob,
-            nameof(Learner.Email) => learner => learner.Email,
-            nameof(Learner.EpaoPrice) => learner => learner.EpaoPrice,
-            nameof(Learner.FirstName) => learner => learner.FirstName,
-            nameof(Learner.IsFlexiJob) => learner => learner.IsFlexiJob,
-            nameof(Learner.LastName) => learner => learner.LastName,
-            nameof(Learner.PercentageLearningToBeDelivered) => learner => learner.PercentageLearningToBeDelivered,
-            nameof(Learner.PlannedOTJTrainingHours) => learner => learner.PlannedOTJTrainingHours,
-            nameof(Learner.PlannedEndDate) => learner => learner.PlannedEndDate,
-            nameof(Learner.ReceivedDate) => learner => learner.ReceivedDate,
-            nameof(Learner.StandardCode) => learner => learner.StandardCode,
-            nameof(Learner.StartDate) => learner => learner.StartDate,
-            nameof(Learner.TrainingPrice) => learner => learner.TrainingPrice,
-            nameof(Learner.Uln) => learner => learner.Uln,
-            _ => learner => learner.LastName
+            nameof(Learner.AgreementId) => $"AgreementId {sort}",
+            nameof(Learner.Dob) => $"Dob  {sort}",
+            nameof(Learner.Email) => $"Email  {sort}",
+            nameof(Learner.EpaoPrice) => $"EpaoPrice  {sort}",
+            nameof(Learner.FirstName) => $"Firstname  {sort}, Lastname  {sort}",
+            nameof(Learner.IsFlexiJob) => $"IsFlexiJob  {sort}",
+            nameof(Learner.LastName) => $"Lastname  {sort}, Firstname  {sort}",
+            nameof(Learner.PercentageLearningToBeDelivered) => $"PercentageLearningToBeDelivered  {sort}",
+            nameof(Learner.PlannedOTJTrainingHours) => $"PlannedOTJTrainingHours  {sort}",
+            nameof(Learner.PlannedEndDate) => $"PlannedEndDate  {sort}",
+            nameof(Learner.ReceivedDate) => $"ReceivedDate  {sort}",
+            nameof(Learner.StandardCode) => $"StandardCode  {sort}",
+            nameof(Learner.StartDate) => $"StartDate  {sort}, Firstname  {sort}, Lastname  {sort}, ULN  {sort}",
+            nameof(Learner.TrainingPrice) => $"TrainingPrice  {sort}",
+            nameof(Learner.Uln) => $"Uln  {sort}",
+            _ => $"Lastname  {sort}, Firstname  {sort}"
         };
     }
 
@@ -125,7 +128,8 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
 
     public async Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken)
     {
-        var existingLearner = await Get(request.Ukprn, request.Uln, request.StandardCode, request.AcademicYear, cancellationToken);
+        var existingLearner = await Get(request.Ukprn, request.Uln, request.StandardCode, request.AcademicYear,
+            cancellationToken);
 
         if (existingLearner == null)
         {
@@ -133,7 +137,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
             await dbContext.Learners.AddAsync(learner, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
 
-            return new SaveLearnerCommandResponse { Id = learner.Id, Result = SaveLearnerResult.Created };
+            return new SaveLearnerCommandResponse {Id = learner.Id, Result = SaveLearnerResult.Created};
         }
 
         existingLearner.Uln = request.Uln;
@@ -180,16 +184,5 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
 
         learner.ApprenticeshipId = request.ApprenticeshipId;
         await dbContext.SaveChangesAsync(cancellationToken);
-    }
-
-    protected static Expression<Func<Learner, object>> GetSecondarySortByField(string fieldName)
-    {
-        switch (fieldName)
-        {
-            case nameof(Learner.FirstName):
-                return apprenticeship => apprenticeship.LastName;
-            default:
-                return GetOrderByField(fieldName);
-        }
     }
 }
