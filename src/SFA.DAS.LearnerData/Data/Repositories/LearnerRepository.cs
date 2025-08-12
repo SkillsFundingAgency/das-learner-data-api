@@ -3,7 +3,6 @@ using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Data.Entities;
 using System.Linq.Dynamic.Core;
-using System.Linq.Expressions;
 using Microsoft.Extensions.Logging;
 
 namespace SFA.DAS.LearnerData.Data.Repositories;
