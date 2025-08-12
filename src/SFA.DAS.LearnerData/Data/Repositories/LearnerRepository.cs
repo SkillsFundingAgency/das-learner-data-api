@@ -10,7 +10,7 @@ namespace SFA.DAS.LearnerData.Data.Repositories;
 public interface ILearnerRepository
 {
     Task<Learner?> GetById(long id, CancellationToken cancellationToken);
-    Task<Learner> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
+    Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
@@ -28,7 +28,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
         return await dbContext.Learners.FindAsync(keyValues: [id], cancellationToken);
     }
 
-    public async Task<Learner> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken)
+    public async Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken)
     {
         return await dbContext.Learners
             .SingleOrDefaultAsync(learner => learner.Ukprn == ukPrn
@@ -138,6 +138,11 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
             await dbContext.SaveChangesAsync(cancellationToken);
 
             return new SaveLearnerCommandResponse {Id = learner.Id, Result = SaveLearnerResult.Created};
+        }
+
+        if (existingLearner.ApprenticeshipId != null)
+        {
+            throw new InvalidOperationException($"Learner with ID {existingLearner.Id} already has ApprenticeshipId {existingLearner.ApprenticeshipId} assigned. Cannot update.");
         }
 
         existingLearner.Uln = request.Uln;
