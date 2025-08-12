@@ -4,6 +4,7 @@ using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Data.Entities;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
+using Microsoft.Extensions.Logging;
 
 namespace SFA.DAS.LearnerData.Data.Repositories;
 
@@ -21,7 +22,7 @@ public interface ILearnerRepository
     Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken);
 }
 
-public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerRepository
+public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRepository> logger) : ILearnerRepository
 {
     public async Task<Learner?> GetById(long id, CancellationToken cancellationToken)
     {
@@ -142,6 +143,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
 
         if (existingLearner.ApprenticeshipId != null)
         {
+            logger.LogError("Learner record {0} cannot be updated as it already has an ApprenticeshipId assigned", existingLearner.Id);
             throw new InvalidOperationException($"Learner with ID {existingLearner.Id} already has ApprenticeshipId {existingLearner.ApprenticeshipId} assigned. Cannot update.");
         }
 

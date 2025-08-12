@@ -7,13 +7,13 @@ using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Data.Repositories;
 using SFA.DAS.LearnerData.Data;
-using AutoFixture.NUnit3;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.Testing.AutoFixture;
 
 namespace SFA.DAS.LearnerData.UnitTests.Repositories;
 
 [TestFixture]
-public class LearnerRepositoryTests
+public class WhenIAssignApprenticeshipId
 {
     private LearnerRepository _repository;
     private LearnerDataDbContext _dbContext;
@@ -28,7 +28,7 @@ public class LearnerRepositoryTests
             .ConfigureWarnings(w => w.Ignore(CoreEventId.ManyServiceProvidersCreatedWarning))
             .Options);
 
-        _repository = new LearnerRepository(_dbContext);
+        _repository = new LearnerRepository(_dbContext, Mock.Of<ILogger<LearnerRepository>>());
 
         _cancellationToken = CancellationToken.None;
     }
@@ -43,8 +43,7 @@ public class LearnerRepositoryTests
     [Test, MoqAutoData]
     public async Task AssignApprenticeshipId_Updates_ApprenticeshipId_When_Learner_Matches_And_ApprenticeshipId_Is_Null(
         AssignApprenticeshipIdCommand command,
-        Learner learner,
-        [Frozen] Mock<ILearnerRepository> repository)
+        Learner learner)
     {
         learner.Id = command.LearnerDataId;
         learner.Ukprn = command.Ukprn;
@@ -60,10 +59,10 @@ public class LearnerRepositoryTests
         updatedLearner.ApprenticeshipId.Should().Be(command.ApprenticeshipId);
     }
 
+
     [Test, MoqAutoData]
     public async Task AssignApprenticeshipId_Throws_Exception_When_Learner_Not_Found(
-        AssignApprenticeshipIdCommand command,
-        [Frozen] Mock<ILearnerRepository> repository)
+        AssignApprenticeshipIdCommand command)
     {
         var ex = () => _repository.AssignApprenticeshipId(command, _cancellationToken);
 
@@ -73,8 +72,7 @@ public class LearnerRepositoryTests
     [Test, MoqAutoData]
     public async Task AssignApprenticeshipId_Throws_Exception_When_Learner_Does_Not_Belong_To_Provider(
         AssignApprenticeshipIdCommand command,
-        Learner learner,
-        [Frozen] Mock<ILearnerRepository> repository)
+        Learner learner)
     {
         learner.Id = command.LearnerDataId;
         learner.Ukprn = command.Ukprn + 1; 
@@ -87,8 +85,7 @@ public class LearnerRepositoryTests
     [Test, MoqAutoData]
     public async Task AssignApprenticeshipId_Throws_Exception_When_Learner_Already_Has_ApprenticeshipId_Assigned(
         AssignApprenticeshipIdCommand command,
-        Learner learner,
-        [Frozen] Mock<ILearnerRepository> repository)
+        Learner learner)
     {
         learner.Id = command.LearnerDataId;
         learner.Ukprn = command.Ukprn;
@@ -102,8 +99,7 @@ public class LearnerRepositoryTests
     [Test, MoqAutoData]
     public async Task AssignApprenticeshipId_Updates_ApprenticeshipId_When_Learner_Matches_And_ApprenticeshipId_Matches_the_incoming_Id(
         AssignApprenticeshipIdCommand command,
-        Learner learner,
-        [Frozen] Mock<ILearnerRepository> repository)
+        Learner learner)
     {
         learner.Id = command.LearnerDataId;
         learner.Ukprn = command.Ukprn;
@@ -123,8 +119,7 @@ public class LearnerRepositoryTests
     public async Task When_Learner_Search_Should_Exclude_Learners_With_ApprenticeshipId_Assigned(
         AssignApprenticeshipIdCommand command,
         long providerId,
-        List<Learner> learners,
-        [Frozen] Mock<ILearnerRepository> repository)
+        List<Learner> learners)
     {
         learners.ForEach(x =>
         {
@@ -145,8 +140,7 @@ public class LearnerRepositoryTests
     public async Task When_Learner_Search_Should_Include_Learners_With_ApprenticeshipId_Assigned(
         AssignApprenticeshipIdCommand command,
         long providerId,
-        List<Learner> learners,
-        [Frozen] Mock<ILearnerRepository> repository)
+        List<Learner> learners)
     {
         learners.ForEach(x =>
         {
