@@ -9,15 +9,19 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
     public string SortColumn { get; }
     public bool SortDescending { get; }
     public string Filter { get; }
+    public int? StartMonth { get; }
+    public int StartYear { get; }
 
-    public GetSearchQuery(long ukPrn, int page, int? pageSize, string sortColumn, bool sortDescending, string filter)
+    public GetSearchQuery(long ukPrn, int page, int? pageSize, string sortColumn, bool sortDescending, string filter, int? startMonth, int startYear)
     {
         UkPrn = ukPrn;
         SortColumn = sortColumn;
         SortDescending = sortDescending;
-        Filter = filter;
+        Filter = filter;        
         Page = page;
         PageSize = pageSize;
+        StartMonth = startMonth;
+        StartYear = startYear;
     }
 }
 
@@ -34,6 +38,8 @@ public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandl
             request.SortColumn,
             request.SortDescending,
             request.Filter,
+            request.StartMonth,
+            request.StartYear,
             cancellationToken);
 
         DateTime? lastSubmissionDate = null;

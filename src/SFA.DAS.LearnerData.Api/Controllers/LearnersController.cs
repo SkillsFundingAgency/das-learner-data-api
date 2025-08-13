@@ -22,13 +22,15 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
     [ProducesResponseType((int)HttpStatusCode.OK)]
     public async Task<IActionResult> Search(
         long ukprn,
+        [FromQuery] int? startMonth,
+        [FromQuery] int startYear,
         [FromQuery] int page = 1,
         [FromQuery] int? pageSize = 20,
         [FromQuery] string sortColumn = "",
         [FromQuery] bool sortDescending = false,
         [FromQuery] string filter = "")
     {
-        var query = new GetSearchQuery(ukprn, page, pageSize, sortColumn, sortDescending, filter);
+        var query = new GetSearchQuery(ukprn, page, pageSize, sortColumn, sortDescending, filter, startMonth, startYear);
 
         var result = await sender.Send(query);
 

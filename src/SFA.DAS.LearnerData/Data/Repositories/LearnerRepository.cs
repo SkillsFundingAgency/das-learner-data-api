@@ -10,7 +10,7 @@ public interface ILearnerRepository
     Task<Learner> GetById(long id, CancellationToken cancellationToken);
     Task<Learner> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
-    Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn, bool sortDescending, string filter, CancellationToken cancellationToken);
+    Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn, bool sortDescending, string filter, int? startMonth, int startYear, CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
     Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
 }
@@ -40,7 +40,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn, bool sortDescending, string filter, CancellationToken cancellationToken)
+    public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn, bool sortDescending, string filter, int? startMonth, int startYear, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
@@ -50,6 +50,21 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
         {
             query = query.Where(x => x.LastName.Contains(filter) || x.FirstName.Contains(filter) || x.Uln.ToString() == filter);
         }
+
+        if (startMonth.HasValue)
+        {
+            var month = startMonth.Value;
+            if (month >= 1 && month <= 12)
+            {
+                query = query.Where(x => x.StartDate.Month == month);
+            }
+        }
+
+        if (startYear > 0)
+        {
+            query = query.Where(x => x.StartDate.Year == startYear);
+        }
+
 
         if (string.IsNullOrEmpty(sortColumn))
         {
@@ -125,7 +140,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
             await dbContext.Learners.AddAsync(learner, cancellationToken);
             await dbContext.SaveChangesAsync(cancellationToken);
 
-            return new SaveLearnerCommandResponse {Id = learner.Id, Result = SaveLearnerResult.Created};
+            return new SaveLearnerCommandResponse { Id = learner.Id, Result = SaveLearnerResult.Created };
         }
 
         existingLearner.Uln = request.Uln;
@@ -150,6 +165,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new SaveLearnerCommandResponse {Id = existingLearner.Id, Result = SaveLearnerResult.Updated};
+        return new SaveLearnerCommandResponse { Id = existingLearner.Id, Result = SaveLearnerResult.Updated };
     }
 }
