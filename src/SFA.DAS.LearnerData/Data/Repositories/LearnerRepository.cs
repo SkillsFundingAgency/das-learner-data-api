@@ -3,14 +3,14 @@ using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Data.Entities;
 using System.Linq.Dynamic.Core;
-using System.Linq.Expressions;
+using Microsoft.Extensions.Logging;
 
 namespace SFA.DAS.LearnerData.Data.Repositories;
 
 public interface ILearnerRepository
 {
     Task<Learner?> GetById(long id, CancellationToken cancellationToken);
-    Task<Learner> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
+    Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
@@ -21,14 +21,14 @@ public interface ILearnerRepository
     Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken);
 }
 
-public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerRepository
+public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRepository> logger) : ILearnerRepository
 {
     public async Task<Learner?> GetById(long id, CancellationToken cancellationToken)
     {
         return await dbContext.Learners.FindAsync(keyValues: [id], cancellationToken);
     }
 
-    public async Task<Learner> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken)
+    public async Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken)
     {
         return await dbContext.Learners
             .SingleOrDefaultAsync(learner => learner.Ukprn == ukPrn
@@ -138,6 +138,12 @@ public class LearnerRepository(LearnerDataDbContext dbContext) : ILearnerReposit
             await dbContext.SaveChangesAsync(cancellationToken);
 
             return new SaveLearnerCommandResponse {Id = learner.Id, Result = SaveLearnerResult.Created};
+        }
+
+        if (existingLearner.ApprenticeshipId != null)
+        {
+            logger.LogError("Learner record {0} cannot be updated as it already has an ApprenticeshipId assigned", existingLearner.Id);
+            throw new InvalidOperationException($"Learner with ID {existingLearner.Id} already has ApprenticeshipId {existingLearner.ApprenticeshipId} assigned. Cannot update.");
         }
 
         existingLearner.Uln = request.Uln;
