@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using SFA.DAS.LearnerData.Api.Models.Requests;
 using SFA.DAS.LearnerData.Api.Models.Responses;
+using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
@@ -16,10 +17,13 @@ namespace SFA.DAS.LearnerData.Api.Controllers;
 [Route("providers/{ukprn:long}/learners")]
 [ApiVersion("1.0")]
 [ApiController]
-public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLinkHeaderService) : ControllerBase
+public class LearnersController(
+    ISender sender,
+    IPagedLinkHeaderService pagedLinkHeaderService,
+    ILogger<LearnersController> logger) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.OK)]
     public async Task<IActionResult> Search(
         long ukprn,
         [FromQuery] int? startMonth,
@@ -28,9 +32,10 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
         [FromQuery] int? pageSize = 20,
         [FromQuery] string sortColumn = "",
         [FromQuery] bool sortDescending = false,
-        [FromQuery] string filter = "")
+        [FromQuery] string filter = "",
+        [FromQuery] bool excludeApproved = true)
     {
-        var query = new GetSearchQuery(ukprn, page, pageSize, sortColumn, sortDescending, filter, startMonth, startYear);
+        var query = new GetSearchQuery(ukprn, page, pageSize, sortColumn, sortDescending, filter, excludeApproved, startMonth, startYear);
 
         var result = await sender.Send(query);
 
@@ -42,7 +47,7 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
     }
 
     [HttpPut]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int) HttpStatusCode.Created)]
     [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode}")]
     public async Task<IActionResult> Save(long ukprn, long uln, int academicYear, [FromBody] SaveLearnerRequest request)
     {
@@ -78,7 +83,7 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
 
         if (response.Result == SaveLearnerResult.Created)
         {
-            return CreatedAtAction(nameof(GetById), new { ukprn, id = response.Id }, command);
+            return CreatedAtAction(nameof(GetById), new {ukprn, id = response.Id}, command);
         }
 
         var location = $"{Request?.Scheme}://{Request?.Host}/providers/{request.Ukprn}/learners/{response.Id}";
@@ -88,8 +93,8 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
     }
 
     [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int) HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
     [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode:int}")]
     public async Task<IActionResult> GetSingle(long ukprn, long uln, int academicYear, int standardCode)
     {
@@ -106,12 +111,12 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
     }
 
     [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int) HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
     [Route("{id:long}")]
-    public async Task<IActionResult> GetById(long id)
+    public async Task<IActionResult> GetById(long ukprn, long id)
     {
-        var command = new GetLearnerByIdQuery(id);
+        var command = new GetLearnerByIdQuery(ukprn, id);
 
         var result = await sender.Send(command);
 
@@ -121,5 +126,36 @@ public class LearnersController(ISender sender, IPagedLinkHeaderService pagedLin
         }
 
         return Ok(GetLearnerByIdResponse.MapFrom(result));
+    }
+
+    [HttpPatch]
+    [ProducesResponseType((int) HttpStatusCode.OK)]
+    [Route("{id:long}/apprenticeshipId")]
+    public async Task<IActionResult> PatchApprenticeshipId(long ukprn, long id, [FromBody] PatchLearnerDataApprenticeshipIdRequest request)
+    {
+        try
+        {
+            var command = new AssignApprenticeshipIdCommand
+            {
+                Ukprn = ukprn,
+                LearnerDataId = id,
+                ApprenticeshipId = request.ApprenticeshipId,
+            };
+
+            await sender.Send(command);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return NotFound();
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error trying to assign apprenticeship Id {0} to Learner Data record {1}", request.ApprenticeshipId, id);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+
+        return Ok();
     }
 }

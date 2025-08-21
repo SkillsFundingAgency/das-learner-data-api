@@ -19,6 +19,7 @@ public class GetLearnerByIdQueryHandlerTests
         GetLearnerByIdQueryHandler sut
     )
     {
+        learner.Ukprn = query.ukprn; // Ensure the learner's UKPRN matches the query's UKPRN
         repository
             .Setup(x => x.GetById(query.Id, It.IsAny<CancellationToken>())).ReturnsAsync(learner)
             .Verifiable();
@@ -28,6 +29,26 @@ public class GetLearnerByIdQueryHandlerTests
         result.Should().BeEquivalentTo(learner, options => options.ExcludingMissingMembers());
         result.Found.Should().BeTrue();
         
+        repository.Verify();
+    }
+
+    [Test, MoqAutoData]
+    public async Task Handle_GetById_When_Learner_Exists_But_Is_Not_assigned_To_This_Provider(
+        GetLearnerByIdQuery query,
+        Learner learner,
+        [Frozen] Mock<ILearnerRepository> repository,
+        GetLearnerByIdQueryHandler sut
+    )
+    {
+        learner.Ukprn = query.ukprn + 1; // Ensure the learner's UKPRN matches the query's UKPRN
+        repository
+            .Setup(x => x.GetById(query.Id, It.IsAny<CancellationToken>())).ReturnsAsync(learner)
+            .Verifiable();
+
+        var result = await sut.Handle(query, CancellationToken.None);
+        result.Should().NotBeNull();
+        result.Found.Should().BeFalse();
+
         repository.Verify();
     }
 

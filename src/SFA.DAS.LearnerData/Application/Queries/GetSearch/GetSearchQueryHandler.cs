@@ -9,10 +9,11 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
     public string SortColumn { get; }
     public bool SortDescending { get; }
     public string Filter { get; }
+    public bool ExcludeApproved { get; }
     public int? StartMonth { get; }
     public int StartYear { get; }
 
-    public GetSearchQuery(long ukPrn, int page, int? pageSize, string sortColumn, bool sortDescending, string filter, int? startMonth, int startYear)
+    public GetSearchQuery(long ukPrn, int page, int? pageSize, string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear)
     {
         UkPrn = ukPrn;
         SortColumn = sortColumn;
@@ -20,6 +21,7 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
         Filter = filter;        
         Page = page;
         PageSize = pageSize;
+        ExcludeApproved = excludeApproved;
         StartMonth = startMonth;
         StartYear = startYear;
     }
@@ -38,6 +40,7 @@ public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandl
             request.SortColumn,
             request.SortDescending,
             request.Filter,
+            request.ExcludeApproved,
             request.StartMonth,
             request.StartYear,
             cancellationToken);

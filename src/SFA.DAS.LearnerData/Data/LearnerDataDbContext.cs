@@ -5,7 +5,7 @@ namespace SFA.DAS.LearnerData.Data;
 
 public class LearnerDataDbContext(DbContextOptions options) : DbContext(options)
 {
-    public DbSet<Learner?> Learners { get; set; }
+    public DbSet<Learner> Learners { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
