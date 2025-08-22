@@ -156,4 +156,67 @@ public class WhenIAssignApprenticeshipId
         var results = response.Data.ToList();
         results.Count.Should().Be(3);
     }
+
+    [Test, MoqAutoData]
+    public async Task When_Learner_Search_Should_Include_Learners_When_StartYear_Matches(
+        AssignApprenticeshipIdCommand command,
+        long providerId,
+        List<Learner> learners)
+    {
+        learners.ForEach(x =>
+        {
+            x.Ukprn = providerId;
+            x.StartDate = new DateTime(2025, 05, 01);
+        });
+
+        _dbContext.Learners.AddRange(learners);
+        await _dbContext.SaveChangesAsync();
+
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, null, 2025, _cancellationToken);
+        var results = response.Data.ToList();
+        results.Count.Should().Be(3);
+    }
+
+    [Test, MoqAutoData]
+    public async Task When_Learner_Search_Should_Not_Include_Learners_When_StartYear_Not_Matches(
+        AssignApprenticeshipIdCommand command,
+        long providerId,
+        List<Learner> learners)
+    {
+        learners.ForEach(x =>
+        {
+            x.Ukprn = providerId;
+            x.StartDate = new DateTime(2025, 05, 01);
+        });
+
+        _dbContext.Learners.AddRange(learners);
+        await _dbContext.SaveChangesAsync();
+
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, null, 2024, _cancellationToken);
+        var results = response.Data.ToList();
+        results.Count.Should().Be(0);
+    }
+
+    [Test, MoqAutoData]
+    public async Task When_Learner_Search_Should_Include_Learners_When_StartYear_And_StartMonth_Matches(
+        AssignApprenticeshipIdCommand command,
+        long providerId,
+        List<Learner> learners)
+    {
+        learners.ForEach(x =>
+        {
+            x.Ukprn = providerId;
+            x.StartDate = new DateTime(2025, 05, 01);
+        });
+        learners[0].StartDate = new DateTime(2025, 01, 01);
+
+        _dbContext.Learners.AddRange(learners);
+        await _dbContext.SaveChangesAsync();
+
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, 01, 2025, _cancellationToken);
+        var results = response.Data.ToList();
+        results.Count.Should().Be(1);
+    }
+
+
 }
