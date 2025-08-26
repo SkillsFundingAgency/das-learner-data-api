@@ -74,8 +74,9 @@ public static class NServiceBusStartupExtensions
         }
         
         var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-        transport.CustomTokenCredential(new DefaultAzureCredential());
-        transport.ConnectionString(connectionString.FormatConnectionString());
+        var fullyQualifiedNamespace = connectionString.FormatConnectionString();
+        transport.CustomTokenCredential(fullyQualifiedNamespace, new DefaultAzureCredential());
+        transport.ConnectionString(fullyQualifiedNamespace);
         transport.Transactions(TransportTransactionMode.ReceiveOnly);
         transport.SubscriptionRuleNamingConvention(RuleNameShortener.Shorten);
 #endif
