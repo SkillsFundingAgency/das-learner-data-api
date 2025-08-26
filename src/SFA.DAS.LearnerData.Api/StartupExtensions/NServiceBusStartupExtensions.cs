@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NServiceBus;
+using NServiceBus.NewtonsoftJson;
 using SFA.DAS.LearnerData.Configuration;
 
 namespace SFA.DAS.LearnerData.Api.StartupExtensions;
@@ -31,6 +32,7 @@ public static class NServiceBusStartupExtensions
         var endpointConfiguration = new EndpointConfiguration(EndpointName);
         
         ConfigureBasicSettings(endpointConfiguration);
+        ConfigureSerialization(endpointConfiguration);
         ConfigureMessageConventions(endpointConfiguration);
         ConfigureTransport(endpointConfiguration, configuration);
         ConfigureLicense(endpointConfiguration, configuration);
@@ -42,6 +44,11 @@ public static class NServiceBusStartupExtensions
     {
         endpointConfiguration.EnableInstallers();
         endpointConfiguration.SendFailedMessagesTo(ErrorEndpointName);
+    }
+
+    private static void ConfigureSerialization(EndpointConfiguration endpointConfiguration)
+    {
+        endpointConfiguration.UseSerialization<NewtonsoftJsonSerializer>();
     }
 
     private static void ConfigureMessageConventions(EndpointConfiguration endpointConfiguration)
