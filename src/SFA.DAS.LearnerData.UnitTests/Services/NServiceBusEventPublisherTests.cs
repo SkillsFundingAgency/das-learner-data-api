@@ -1,7 +1,5 @@
 using AutoFixture.NUnit3;
-using FluentAssertions;
 using Moq;
-using NServiceBus;
 using NUnit.Framework;
 using SFA.DAS.LearnerData.Messages;
 using SFA.DAS.LearnerData.Services;
@@ -20,6 +18,6 @@ public class NServiceBusEventPublisherTests
     {
         await sut.PublishLearnerDataUpdatedEventAsync(@event);
 
-        messageSession.Verify(x => x.Send(@event, It.IsAny<SendOptions>(), It.IsAny<CancellationToken>()), Times.Once);
+        messageSession.Verify(x => x.Publish(@event, It.IsAny<PublishOptions>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 } 

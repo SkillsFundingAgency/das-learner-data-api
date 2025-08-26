@@ -25,14 +25,19 @@ public class SaveLearnerCommandHandler(
 {
     public async Task<SaveLearnerCommandResponse> Handle(SaveLearnerCommand request, CancellationToken cancellationToken)
     {
+        var response = new SaveLearnerCommandResponse();
         var existingLearner = await repository.Get(request.Ukprn, request.Uln, request.StandardCode, request.AcademicYear, cancellationToken);
-        var response = await repository.Save(request, cancellationToken);
 
-        if (response.Result == SaveLearnerResult.Updated && existingLearner != null)
+        if (existingLearner == null)
+        {
+            response = await repository.Save(request, cancellationToken);
+        }
+        else
         {
             var updatedLearner = Learner.From(request);
             
             var changeSummary = changeTrackingService.DetectChanges(existingLearner, updatedLearner);
+            response = await repository.Save(request, cancellationToken);
             
             if (changeSummary.HasChanges)
             {

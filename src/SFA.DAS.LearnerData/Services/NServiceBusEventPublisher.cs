@@ -6,7 +6,6 @@ public class NServiceBusEventPublisher(IMessageSession messageSession) : IEventP
 {
     public async Task PublishLearnerDataUpdatedEventAsync(LearnerDataUpdatedEvent @event)
     {
-        var sendOptions = new SendOptions();
-        await messageSession.Send(@event, sendOptions);
+        await messageSession.Publish(@event);
     }
 } 
