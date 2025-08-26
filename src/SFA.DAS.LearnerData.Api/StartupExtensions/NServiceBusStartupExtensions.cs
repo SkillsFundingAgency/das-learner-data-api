@@ -2,7 +2,6 @@ using System.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NServiceBus;
-using NServiceBus.NewtonsoftJson;
 using SFA.DAS.LearnerData.Configuration;
 
 namespace SFA.DAS.LearnerData.Api.StartupExtensions;
