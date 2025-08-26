@@ -77,7 +77,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             query = query.Where(x => x.StartDate.Year == startYear);
         }
 
-
         if (string.IsNullOrEmpty(sortColumn))
         {
             sortColumn = nameof(Learner.StartDate);

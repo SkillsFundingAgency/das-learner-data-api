@@ -217,6 +217,4 @@ public class WhenIAssignApprenticeshipId
         var results = response.Data.ToList();
         results.Count.Should().Be(1);
     }
-
-
 }
