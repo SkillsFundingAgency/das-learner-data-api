@@ -1,4 +1,5 @@
 using System.Net;
+using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NServiceBus;
@@ -72,9 +73,11 @@ public static class NServiceBusStartupExtensions
             throw new InvalidOperationException("NServiceBus connection string is required for production environment");
         }
         
-        var azureTransport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
-        azureTransport.ConnectionString(connectionString);
-        azureTransport.SubscriptionRuleNamingConvention(AzureRuleNameShortener.Shorten);
+        var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
+        transport.CustomTokenCredential(new DefaultAzureCredential());
+        transport.ConnectionString(connectionString.FormatConnectionString());
+        transport.Transactions(TransportTransactionMode.ReceiveOnly);
+        transport.SubscriptionRuleNamingConvention(RuleNameShortener.Shorten);
 #endif
     }
 
@@ -99,7 +102,15 @@ public static class NServiceBusStartupExtensions
     }
 }
 
-internal static class AzureRuleNameShortener
+internal static class ConnectionStringExtensions
+{
+    public static string FormatConnectionString(this string connectionString)
+    {
+        return connectionString.Replace("Endpoint=sb://", string.Empty).TrimEnd('/');
+    }
+}
+
+internal static class RuleNameShortener
 {
     private const int AzureServiceBusRuleNameMaxLength = 50;
 
