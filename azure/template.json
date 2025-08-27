@@ -77,7 +77,7 @@
         },
         "utcValue": {
             "type": "string",
-            "defaultValue": "[utcNow()]"
+            "defaultValue": "[utcNow('yyMMddHHmmss')]"
         },
         "deployPrivateLinkedScopedResource": {
             "type": "bool"
@@ -294,6 +294,9 @@
             "name": "[concat('role-assignments-', copyIndex(),'-', parameters('utcValue'))]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
+            "dependsOn": [
+                "[concat(variables('appServiceName'), '-', parameters('utcValue'))]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
@@ -302,7 +305,7 @@
                 },
                 "parameters": {
                     "principalId": {
-                        "value": "[createArray(reference(concat(variables('appServiceName'), '-app-service-', parameters('utcValue'))).outputs.managedServiceIdentityId.value, reference(concat(variables('appServiceName'), '-app-service-', parameters('utcValue'))).outputs.stagingManagedServiceIdentityId.value)[copyIndex()]]"
+                        "value": "[createArray(reference(concat(variables('appServiceName'), '-', parameters('utcValue'))).outputs.managedServiceIdentityId.value, reference(concat(variables('appServiceName'), '-', parameters('utcValue'))).outputs.stagingManagedServiceIdentityId.value)[copyIndex()]]"
                     },
                     "assignmentType": {
                         "value": "ServiceBusOwner"
