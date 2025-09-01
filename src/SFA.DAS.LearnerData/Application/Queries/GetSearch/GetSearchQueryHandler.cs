@@ -47,10 +47,7 @@ public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandl
 
         DateTime? lastSubmissionDate = null;
 
-        if (result.TotalItems > 0)
-        {
-            lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, cancellationToken);            
-        }
+        lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, cancellationToken);            
 
         return new GetSearchResult
         {
