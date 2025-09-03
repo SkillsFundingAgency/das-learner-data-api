@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageId>SFA.DAS.LearnerData.Messages</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>SFA</Authors>
+    <Description>Messages for Learner Data API</Description>
+    <PackageTags>sfa;das;learner;data;messages</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/SkillsFundingAgency/das-learner-data-api</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/SkillsFundingAgency/das-learner-data-api</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+</Project>
