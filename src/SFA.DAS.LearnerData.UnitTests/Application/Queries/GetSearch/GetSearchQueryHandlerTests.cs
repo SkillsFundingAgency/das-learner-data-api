@@ -28,7 +28,7 @@ public class GetSearchQueryHandlerTests
         learners.PageSize = query.PageSize.Value;
 
         repository
-            .Setup(x => x.Search(query.UkPrn, query.Page, query.PageSize, query.Limit, query.Offset, query.SortColumn, query.SortDescending, query.Filter, query.ExcludeApproved, It.IsAny<CancellationToken>())).ReturnsAsync(learners)
+            .Setup(x => x.Search(query.UkPrn, query.Page, query.PageSize, query.Limit, query.Offset, query.SortColumn, query.SortDescending, query.Filter, query.ExcludeApproved, query.StartMonth, query.StartYear, It.IsAny<CancellationToken>())).ReturnsAsync(learners)
             .Verifiable();
 
         repository

@@ -26,6 +26,9 @@ public class WhenIGetSearch
     {
         sender
             .Setup(x => x.Send(It.Is<GetSearchQuery>(ctx => ctx.UkPrn == query.UkPrn
+                                                                    && ctx.StartMonth == query.StartMonth
+                                                                    && ctx.StartYear == query.StartYear
+                                                                    && ctx.ExcludeApproved == query.ExcludeApproved
                                                                     && ctx.Page == query.Page
                                                                     && ctx.PageSize == query.PageSize
                                                                     && ctx.Limit == query.Limit
@@ -37,7 +40,7 @@ public class WhenIGetSearch
             .Setup(x => x.GetPageLinks(It.IsAny<PagedQuery>(), It.IsAny<PagedQueryResult<GetSearchResult>>())).Returns(new KeyValuePair<string, StringValues>())
             .Verifiable();
 
-        var result = await sut.Search(query.UkPrn, query.Page, query.PageSize, query.SortColumn, query.SortDescending, query.Filter, query.ExcludeApproved);
+        var result = await sut.Search(query.UkPrn, query.StartMonth, query.StartYear, query.Page, query.PageSize, query.SortColumn, query.SortDescending, query.Filter, query.ExcludeApproved);
         result.Should().NotBeNull();
 
         var okResult = result as OkObjectResult;

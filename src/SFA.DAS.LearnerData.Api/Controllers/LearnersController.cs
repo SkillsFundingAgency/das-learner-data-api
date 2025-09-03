@@ -26,6 +26,8 @@ public class LearnersController(
     [ProducesResponseType((int) HttpStatusCode.OK)]
     public async Task<IActionResult> Search(
         long ukprn,
+        [FromQuery] int? startMonth,
+        [FromQuery] int startYear,
         [FromQuery] int page = 1,
         [FromQuery] int? pageSize = 20,
         [FromQuery] string sortColumn = "",
@@ -33,7 +35,7 @@ public class LearnersController(
         [FromQuery] string filter = "",
         [FromQuery] bool excludeApproved = true)
     {
-        var query = new GetSearchQuery(ukprn, page, pageSize, sortColumn, sortDescending, filter, excludeApproved);
+        var query = new GetSearchQuery(ukprn, page, pageSize, sortColumn, sortDescending, filter, excludeApproved, startMonth, startYear);
 
         var result = await sender.Send(query);
 
