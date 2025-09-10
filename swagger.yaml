@@ -26,7 +26,7 @@ paths:
 
   /providers/{ukprn}/learners:
     get:
-      summary: Returns a paged list of learners for this provider for the academic year
+      summary: Returns a paged list of learners for this provider, filtered in query
       parameters:
         - name: ukprn
           in: path
@@ -38,6 +38,18 @@ paths:
           in: query
           required: false
           example: 2425
+          schema:
+            type: integer
+        - name: startYear
+          in: query
+          required: false
+          example: 2025
+          schema:
+            type: integer
+        - name: startMonth
+          in: query
+          required: false
+          example: 01
           schema:
             type: integer
         - name: page
@@ -166,7 +178,27 @@ paths:
           $ref: '#/components/responses/learnerResponse'  
         '404':
           $ref: '#/components/responses/notFound'
-     
+   
+  /api/providers/{ukprn}/learners/{uln}:
+    get:
+      summary: Returns a list of record for a specific uln for this provider 
+      parameters:
+        - name: ukprn
+          in: path
+          required: true
+          description: The UK Provider Reference Number for the provider entering this learner
+          schema:
+            type: string
+        - name: uln
+          in: path
+          required: true
+          example: 2425
+          schema:
+            type: integer
+      responses:
+        '200':
+          $ref: '#/components/responses/learnersResponse' 
+  
 components:  
   headers:
     location:
@@ -197,9 +229,14 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/pagedLearners'
+            $ref: '#/components/schemas/pagedLearners'
+        
+    learnersResponse:
+      description: A learners response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/learners'
 
     createUpdateResponse:
       description: The update
@@ -264,12 +301,10 @@ components:
         - message
     
     pagedLearners:
+      allOf:
+        - $ref: "#/components/schemas/learners"
       type: object
       properties:
-        learners:
-          type: array
-          items:
-              $ref: '#/components/schemas/learnerResponse'
         lastSubmssionDate: 
           description: This is the latest time that we have had an entry into the system. |
             This date will be driven from the date the event was received from SLD
@@ -292,8 +327,16 @@ components:
         - page
         - total
         - pageSize  
-        - totalPages  
-    
+        - totalPages
+        
+    learners:
+      type: object
+      properties:
+        learners:
+          type: array
+          items:
+              $ref: '#/components/schemas/learnerResponse'
+
     healthcheckResults:
       type: array
       items:
@@ -389,6 +432,8 @@ components:
             id:
               type: string
               format: guid
+            apprenticeshipId:
+              type: string
             createdDate:
               type: string
               format: date
