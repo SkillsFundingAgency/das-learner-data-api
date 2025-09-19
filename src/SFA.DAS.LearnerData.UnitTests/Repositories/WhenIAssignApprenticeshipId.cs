@@ -217,4 +217,44 @@ public class WhenIAssignApprenticeshipId
         var results = response.Data.ToList();
         results.Count.Should().Be(1);
     }
+
+    [Test, MoqAutoData]
+    public async Task When_Learner_Search_Should_Include_Learners_When_StartDate_Is_Less_Than_MaxStartDate(
+       long providerId,
+       List<Learner> learners)
+    {
+        learners.ForEach(x =>
+        {
+            x.Ukprn = providerId;
+            x.StartDate = new DateTime(2025, 05, 01);
+        });
+        learners[0].StartDate = new DateTime(2025, 11, 02);
+
+        _dbContext.Learners.AddRange(learners);
+        await _dbContext.SaveChangesAsync();
+         
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, null, 2025, "2025-12-01", _cancellationToken);
+        var results = response.Data.ToList();
+        results.Count.Should().Be(learners.Count);
+    }
+
+    [Test, MoqAutoData]
+    public async Task When_Learner_Search_Should_Exclude_Learners_When_StartDate_Is_Grater_Than_MaxStartDate(
+       long providerId,
+       List<Learner> learners)
+    {
+        learners.ForEach(x =>
+        {
+            x.Ukprn = providerId;
+            x.StartDate = new DateTime(2025, 05, 01);
+        });
+        learners[0].StartDate = new DateTime(2025, 12, 06);
+
+        _dbContext.Learners.AddRange(learners);
+        await _dbContext.SaveChangesAsync();
+
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, null, 2025, "2025-12-01", _cancellationToken);
+        var results = response.Data.ToList();
+        results.Count.Should().Be(learners.Count-1);
+    }
 }
