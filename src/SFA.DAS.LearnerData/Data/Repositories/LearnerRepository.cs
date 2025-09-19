@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Data.Entities;
+using System.Globalization;
 using System.Linq.Dynamic.Core;
-using Microsoft.Extensions.Logging;
 
 namespace SFA.DAS.LearnerData.Data.Repositories;
 
@@ -14,7 +15,7 @@ public interface ILearnerRepository
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
-        string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear,
+        string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate,
         CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
     Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
@@ -47,7 +48,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
     }
 
     public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn, 
-        bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, CancellationToken cancellationToken)
+        bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
@@ -81,6 +82,15 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         {
             sortColumn = nameof(Learner.StartDate);
             sortDescending = true;
+        }
+
+        if (!string.IsNullOrEmpty(maxStartDate))
+        {
+            DateTime maxDate;
+            if (DateTime.TryParse(maxStartDate, CultureInfo.InvariantCulture, out maxDate))
+            {
+                query = query.Where(x => x.StartDate < maxDate);
+            }
         }
 
         query = query.OrderBy(GetOrderNamesByField(sortColumn, sortDescending));

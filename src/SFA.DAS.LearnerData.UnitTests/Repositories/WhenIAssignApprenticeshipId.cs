@@ -131,7 +131,7 @@ public class WhenIAssignApprenticeshipId
         _dbContext.Learners.AddRange(learners);
         await _dbContext.SaveChangesAsync();
 
-        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", true, null, 2025, _cancellationToken);
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", true, null, 2025, null, _cancellationToken);
         var results = response.Data.ToList();
         results.Count.Should().Be(1);
         results.First().Should().BeEquivalentTo(learners[0]);
@@ -152,7 +152,7 @@ public class WhenIAssignApprenticeshipId
         _dbContext.Learners.AddRange(learners);
         await _dbContext.SaveChangesAsync();
 
-        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, null, 2025, _cancellationToken);
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, null, 2025, null, _cancellationToken);
         var results = response.Data.ToList();
         results.Count.Should().Be(3);
     }
@@ -172,7 +172,7 @@ public class WhenIAssignApprenticeshipId
         _dbContext.Learners.AddRange(learners);
         await _dbContext.SaveChangesAsync();
 
-        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, null, 2025, _cancellationToken);
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, null, 2025, null, _cancellationToken);
         var results = response.Data.ToList();
         results.Count.Should().Be(3);
     }
@@ -192,7 +192,7 @@ public class WhenIAssignApprenticeshipId
         _dbContext.Learners.AddRange(learners);
         await _dbContext.SaveChangesAsync();
 
-        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, null, 2024, _cancellationToken);
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, null, 2024, null, _cancellationToken);
         var results = response.Data.ToList();
         results.Count.Should().Be(0);
     }
@@ -213,7 +213,7 @@ public class WhenIAssignApprenticeshipId
         _dbContext.Learners.AddRange(learners);
         await _dbContext.SaveChangesAsync();
 
-        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, 01, 2025, _cancellationToken);
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", false, 01, 2025, null, _cancellationToken);
         var results = response.Data.ToList();
         results.Count.Should().Be(1);
     }
