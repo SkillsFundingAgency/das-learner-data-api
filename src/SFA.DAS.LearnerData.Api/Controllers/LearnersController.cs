@@ -7,6 +7,7 @@ using SFA.DAS.LearnerData.Api.Models.Requests;
 using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
+using SFA.DAS.LearnerData.Application.Commands.StopBackApprenticeship;
 using SFA.DAS.LearnerData.Application.Queries.GetLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
 using SFA.DAS.LearnerData.Application.Queries.GetSearch;
@@ -153,6 +154,36 @@ public class LearnersController(
         catch (Exception ex)
         {
             logger.LogError(ex, "Error trying to assign apprenticeship Id {0} to Learner Data record {1}", request.ApprenticeshipId, id);
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+
+        return Ok();
+    }
+
+    [HttpPatch]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [Route("{id:long}")]
+    public async Task<IActionResult> PatchApprenticeshipId(long id, [FromBody] PatchLearnerDataApprenticeshipIdRequest request)
+    {
+        try
+        {
+            var command = new StopBackApprenticeshipCommand
+            {
+                LearnerDataId = id,
+                ApprenticeshipId = request.ApprenticeshipId,
+            };
+
+            await sender.Send(command);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            logger.LogError(ex, ex.Message);
+            return NotFound();
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error trying to patch apprenticeship Id {0} to null for learnerDataId {0}", request.ApprenticeshipId, id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
