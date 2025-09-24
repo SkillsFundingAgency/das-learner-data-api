@@ -4,7 +4,6 @@ using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Data.Entities;
 using System.Linq.Dynamic.Core;
 using Microsoft.Extensions.Logging;
-using SFA.DAS.LearnerData.Application.Commands.StopBackApprenticeship;
 
 namespace SFA.DAS.LearnerData.Data.Repositories;
 
@@ -20,7 +19,6 @@ public interface ILearnerRepository
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
     Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
     Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken);
-    Task StopBackApprenticeshipId(StopBackApprenticeshipCommand request, CancellationToken cancellationToken);
 }
 
 public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRepository> logger) : ILearnerRepository
@@ -28,11 +26,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
     public async Task<Learner?> GetById(long id, CancellationToken cancellationToken)
     {
         return await dbContext.Learners.FindAsync(keyValues: [id], cancellationToken);
-    }
-
-    public async Task<Learner?> GetByApprenticeshipId(long apprenticeshipId, long learnerDataId,CancellationToken cancellationToken)
-    {
-        return await dbContext.Learners.SingleOrDefaultAsync(l=>l.Id == learnerDataId && l.ApprenticeshipId == apprenticeshipId);
     }
 
     public async Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken)
@@ -53,7 +46,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn, 
+    public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn,
         bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
@@ -210,23 +203,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         }
 
         learner.ApprenticeshipId = request.ApprenticeshipId;
-        await dbContext.SaveChangesAsync(cancellationToken);
-    }
-
-
-    public async Task StopBackApprenticeshipId(StopBackApprenticeshipCommand request, CancellationToken cancellationToken)
-    {
-        var learner = await GetByApprenticeshipId(request.ApprenticeshipId, request.LearnerDataId, cancellationToken);
-        if (learner == null)
-        {
-            throw new KeyNotFoundException($"Learner with ApprenticeShipId {request.ApprenticeshipId} and LearnerDataId {request.LearnerDataId} not found.");
-        }
-        if (learner.Uln != request.uln)
-        {
-            throw new KeyNotFoundException($"Learner with ApprenticeShipId {request.ApprenticeshipId} not found for LearnerDataId {request.LearnerDataId}");
-        }
-        
-        learner.ApprenticeshipId = null;
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
