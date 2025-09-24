@@ -46,7 +46,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn,
+    public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn, 
         bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners

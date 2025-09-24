@@ -23,7 +23,7 @@ public class LearnersController(
     ILogger<LearnersController> logger) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.OK)]
     public async Task<IActionResult> Search(
         long ukprn,
         [FromQuery] int? startMonth,
@@ -47,7 +47,7 @@ public class LearnersController(
     }
 
     [HttpPut]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int) HttpStatusCode.Created)]
     [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode}")]
     public async Task<IActionResult> Save(long ukprn, long uln, int academicYear, [FromBody] SaveLearnerRequest request)
     {
@@ -83,7 +83,7 @@ public class LearnersController(
 
         if (response.Result == SaveLearnerResult.Created)
         {
-            return CreatedAtAction(nameof(GetById), new { ukprn, id = response.Id }, command);
+            return CreatedAtAction(nameof(GetById), new {ukprn, id = response.Id}, command);
         }
 
         var location = $"{Request?.Scheme}://{Request?.Host}/providers/{request.Ukprn}/learners/{response.Id}";
@@ -93,8 +93,8 @@ public class LearnersController(
     }
 
     [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int) HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
     [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode:int}")]
     public async Task<IActionResult> GetSingle(long ukprn, long uln, int academicYear, int standardCode)
     {
@@ -111,8 +111,8 @@ public class LearnersController(
     }
 
     [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int) HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.NotFound)]
     [Route("{id:long}")]
     public async Task<IActionResult> GetById(long ukprn, long id)
     {
@@ -129,7 +129,7 @@ public class LearnersController(
     }
 
     [HttpPatch]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int) HttpStatusCode.OK)]
     [Route("{id:long}/apprenticeshipId")]
     public async Task<IActionResult> PatchApprenticeshipId(long ukprn, long id, [FromBody] PatchLearnerDataApprenticeshipIdRequest request)
     {
