@@ -51,4 +51,30 @@ public class Learner : Entity
             PlannedOTJTrainingHours = command.PlannedOTJTrainingHours
         };
     }
+
+    public static Learner From(SaveLearnerNewCommand command)
+    {
+        return new Learner
+        {
+            Uln = command.Uln,
+            Ukprn = command.Ukprn,
+            FirstName = command.FirstName,
+            LastName = command.LastName,
+            Email = command.Email,
+            Dob = command.Dob,
+            AcademicYear = command.AcademicYear,
+            StartDate = command.StartDate,
+            PlannedEndDate = command.PlannedEndDate,
+            PercentageLearningToBeDelivered = command.PercentageLearningToBeDelivered,
+            EpaoPrice = command.EpaoPrice,
+            TrainingPrice = command.TrainingPrice,
+            AgreementId = command.AgreementId,
+            ConsumerReference = command.ConsumerReference,
+            CorrelationId = command.CorrelationId,
+            ReceivedDate = command.ReceivedDate,
+            StandardCode = command.StandardCode,
+            IsFlexiJob = command.IsFlexiJob,
+            PlannedOTJTrainingHours = command.PlannedOTJTrainingHours
+        };
+    }
 }

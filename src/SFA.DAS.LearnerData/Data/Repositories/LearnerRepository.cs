@@ -11,6 +11,7 @@ public interface ILearnerRepository
 {
     Task<Learner?> GetById(long id, CancellationToken cancellationToken);
     Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
+    Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
@@ -18,6 +19,7 @@ public interface ILearnerRepository
         CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
     Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
+    Task<SaveLearnerNewCommandResponse> Save(SaveLearnerNewCommand request, CancellationToken cancellationToken);
     Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken);
 }
 
@@ -35,6 +37,14 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
                                              && learner.Uln == uln
                                              && learner.StandardCode == standardCode
                                              && learner.AcademicYear == academicYear
+                , cancellationToken);
+    }
+
+    public async Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken)
+    {
+        return await dbContext.Learners
+            .FirstOrDefaultAsync(learner => learner.Ukprn == ukPrn
+                                             && learner.Uln == uln
                 , cancellationToken);
     }
 
@@ -183,6 +193,50 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return new SaveLearnerCommandResponse { Id = existingLearner.Id, Result = SaveLearnerResult.Updated };
+    }
+
+    public async Task<SaveLearnerNewCommandResponse> Save(SaveLearnerNewCommand request, CancellationToken cancellationToken)
+    {
+        var existingLearner = await Get(request.Ukprn, request.Uln, cancellationToken);
+
+        if (existingLearner == null)
+        {
+            var learner = Learner.From(request);
+            await dbContext.Learners.AddAsync(learner, cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
+
+            return new SaveLearnerNewCommandResponse { Id = learner.Id, Result = SaveLearnerNewResult.Created };
+        }
+
+        if (existingLearner.ApprenticeshipId != null)
+        {
+            logger.LogError("Learner record {0} cannot be updated as it already has an ApprenticeshipId assigned", existingLearner.Id);
+            throw new InvalidOperationException($"Learner with ID {existingLearner.Id} already has ApprenticeshipId {existingLearner.ApprenticeshipId} assigned. Cannot update.");
+        }
+
+        existingLearner.Uln = request.Uln;
+        existingLearner.Ukprn = request.Ukprn;
+        existingLearner.FirstName = request.FirstName;
+        existingLearner.LastName = request.LastName;
+        existingLearner.Email = request.Email;
+        existingLearner.Dob = request.Dob;
+        existingLearner.AcademicYear = request.AcademicYear;
+        existingLearner.StartDate = request.StartDate;
+        existingLearner.PlannedEndDate = request.PlannedEndDate;
+        existingLearner.PercentageLearningToBeDelivered = request.PercentageLearningToBeDelivered;
+        existingLearner.EpaoPrice = request.EpaoPrice;
+        existingLearner.TrainingPrice = request.TrainingPrice;
+        existingLearner.AgreementId = request.AgreementId;
+        existingLearner.ConsumerReference = request.ConsumerReference;
+        existingLearner.CorrelationId = request.CorrelationId;
+        existingLearner.ReceivedDate = request.ReceivedDate;
+        existingLearner.StandardCode = request.StandardCode;
+        existingLearner.IsFlexiJob = request.IsFlexiJob;
+        existingLearner.PlannedOTJTrainingHours = request.PlannedOTJTrainingHours;
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return new SaveLearnerNewCommandResponse { Id = existingLearner.Id, Result = SaveLearnerNewResult.Updated };
     }
 
     public async Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken)
