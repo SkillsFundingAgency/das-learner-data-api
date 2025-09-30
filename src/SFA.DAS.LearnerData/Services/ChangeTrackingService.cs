@@ -49,6 +49,11 @@ public class ChangeTrackingService : IChangeTrackingService
             changes.Add(new TrainingPriceChange { OldValue = existingLearner.TrainingPrice, NewValue = newLearner.TrainingPrice });
         }
 
+        if (!Equals(existingLearner.StandardCode, newLearner.StandardCode))
+        {
+            changes.Add(new StandardCodeChange { OldValue = existingLearner.StandardCode, NewValue = newLearner.StandardCode });
+        }
+
         return new ChangeSummary
         {
             Changes = changes
