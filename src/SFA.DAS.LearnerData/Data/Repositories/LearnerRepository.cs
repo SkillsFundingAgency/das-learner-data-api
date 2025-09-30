@@ -262,23 +262,23 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
     private bool AreLearnerRecordsIdentical(Learner existingLearner, SaveLearnerNewCommand request)
     {
-        if (existingLearner.Uln == request.Uln ||
-            existingLearner.Ukprn == request.Ukprn ||
-            existingLearner.FirstName == request.FirstName ||
-            existingLearner.LastName == request.LastName ||
-            existingLearner.Email == request.Email ||
-            existingLearner.Dob == request.Dob ||
-            existingLearner.AcademicYear == request.AcademicYear ||
-            existingLearner.StartDate == request.StartDate ||
-            existingLearner.PlannedEndDate == request.PlannedEndDate ||
-            existingLearner.PercentageLearningToBeDelivered == request.PercentageLearningToBeDelivered ||
-            existingLearner.EpaoPrice == request.EpaoPrice ||
-            existingLearner.TrainingPrice == request.TrainingPrice ||
-            existingLearner.AgreementId == request.AgreementId ||
-            existingLearner.CorrelationId == request.CorrelationId ||
-            existingLearner.ReceivedDate == request.ReceivedDate ||
-            existingLearner.StandardCode == request.StandardCode ||
-            existingLearner.IsFlexiJob == request.IsFlexiJob ||
+        if (existingLearner.Uln == request.Uln &&
+            existingLearner.Ukprn == request.Ukprn &&
+            existingLearner.FirstName == request.FirstName &&
+            existingLearner.LastName == request.LastName &&
+            existingLearner.Email == request.Email &&
+            existingLearner.Dob == request.Dob &&
+            existingLearner.AcademicYear == request.AcademicYear &&
+            existingLearner.StartDate == request.StartDate &&
+            existingLearner.PlannedEndDate == request.PlannedEndDate &&
+            existingLearner.PercentageLearningToBeDelivered == request.PercentageLearningToBeDelivered &&
+            existingLearner.EpaoPrice == request.EpaoPrice &&
+            existingLearner.TrainingPrice == request.TrainingPrice &&
+            existingLearner.AgreementId == request.AgreementId &&
+            existingLearner.CorrelationId == request.CorrelationId &&
+            existingLearner.ReceivedDate == request.ReceivedDate &&
+            existingLearner.StandardCode == request.StandardCode &&
+            existingLearner.IsFlexiJob == request.IsFlexiJob &&
             existingLearner.PlannedOTJTrainingHours == request.PlannedOTJTrainingHours)
         {
             return true;
@@ -296,7 +296,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             existingLearner.Dob != request.Dob ||            
             existingLearner.StartDate != request.StartDate ||
             existingLearner.PlannedEndDate != request.PlannedEndDate ||
-            existingLearner.PercentageLearningToBeDelivered != request.PercentageLearningToBeDelivered ||
+            existingLearner.PercentageLearningToBeDelivered != request.PercentageLearningToBeDelivered || ///???
             existingLearner.EpaoPrice != request.EpaoPrice ||
             existingLearner.TrainingPrice != request.TrainingPrice ||
             existingLearner.AgreementId != request.AgreementId ||
