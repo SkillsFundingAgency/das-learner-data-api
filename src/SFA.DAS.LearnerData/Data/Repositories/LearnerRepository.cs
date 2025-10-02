@@ -288,12 +288,10 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
     private bool AreLearnerRecordsMateriallyDifferent(Learner existingLearner, SaveLearnerNewCommand request)
     {
-        if (existingLearner.Uln != request.Uln ||
-            existingLearner.Ukprn != request.Ukprn ||
-            existingLearner.FirstName != request.FirstName ||
+        if (existingLearner.FirstName != request.FirstName ||
             existingLearner.LastName != request.LastName ||
             existingLearner.Email != request.Email ||
-            existingLearner.Dob != request.Dob ||            
+            existingLearner.Dob != request.Dob ||
             existingLearner.StartDate != request.StartDate ||
             existingLearner.PlannedEndDate != request.PlannedEndDate ||
             existingLearner.PercentageLearningToBeDelivered != request.PercentageLearningToBeDelivered || ///???
