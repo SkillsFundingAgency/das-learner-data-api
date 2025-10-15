@@ -1,6 +1,7 @@
 using MediatR;
 using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Data.Repositories;
+using SFA.DAS.LearnerData.Messages;
 using SFA.DAS.LearnerData.Services;
 
 namespace SFA.DAS.LearnerData.Application.Commands.SaveLearner;
@@ -44,7 +45,18 @@ public class SaveLearnerNewCommandHandler(
             return new SaveLearnerNewCommandResponse {Id = existingLearner.Id, Result = SaveLearnerNewResult.NotNeeded};
         }
 
-        return await repository.UpdateLearner(existingLearner, request, cancellationToken);
+        var response = await repository.UpdateLearner(existingLearner, request, cancellationToken);
+
+        if (changeSummary.HasLearnerChanges)
+        {
+            var @event = new LearnerDataUpdatedEvent
+            {
+                LearnerId = response.Id,
+                ChangedAt = DateTime.UtcNow
+            };
+
+            await eventPublisher.PublishLearnerDataUpdatedEventAsync(@event);
+        }
 
         bool ApprovedLearnerRecordHasBeenMateriallyUpdated() => changeSummary.HasMaterialChanges && existingLearner.ApprenticeshipId != null;
         bool ApprovedLearnerRecordHasNotBeenMateriallyUpdated() => !changeSummary.HasMaterialChanges && existingLearner.ApprenticeshipId != null;
