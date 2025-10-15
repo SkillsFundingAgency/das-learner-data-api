@@ -58,6 +58,8 @@ public class SaveLearnerNewCommandHandler(
             await eventPublisher.PublishLearnerDataUpdatedEventAsync(@event);
         }
 
+        return response;
+
         bool ApprovedLearnerRecordHasBeenMateriallyUpdated() => changeSummary.HasMaterialChanges && existingLearner.ApprenticeshipId != null;
         bool ApprovedLearnerRecordHasNotBeenMateriallyUpdated() => !changeSummary.HasMaterialChanges && existingLearner.ApprenticeshipId != null;
     }
