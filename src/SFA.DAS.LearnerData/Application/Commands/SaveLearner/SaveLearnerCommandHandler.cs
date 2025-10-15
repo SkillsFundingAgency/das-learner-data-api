@@ -39,7 +39,7 @@ public class SaveLearnerCommandHandler(
             var changeSummary = changeTrackingService.DetectChanges(existingLearner, updatedLearner);
             response = await repository.Save(request, cancellationToken);
             
-            if (changeSummary.HasChanges)
+            if (changeSummary.HasLearnerChanges)
             {
                 var @event = new LearnerDataUpdatedEvent
                 {

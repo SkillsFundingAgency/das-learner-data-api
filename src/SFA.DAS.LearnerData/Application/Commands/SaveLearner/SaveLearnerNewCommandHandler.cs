@@ -1,7 +1,6 @@
 using MediatR;
 using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Data.Repositories;
-using SFA.DAS.LearnerData.Messages;
 using SFA.DAS.LearnerData.Services;
 
 namespace SFA.DAS.LearnerData.Application.Commands.SaveLearner;
@@ -9,7 +8,8 @@ namespace SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 public enum SaveLearnerNewResult
 {
     Created,
-    Updated
+    Updated,
+    NotNeeded
 }
 
 public class SaveLearnerNewCommandResponse
@@ -25,32 +25,28 @@ public class SaveLearnerNewCommandHandler(
 {
     public async Task<SaveLearnerNewCommandResponse> Handle(SaveLearnerNewCommand request, CancellationToken cancellationToken)
     {
-        var response = new SaveLearnerNewCommandResponse();
         var existingLearner = await repository.Get(request.Ukprn, request.Uln, cancellationToken);
 
         if (existingLearner == null)
         {
-            response = await repository.Save(request, cancellationToken);
-        }
-        else
-        {
-            var updatedLearner = Learner.From(request);
-            
-            var changeSummary = changeTrackingService.DetectChanges(existingLearner, updatedLearner);
-            response = await repository.Save(request, cancellationToken);
-            
-            if (changeSummary.HasChanges)
-            {
-                var @event = new LearnerDataUpdatedEvent
-                {
-                    LearnerId = response.Id,
-                    ChangedAt = DateTime.UtcNow
-                };
-                
-                await eventPublisher.PublishLearnerDataUpdatedEventAsync(@event);
-            }
+            return await repository.AddLearner(request, cancellationToken);
         }
 
-        return response;
+        var updatedLearner = Learner.From(request);
+        var changeSummary = changeTrackingService.DetectChanges(existingLearner, updatedLearner);
+
+        if (ApprovedLearnerRecordHasBeenMateriallyUpdated())
+        {
+            return await repository.AddLearner(request, cancellationToken);
+        }
+        if (ApprovedLearnerRecordHasNotBeenMateriallyUpdated())
+        {
+            return new SaveLearnerNewCommandResponse {Id = existingLearner.Id, Result = SaveLearnerNewResult.NotNeeded};
+        }
+
+        return await repository.UpdateLearner(existingLearner, request, cancellationToken);
+
+        bool ApprovedLearnerRecordHasBeenMateriallyUpdated() => changeSummary.HasMaterialChanges && existingLearner.ApprenticeshipId != null;
+        bool ApprovedLearnerRecordHasNotBeenMateriallyUpdated() => !changeSummary.HasMaterialChanges && existingLearner.ApprenticeshipId != null;
     }
 }
