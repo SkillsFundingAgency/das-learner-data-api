@@ -58,7 +58,7 @@ public class ChangeSummaryTests
         };
 
         // Act & Assert
-        changeSummary.HasChanges.Should().BeTrue();
+        changeSummary.HasLearnerChanges.Should().BeTrue();
     }
 
     [Test]
@@ -68,7 +68,7 @@ public class ChangeSummaryTests
         var changeSummary = new ChangeSummary { Changes = [] };
 
         // Act & Assert
-        changeSummary.HasChanges.Should().BeFalse();
+        changeSummary.HasLearnerChanges.Should().BeFalse();
     }
 
     [Test]

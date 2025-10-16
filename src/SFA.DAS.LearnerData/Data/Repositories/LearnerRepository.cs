@@ -19,7 +19,8 @@ public interface ILearnerRepository
         CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
     Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
-    Task<SaveLearnerNewCommandResponse> Save(SaveLearnerNewCommand request, CancellationToken cancellationToken);
+    Task<SaveLearnerNewCommandResponse> AddLearner(SaveLearnerNewCommand request, CancellationToken cancellationToken);
+    Task<SaveLearnerNewCommandResponse> UpdateLearner(Learner existingLearner, SaveLearnerNewCommand request, CancellationToken cancellationToken);
     Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken);
 }
 
@@ -42,7 +43,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
     public async Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken)
     {
-        return await dbContext.Learners
+        return await dbContext.Learners.OrderBy(x=>x.Ukprn).ThenBy(x=>x.Uln).ThenByDescending(x=>x.Id)
             .FirstOrDefaultAsync(learner => learner.Ukprn == ukPrn
                                              && learner.Uln == uln
                 , cancellationToken);
@@ -195,35 +196,22 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         return new SaveLearnerCommandResponse { Id = existingLearner.Id, Result = SaveLearnerResult.Updated };
     }
 
-    public async Task<SaveLearnerNewCommandResponse> Save(SaveLearnerNewCommand request, CancellationToken cancellationToken)
+    public async Task<SaveLearnerNewCommandResponse> AddLearner(SaveLearnerNewCommand request, CancellationToken cancellationToken)
     {
-        var existingLearner = await Get(request.Ukprn, request.Uln, cancellationToken);
+        var learner = Learner.From(request);
+        await dbContext.Learners.AddAsync(learner, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
 
-        if (existingLearner == null)
-        {
-            return await CreateLearnerRecord(request, cancellationToken);
-        }
+        return new SaveLearnerNewCommandResponse { Id = learner.Id, Result = SaveLearnerNewResult.Created };
+    }
+
+    public async Task<SaveLearnerNewCommandResponse> UpdateLearner(Learner existingLearner, SaveLearnerNewCommand request, CancellationToken cancellationToken)
+    {
 
         if (existingLearner.ApprenticeshipId != null)
         {
-            var identicalRecords = AreLearnerRecordsIdentical(existingLearner, request);
-            if (identicalRecords)
-            {
-                logger.LogInformation("Learner record {0} not updated as incoming record is identical", existingLearner.Id);
-                //?? return new result state
-                //return new SaveLearnerNewCommandResponse { Id = existingLearner.Id, Result = SaveLearnerNewResult.Updated };
-            }
-            else
-            {
-                var materiallyDifferentRecords = AreLearnerRecordsMateriallyDifferent(existingLearner, request);
-                if (materiallyDifferentRecords)
-                {
-                    return await CreateLearnerRecord(request, cancellationToken);
-                }
-            }
-
-            //    logger.LogError("Learner record {0} cannot be updated as it already has an ApprenticeshipId assigned", existingLearner.Id);
-            //    throw new InvalidOperationException($"Learner with ID {existingLearner.Id} already has ApprenticeshipId {existingLearner.ApprenticeshipId} assigned. Cannot update.");
+            logger.LogError("Learner record {0} cannot be updated as it already has an ApprenticeshipId assigned", existingLearner.Id);
+            throw new InvalidOperationException($"Learner with ID {existingLearner.Id} already has ApprenticeshipId {existingLearner.ApprenticeshipId} assigned. Cannot update.");
         }
 
         existingLearner.Uln = request.Uln;
@@ -249,62 +237,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return new SaveLearnerNewCommandResponse { Id = existingLearner.Id, Result = SaveLearnerNewResult.Updated };
-    }
-
-    private async Task<SaveLearnerNewCommandResponse> CreateLearnerRecord(SaveLearnerNewCommand request, CancellationToken cancellationToken)
-    {
-        var learner = Learner.From(request);
-        await dbContext.Learners.AddAsync(learner, cancellationToken);
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        return new SaveLearnerNewCommandResponse { Id = learner.Id, Result = SaveLearnerNewResult.Created };
-    }
-
-    private bool AreLearnerRecordsIdentical(Learner existingLearner, SaveLearnerNewCommand request)
-    {
-        if (existingLearner.Uln == request.Uln &&
-            existingLearner.Ukprn == request.Ukprn &&
-            existingLearner.FirstName == request.FirstName &&
-            existingLearner.LastName == request.LastName &&
-            existingLearner.Email == request.Email &&
-            existingLearner.Dob == request.Dob &&
-            existingLearner.AcademicYear == request.AcademicYear &&
-            existingLearner.StartDate == request.StartDate &&
-            existingLearner.PlannedEndDate == request.PlannedEndDate &&
-            existingLearner.PercentageLearningToBeDelivered == request.PercentageLearningToBeDelivered &&
-            existingLearner.EpaoPrice == request.EpaoPrice &&
-            existingLearner.TrainingPrice == request.TrainingPrice &&
-            existingLearner.AgreementId == request.AgreementId &&
-            existingLearner.CorrelationId == request.CorrelationId &&
-            existingLearner.ReceivedDate == request.ReceivedDate &&
-            existingLearner.StandardCode == request.StandardCode &&
-            existingLearner.IsFlexiJob == request.IsFlexiJob &&
-            existingLearner.PlannedOTJTrainingHours == request.PlannedOTJTrainingHours)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    private bool AreLearnerRecordsMateriallyDifferent(Learner existingLearner, SaveLearnerNewCommand request)
-    {
-        if (existingLearner.FirstName != request.FirstName ||
-            existingLearner.LastName != request.LastName ||
-            existingLearner.Email != request.Email ||
-            existingLearner.Dob != request.Dob ||
-            existingLearner.StartDate != request.StartDate ||
-            existingLearner.PlannedEndDate != request.PlannedEndDate ||
-            existingLearner.PercentageLearningToBeDelivered != request.PercentageLearningToBeDelivered || ///???
-            existingLearner.EpaoPrice != request.EpaoPrice ||
-            existingLearner.TrainingPrice != request.TrainingPrice ||
-            existingLearner.AgreementId != request.AgreementId ||
-            existingLearner.StandardCode != request.StandardCode ||
-            existingLearner.IsFlexiJob != request.IsFlexiJob ||
-            existingLearner.PlannedOTJTrainingHours != request.PlannedOTJTrainingHours)
-        {
-            return true;
-        }
-        return false;
     }
 
     public async Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken)
