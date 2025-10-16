@@ -35,7 +35,9 @@ public class GetAllLearnersResponse
                 ReceivedDate = item.ReceivedDate,
                 StandardCode = item.StandardCode,
                 IsFlexiJob = item.IsFlexiJob,
-                PlannedOTJTrainingHours = item.PlannedOTJTrainingHours
+                PlannedOTJTrainingHours = item.PlannedOTJTrainingHours,
+                CreatedDate = item.CreatedDate,
+                UpdatedDate = item.UpdatedDate
             }),
             TotalItems = result.TotalItems,
             TotalPages = result.TotalPages,
@@ -67,4 +69,6 @@ public class GetAllLearnersResponseItem
     public int StandardCode { get; set; }
     public bool IsFlexiJob { get; set; }
     public int PlannedOTJTrainingHours { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public DateTime? UpdatedDate { get; set; }
 }
