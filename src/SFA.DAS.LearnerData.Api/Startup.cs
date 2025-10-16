@@ -64,6 +64,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
         services.AddControllers();
 
         services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<SaveLearnerCommand>());
+        services.AddMediatR(x => x.RegisterServicesFromAssemblyContaining<SaveLearnerNewCommand>());
 
         var config = _configuration.GetSection<LearnerDataApi>();
 
