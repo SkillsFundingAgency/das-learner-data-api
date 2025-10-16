@@ -47,52 +47,6 @@ public class LearnersController(
     }
 
     [HttpPut]
-    [ProducesResponseType((int) HttpStatusCode.Created)]
-    [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode}")]
-    public async Task<IActionResult> Save(long ukprn, long uln, int academicYear, [FromBody] SaveLearnerRequest request)
-    {
-        if (ukprn != request.Ukprn | uln != request.Uln | academicYear != request.AcademicYear)
-        {
-            return BadRequest();
-        }
-
-        var command = new SaveLearnerCommand
-        {
-            Uln = request.Uln,
-            Ukprn = request.Ukprn,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email,
-            Dob = request.Dob,
-            AcademicYear = request.AcademicYear,
-            StartDate = request.StartDate,
-            PlannedEndDate = request.PlannedEndDate,
-            PercentageLearningToBeDelivered = request.PercentageLearningToBeDelivered,
-            EpaoPrice = request.EpaoPrice,
-            TrainingPrice = request.TrainingPrice,
-            AgreementId = request.AgreementId,
-            ConsumerReference = request.ConsumerReference,
-            CorrelationId = request.CorrelationId,
-            ReceivedDate = request.ReceivedDate,
-            StandardCode = request.StandardCode,
-            IsFlexiJob = request.IsFlexiJob,
-            PlannedOTJTrainingHours = request.PlannedOTJTrainingHours
-        };
-
-        var response = await sender.Send(command);
-
-        if (response.Result == SaveLearnerResult.Created)
-        {
-            return CreatedAtAction(nameof(GetById), new {ukprn, id = response.Id}, command);
-        }
-
-        var location = $"{Request?.Scheme}://{Request?.Host}/providers/{request.Ukprn}/learners/{response.Id}";
-        Response?.Headers.Add(new KeyValuePair<string, StringValues>("location", location));
-
-        return Ok();
-    }
-
-    [HttpPut]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [Route("{uln:long}")]
     public async Task<IActionResult> Save(long ukprn, long uln, [FromBody] SaveLearnerRequest request)
