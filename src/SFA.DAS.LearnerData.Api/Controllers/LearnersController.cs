@@ -7,7 +7,6 @@ using SFA.DAS.LearnerData.Api.Models.Requests;
 using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
-using SFA.DAS.LearnerData.Application.Queries.GetLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
 using SFA.DAS.LearnerData.Application.Queries.GetSearch;
 using SFA.DAS.LearnerData.Services;
@@ -90,24 +89,6 @@ public class LearnersController(
         Response?.Headers.Add(new KeyValuePair<string, StringValues>("location", location));
 
         return Ok();
-    }
-
-    [HttpGet]
-    [ProducesResponseType((int) HttpStatusCode.OK)]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
-    [Route("{uln:long}/academicyears/{academicYear:int}/standardcodes/{standardCode:int}")]
-    public async Task<IActionResult> GetSingle(long ukprn, long uln, int academicYear, int standardCode)
-    {
-        var query = new GetLearnerQuery(ukprn, uln, standardCode, academicYear);
-
-        var result = await sender.Send(query);
-
-        if (!result.Found)
-        {
-            return NotFound();
-        }
-
-        return Ok(GetLearnerResponse.MapFrom(result));
     }
 
     [HttpGet]
