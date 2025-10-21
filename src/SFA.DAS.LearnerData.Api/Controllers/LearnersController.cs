@@ -117,8 +117,10 @@ public class LearnersController(
     public async Task<IActionResult> GetById(long ukprn, long id)
     {
         var command = new GetLearnerByIdQuery(ukprn, id);
+        logger.LogInformation($"Get learner data from API for {id}");
 
         var result = await sender.Send(command);
+        logger.LogInformation($"Learener data for {id} issucessful :{result.Found}");
 
         if (!result.Found)
         {
