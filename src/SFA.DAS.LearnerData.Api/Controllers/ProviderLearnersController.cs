@@ -92,52 +92,6 @@ public class ProviderLearnersController(
         return Ok();
     }
 
-    [HttpPut]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
-    [Route("{uln:long}")]
-    public async Task<IActionResult> Save(long ukprn, long uln, [FromBody] SaveLearnerRequest request)
-    {
-        if (ukprn != request.Ukprn | uln != request.Uln)
-        {
-            return BadRequest();
-        }
-
-        var command = new SaveLearnerNewCommand
-        {
-            Uln = request.Uln,
-            Ukprn = request.Ukprn,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email,
-            Dob = request.Dob,
-            AcademicYear = request.AcademicYear,
-            StartDate = request.StartDate,
-            PlannedEndDate = request.PlannedEndDate,
-            PercentageLearningToBeDelivered = request.PercentageLearningToBeDelivered,
-            EpaoPrice = request.EpaoPrice,
-            TrainingPrice = request.TrainingPrice,
-            AgreementId = request.AgreementId,
-            ConsumerReference = request.ConsumerReference,
-            CorrelationId = request.CorrelationId,
-            ReceivedDate = request.ReceivedDate,
-            StandardCode = request.StandardCode,
-            IsFlexiJob = request.IsFlexiJob,
-            PlannedOTJTrainingHours = request.PlannedOTJTrainingHours
-        };
-
-        var response = await sender.Send(command);
-
-        if (response.Result == SaveLearnerNewResult.Created)
-        {
-            return CreatedAtAction(nameof(GetById), new { ukprn, id = response.Id }, command);
-        }
-
-        var location = $"{Request?.Scheme}://{Request?.Host}/providers/{request.Ukprn}/learners/{response.Id}";
-        Response?.Headers.Add(new KeyValuePair<string, StringValues>("location", location));
-
-        return Ok();
-    }
-
     [HttpGet]
     [ProducesResponseType((int) HttpStatusCode.OK)]
     [ProducesResponseType((int) HttpStatusCode.NotFound)]
@@ -201,6 +155,52 @@ public class ProviderLearnersController(
             logger.LogError(ex, "Error trying to assign apprenticeship Id {0} to Learner Data record {1}", request.ApprenticeshipId, id);
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
+
+        return Ok();
+    }
+
+	[HttpPut]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [Route("{uln:long}")]
+    public async Task<IActionResult> Save(long ukprn, long uln, [FromBody] SaveLearnerRequest request)
+    {
+        if (ukprn != request.Ukprn | uln != request.Uln)
+        {
+            return BadRequest();
+        }
+
+        var command = new SaveLearnerNewCommand
+        {
+            Uln = request.Uln,
+            Ukprn = request.Ukprn,
+            FirstName = request.FirstName,
+            LastName = request.LastName,
+            Email = request.Email,
+            Dob = request.Dob,
+            AcademicYear = request.AcademicYear,
+            StartDate = request.StartDate,
+            PlannedEndDate = request.PlannedEndDate,
+            PercentageLearningToBeDelivered = request.PercentageLearningToBeDelivered,
+            EpaoPrice = request.EpaoPrice,
+            TrainingPrice = request.TrainingPrice,
+            AgreementId = request.AgreementId,
+            ConsumerReference = request.ConsumerReference,
+            CorrelationId = request.CorrelationId,
+            ReceivedDate = request.ReceivedDate,
+            StandardCode = request.StandardCode,
+            IsFlexiJob = request.IsFlexiJob,
+            PlannedOTJTrainingHours = request.PlannedOTJTrainingHours
+        };
+
+        var response = await sender.Send(command);
+
+        if (response.Result == SaveLearnerNewResult.Created)
+        {
+            return CreatedAtAction(nameof(GetById), new { ukprn, id = response.Id }, command);
+        }
+
+        var location = $"{Request?.Scheme}://{Request?.Host}/providers/{request.Ukprn}/learners/{response.Id}";
+        Response?.Headers.Add(new KeyValuePair<string, StringValues>("location", location));
 
         return Ok();
     }

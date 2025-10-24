@@ -17,6 +17,7 @@ public interface ILearnerRepository
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
         string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear,
         CancellationToken cancellationToken);
+    Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
     Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
     Task<SaveLearnerNewCommandResponse> AddLearner(SaveLearnerNewCommand request, CancellationToken cancellationToken);
@@ -95,6 +96,36 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         }
 
         query = query.OrderBy(GetOrderNamesByField(sortColumn, sortDescending));
+
+        var totalItems = await query.CountAsync(cancellationToken);
+        var totalPages = (int)Math.Ceiling((double)totalItems / pageSize.GetValueOrDefault());
+
+        var result = await query
+            .Skip(offset)
+            .Take(limit)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<Learner>
+        {
+            Data = result,
+            TotalItems = totalItems,
+            TotalPages = totalPages,
+            PageSize = pageSize ?? int.MaxValue,
+            Page = page,
+        };
+    }
+
+    public async Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken)
+    {
+        var query = dbContext.Learners
+            .AsNoTracking();
+
+        if (excludeApproved)
+        {
+            query = query.Where(x => x.ApprenticeshipId == null);
+        }
+
+        query = query.OrderBy(x => x.Id);
 
         var totalItems = await query.CountAsync(cancellationToken);
         var totalPages = (int)Math.Ceiling((double)totalItems / pageSize.GetValueOrDefault());

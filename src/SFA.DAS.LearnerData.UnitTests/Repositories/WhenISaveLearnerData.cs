@@ -1,14 +1,14 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
+using SFA.DAS.LearnerData.Data;
 using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Data.Repositories;
-using SFA.DAS.LearnerData.Data;
-using Microsoft.Extensions.Logging;
 using SFA.DAS.Testing.AutoFixture;
-using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 
 namespace SFA.DAS.LearnerData.UnitTests.Repositories;
 
