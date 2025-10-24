@@ -16,10 +16,10 @@ namespace SFA.DAS.LearnerData.Api.Controllers;
 [Route("providers/{ukprn:long}/learners")]
 [ApiVersion("1.0")]
 [ApiController]
-public class LearnersController(
+public class ProviderLearnersController(
     ISender sender,
     IPagedLinkHeaderService pagedLinkHeaderService,
-    ILogger<LearnersController> logger) : ControllerBase
+    ILogger<ProviderLearnersController> logger) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType((int) HttpStatusCode.OK)]

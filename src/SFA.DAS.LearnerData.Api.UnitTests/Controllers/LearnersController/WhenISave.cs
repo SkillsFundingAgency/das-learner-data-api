@@ -20,7 +20,7 @@ public class WhenISave
         int academicYear,
         int id,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         request.Uln = uln;
@@ -40,7 +40,7 @@ public class WhenISave
         int academicYear,
         int id,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         request.Ukprn = ukprn;
@@ -60,7 +60,7 @@ public class WhenISave
         int academicYear,
         int id,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         request.Ukprn = ukprn;
@@ -111,7 +111,7 @@ public class WhenISave
         int academicYear,
         int id,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         request.Ukprn = ukprn;

@@ -19,7 +19,7 @@ public class WhenIPatchApprenticeshipId
         long ukprn,
         PatchLearnerDataApprenticeshipIdRequest request,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         sender
@@ -41,7 +41,7 @@ public class WhenIPatchApprenticeshipId
         long ukprn,
         PatchLearnerDataApprenticeshipIdRequest request,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         sender
@@ -63,7 +63,7 @@ public class WhenIPatchApprenticeshipId
         long ukprn,
         PatchLearnerDataApprenticeshipIdRequest request,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         sender
