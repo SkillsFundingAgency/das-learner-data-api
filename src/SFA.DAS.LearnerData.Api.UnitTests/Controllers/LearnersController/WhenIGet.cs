@@ -17,7 +17,7 @@ public class WhenIGet
         GetLearnerQuery query,
         GetLearnerResult queryResult,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         sender
@@ -41,7 +41,7 @@ public class WhenIGet
     public async Task Then_NotFound_Response_Is_Returned_When_Learner_Does_Not_Exist(
         GetLearnerQuery query,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         sender
