@@ -79,7 +79,6 @@ public class LearnersController(
         {
             logger.LogError(ex, ex.Message);
             return NotFound();
-
         }
         catch (Exception ex)
         {
