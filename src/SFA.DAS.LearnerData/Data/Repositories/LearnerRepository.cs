@@ -228,7 +228,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             throw new KeyNotFoundException($"Learner with ID {request.LearnerDataId} not found for UKPRN {request.Ukprn}");
         }
 
-        if (learner.ApprenticeshipId != null && learner.ApprenticeshipId != request.ApprenticeshipId)
+        if (learner.ApprenticeshipId != null && learner.ApprenticeshipId != request.ApprenticeshipId && request.ApprenticeshipId != null)
         {
             throw new InvalidOperationException($"Learner with ID {request.LearnerDataId} already has a different ApprenticeshipId assigned.");
         }

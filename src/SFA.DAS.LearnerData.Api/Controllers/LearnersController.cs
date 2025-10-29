@@ -1,13 +1,10 @@
-using System.Net;
 using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SFA.DAS.LearnerData.Api.Models.Requests;
 using SFA.DAS.LearnerData.Api.Models.Responses;
-using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Queries.GetAllLearners;
-using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
 using SFA.DAS.LearnerData.Services;
+using System.Net;
 
 namespace SFA.DAS.LearnerData.Api.Controllers;
 
@@ -37,55 +34,5 @@ public class LearnersController(
         Response?.Headers.Add(pageLinks);
 
         return Ok(GetAllLearnersResponse.MapFrom(result));
-    }
-
-    [HttpGet]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [Route("{id:long}")]
-    public async Task<IActionResult> GetById(long ukprn, long id)
-    {
-        var command = new GetLearnerByIdQuery(ukprn, id);
-        logger.LogInformation($"Get learner data from API for {id}");
-
-        var result = await sender.Send(command);
-        logger.LogInformation($"Learener data for {id} issucessful :{result.Found}");
-
-        if (!result.Found)
-        {
-            return new NotFoundResult();
-        }
-
-        return Ok(GetLearnerByIdResponse.MapFrom(result));
-    }
-
-    [HttpPatch]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [Route("{id:long}/apprenticeshipId")]
-    public async Task<IActionResult> PatchApprenticeshipId(long ukprn, long id, [FromBody] PatchLearnerDataApprenticeshipIdRequest request)
-    {
-        try
-        {
-            var command = new AssignApprenticeshipIdCommand
-            {
-                Ukprn = ukprn,
-                LearnerDataId = id,
-                ApprenticeshipId = request.ApprenticeshipId,
-            };
-
-            await sender.Send(command);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            logger.LogError(ex, ex.Message);
-            return NotFound();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error trying to assign apprenticeship Id {0} to Learner Data record {1}", request.ApprenticeshipId, id);
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-
-        return Ok();
-    }
+    }    
 }
