@@ -217,4 +217,47 @@ public class WhenIAssignApprenticeshipId
         var results = response.Data.ToList();
         results.Count.Should().Be(1);
     }
+
+    [Test, MoqAutoData]
+    public async Task When_Learner_Search_Should_Remove_Exluded_Ulns(
+        AssignApprenticeshipIdCommand command,
+        long providerId,
+        List<Learner> learners)
+    {
+        learners.ForEach(x =>
+        {
+            x.Ukprn = providerId;
+            x.StartDate = new DateTime(2025, 05, 01);
+            x.ApprenticeshipId = null;
+        });
+        learners[0].Uln = 12345;
+        
+        _dbContext.Learners.AddRange(learners);
+        await _dbContext.SaveChangesAsync();
+
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", true, null, 2025, "12345", _cancellationToken);
+        var results = response.Data.ToList();
+        results.Count.Should().Be(learners.Count-1);
+    }
+
+    [Test, MoqAutoData]
+    public async Task When_Learner_Search_Should_Return_All_Records_When_Excluded_Ulns_Is_Empty(
+        AssignApprenticeshipIdCommand command,
+        long providerId,
+        List<Learner> learners)
+    {
+        learners.ForEach(x =>
+        {
+            x.Ukprn = providerId;
+            x.StartDate = new DateTime(2025, 05, 01);
+            x.ApprenticeshipId = null;
+        });
+
+        _dbContext.Learners.AddRange(learners);
+        await _dbContext.SaveChangesAsync();
+
+        var response = await _repository.Search(providerId, 1, 10, 1000, 0, null, false, "", true, null, 2025, "", _cancellationToken);
+        var results = response.Data.ToList();
+        results.Count.Should().Be(learners.Count);
+    }
 }
