@@ -23,7 +23,6 @@ public record GetLearnerByIdResponse : LearnerResponse
     public DateTime ReceivedDate { get; set; }
     public Guid CorrelationId { get; set; }
     public string ConsumerReference { get; set; }
-
     public long? ApprenticeshipId { get; set; }
 
     public static GetLearnerByIdResponse MapFrom(GetLearnerByIdResult result)
