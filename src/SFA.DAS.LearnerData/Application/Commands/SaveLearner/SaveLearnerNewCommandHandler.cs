@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Data.Repositories;
 using SFA.DAS.LearnerData.Messages;
@@ -22,7 +23,7 @@ public class SaveLearnerNewCommandResponse
 public class SaveLearnerNewCommandHandler(
     ILearnerRepository repository,
     IChangeTrackingService changeTrackingService,
-    IEventPublisher eventPublisher) : IRequestHandler<SaveLearnerNewCommand, SaveLearnerNewCommandResponse>
+    IEventPublisher eventPublisher, ILogger<SaveLearnerNewCommandHandler> logger) : IRequestHandler<SaveLearnerNewCommand, SaveLearnerNewCommandResponse>
 {
     public async Task<SaveLearnerNewCommandResponse> Handle(SaveLearnerNewCommand request, CancellationToken cancellationToken)
     {
@@ -42,6 +43,7 @@ public class SaveLearnerNewCommandHandler(
         }
         if (ApprovedLearnerRecordHasNotBeenMateriallyUpdated())
         {
+            logger.LogInformation("An identical approved learner record already exists for learner id {0}", existingLearner.Id);
             return new SaveLearnerNewCommandResponse {Id = existingLearner.Id, Result = SaveLearnerNewResult.NotNeeded};
         }
 
