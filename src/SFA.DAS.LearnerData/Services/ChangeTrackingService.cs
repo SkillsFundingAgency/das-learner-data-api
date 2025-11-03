@@ -24,17 +24,17 @@ public class ChangeTrackingService : IChangeTrackingService
             changes.Add(new EmailChange { OldValue = existingLearner.Email, NewValue = newLearner.Email });
         }
 
-        if (!Equals(existingLearner.Dob, newLearner.Dob))
+        if (!Equals(existingLearner.Dob.Date, newLearner.Dob.Date))
         {
             changes.Add(new DobChange { OldValue = existingLearner.Dob, NewValue = newLearner.Dob });
         }
 
-        if (!Equals(existingLearner.StartDate, newLearner.StartDate))
+        if (!Equals(existingLearner.StartDate.Date, newLearner.StartDate.Date))
         {
             changes.Add(new StartDateChange { OldValue = existingLearner.StartDate, NewValue = newLearner.StartDate });
         }
 
-        if (!Equals(existingLearner.PlannedEndDate, newLearner.PlannedEndDate))
+        if (!Equals(existingLearner.PlannedEndDate.Date, newLearner.PlannedEndDate.Date))
         {
             changes.Add(new PlannedEndDateChange { OldValue = existingLearner.PlannedEndDate, NewValue = newLearner.PlannedEndDate });
         }
@@ -49,8 +49,25 @@ public class ChangeTrackingService : IChangeTrackingService
             changes.Add(new TrainingPriceChange { OldValue = existingLearner.TrainingPrice, NewValue = newLearner.TrainingPrice });
         }
 
+        if (!Equals(existingLearner.StandardCode, newLearner.StandardCode))
+        {
+            changes.Add(new StandardCodeChange { OldValue = existingLearner.StandardCode, NewValue = newLearner.StandardCode });
+        }
+
+        if (!Equals(existingLearner.IsFlexiJob, newLearner.IsFlexiJob))
+        {
+            changes.Add(new IsFlexiJobChange { OldValue = existingLearner.IsFlexiJob, NewValue = newLearner.IsFlexiJob });
+        }
+
+        var otherFieldsChanged =
+            !Equals(existingLearner.PercentageLearningToBeDelivered, newLearner.PercentageLearningToBeDelivered) ||
+            !Equals(existingLearner.AgreementId, newLearner.AgreementId) ||
+            !Equals(existingLearner.PlannedOTJTrainingHours, newLearner.PlannedOTJTrainingHours);
+
+
         return new ChangeSummary
         {
+            HasMaterialChanges = changes.Any() || otherFieldsChanged,
             Changes = changes
         };
     }

@@ -1,4 +1,4 @@
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.LearnerData.Api.Models.Responses;
@@ -23,7 +23,7 @@ public class LearnersController(
         [FromQuery] int? pageSize = 100,
         [FromQuery] bool excludeApproved = true)
     {
-        if(pageSize > 1000) return BadRequest();
+        if (pageSize > 1000) return BadRequest();
 
         var query = new GetAllLearnersQuery(page, pageSize, excludeApproved);
 
@@ -34,5 +34,5 @@ public class LearnersController(
         Response?.Headers.Add(pageLinks);
 
         return Ok(GetAllLearnersResponse.MapFrom(result));
-    }    
+    }
 }
