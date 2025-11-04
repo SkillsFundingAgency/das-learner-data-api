@@ -67,7 +67,7 @@ public class ChangeTrackingServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result.HasChanges.Should().BeFalse();
+        result.HasLearnerChanges.Should().BeFalse();
         result.Changes.Should().BeEmpty();
     }
 
@@ -128,8 +128,8 @@ public class ChangeTrackingServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result.HasChanges.Should().BeTrue();
-        result.Changes.Should().HaveCount(8);
+        result.HasLearnerChanges.Should().BeTrue();
+        result.Changes.Should().HaveCount(10);
 
         // Verify each change type
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.FirstNameChange);
@@ -140,6 +140,8 @@ public class ChangeTrackingServiceTests
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.PlannedEndDateChange);
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.EpaoPriceChange);
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.TrainingPriceChange);
+        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.StandardCodeChange);
+        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.IsFlexiJob);
 
         // All tracked fields should have changes since we changed all of them
     }
@@ -201,7 +203,69 @@ public class ChangeTrackingServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result.HasChanges.Should().BeFalse();
+        result.HasLearnerChanges.Should().BeFalse();
+        result.Changes.Should().BeEmpty();
+    }
+
+    [Test, AutoData]
+    public void DetectChanges_WhenNonLearnerFieldsChanged_ShouldReturnEmptyLearnerChangesButShow(ChangeTrackingService service)
+    {
+        // Arrange
+        var existingLearner = new Learner
+        {
+            Id = 1,
+            Uln = 1234567890,
+            Ukprn = 10000001,
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            Dob = new DateTime(1990, 1, 1),
+            AcademicYear = 2024,
+            StartDate = new DateTime(2024, 9, 1),
+            PlannedEndDate = new DateTime(2026, 8, 31),
+            PercentageLearningToBeDelivered = 100,
+            EpaoPrice = 500,
+            TrainingPrice = 15000,
+            AgreementId = "ABC123",
+            StandardCode = 123,
+            IsFlexiJob = false,
+            PlannedOTJTrainingHours = 1100,
+            ReceivedDate = DateTime.UtcNow,
+            CorrelationId = Guid.NewGuid(),
+            ConsumerReference = "REF123"
+        };
+
+        var newLearner = new Learner
+        {
+            Id = 2,
+            Uln = 1234567890,
+            Ukprn = 10000001,
+            FirstName = "John",
+            LastName = "Doe",
+            Email = "john.doe@example.com",
+            Dob = new DateTime(1990, 1, 1),
+            AcademicYear = 2425,
+            StartDate = new DateTime(2024, 9, 1),
+            PlannedEndDate = new DateTime(2026, 8, 31),
+            PercentageLearningToBeDelivered = 90,
+            EpaoPrice = 500,
+            TrainingPrice = 15000,
+            AgreementId = "ABC123",
+            StandardCode = 123,
+            IsFlexiJob = false,
+            PlannedOTJTrainingHours = 1200,
+            ReceivedDate = DateTime.UtcNow.AddDays(1),
+            CorrelationId = Guid.NewGuid(),
+            ConsumerReference = "REF456"
+        };
+
+        // Act
+        var result = service.DetectChanges(existingLearner, newLearner);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.HasLearnerChanges.Should().BeFalse();
+        result.HasMaterialChanges.Should().BeTrue();
         result.Changes.Should().BeEmpty();
     }
 
@@ -262,7 +326,7 @@ public class ChangeTrackingServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result.HasChanges.Should().BeTrue();
+        result.HasLearnerChanges.Should().BeTrue();
         result.Changes.Should().HaveCount(1);
         result.Changes.Should().ContainSingle(c => 
             c.ChangeType == ChangeType.FirstNameChange);
@@ -325,7 +389,7 @@ public class ChangeTrackingServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result.HasChanges.Should().BeTrue();
+        result.HasLearnerChanges.Should().BeTrue();
         result.Changes.Should().HaveCount(3);
 
         result.Changes.Should().ContainSingle(c => 
@@ -395,7 +459,7 @@ public class ChangeTrackingServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result.HasChanges.Should().BeTrue();
+        result.HasLearnerChanges.Should().BeTrue();
         result.Changes.Should().HaveCount(1);
 
         result.Changes.Should().Contain(c => 
@@ -459,7 +523,7 @@ public class ChangeTrackingServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result.HasChanges.Should().BeTrue();
+        result.HasLearnerChanges.Should().BeTrue();
         result.Changes.Should().HaveCount(1);
 
         result.Changes.Should().Contain(c => 

@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +23,7 @@ public class LearnersController(
         [FromQuery] int? pageSize = 100,
         [FromQuery] bool excludeApproved = true)
     {
-        if(pageSize > 1000) return BadRequest();
+        if (pageSize > 1000) return BadRequest();
 
         var query = new GetAllLearnersQuery(page, pageSize, excludeApproved);
 
