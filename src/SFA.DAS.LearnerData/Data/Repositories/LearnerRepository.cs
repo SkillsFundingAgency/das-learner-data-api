@@ -10,10 +10,8 @@ namespace SFA.DAS.LearnerData.Data.Repositories;
 public interface ILearnerRepository
 {
     Task<Learner?> GetById(long id, CancellationToken cancellationToken);
-    Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
     Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
-
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
         string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear,
         CancellationToken cancellationToken);
@@ -29,16 +27,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
     public async Task<Learner?> GetById(long id, CancellationToken cancellationToken)
     {
         return await dbContext.Learners.FindAsync(keyValues: [id], cancellationToken);
-    }
-
-    public async Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken)
-    {
-        return await dbContext.Learners
-            .SingleOrDefaultAsync(learner => learner.Ukprn == ukPrn
-                                             && learner.Uln == uln
-                                             && learner.StandardCode == standardCode
-                                             && learner.AcademicYear == academicYear
-                , cancellationToken);
     }
 
     public async Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken)
