@@ -10,16 +10,13 @@ namespace SFA.DAS.LearnerData.Data.Repositories;
 public interface ILearnerRepository
 {
     Task<Learner?> GetById(long id, CancellationToken cancellationToken);
-    Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
     Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
-
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
         string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear,
         CancellationToken cancellationToken);
     Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
-    Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
     Task<SaveLearnerNewCommandResponse> AddLearner(SaveLearnerNewCommand request, CancellationToken cancellationToken);
     Task<SaveLearnerNewCommandResponse> UpdateLearner(Learner existingLearner, SaveLearnerNewCommand request, CancellationToken cancellationToken);
     Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken);
@@ -30,16 +27,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
     public async Task<Learner?> GetById(long id, CancellationToken cancellationToken)
     {
         return await dbContext.Learners.FindAsync(keyValues: [id], cancellationToken);
-    }
-
-    public async Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken)
-    {
-        return await dbContext.Learners
-            .SingleOrDefaultAsync(learner => learner.Ukprn == ukPrn
-                                             && learner.Uln == uln
-                                             && learner.StandardCode == standardCode
-                                             && learner.AcademicYear == academicYear
-                , cancellationToken);
     }
 
     public async Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken)
@@ -180,51 +167,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             .Select(x => x.ReceivedDate)
             .OrderByDescending(x => x)
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
-    }
-
-    public async Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken)
-    {
-        var existingLearner = await Get(request.Ukprn, request.Uln, request.StandardCode, request.AcademicYear,
-            cancellationToken);
-
-        if (existingLearner == null)
-        {
-            var learner = Learner.From(request);
-            await dbContext.Learners.AddAsync(learner, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
-
-            return new SaveLearnerCommandResponse { Id = learner.Id, Result = SaveLearnerResult.Created };
-        }
-
-        if (existingLearner.ApprenticeshipId != null)
-        {
-            logger.LogError("Learner record {0} cannot be updated as it already has an ApprenticeshipId assigned", existingLearner.Id);
-            throw new InvalidOperationException($"Learner with ID {existingLearner.Id} already has ApprenticeshipId {existingLearner.ApprenticeshipId} assigned. Cannot update.");
-        }
-
-        existingLearner.Uln = request.Uln;
-        existingLearner.Ukprn = request.Ukprn;
-        existingLearner.FirstName = request.FirstName;
-        existingLearner.LastName = request.LastName;
-        existingLearner.Email = request.Email;
-        existingLearner.Dob = request.Dob;
-        existingLearner.AcademicYear = request.AcademicYear;
-        existingLearner.StartDate = request.StartDate;
-        existingLearner.PlannedEndDate = request.PlannedEndDate;
-        existingLearner.PercentageLearningToBeDelivered = request.PercentageLearningToBeDelivered;
-        existingLearner.EpaoPrice = request.EpaoPrice;
-        existingLearner.TrainingPrice = request.TrainingPrice;
-        existingLearner.AgreementId = request.AgreementId;
-        existingLearner.ConsumerReference = request.ConsumerReference;
-        existingLearner.CorrelationId = request.CorrelationId;
-        existingLearner.ReceivedDate = request.ReceivedDate;
-        existingLearner.StandardCode = request.StandardCode;
-        existingLearner.IsFlexiJob = request.IsFlexiJob;
-        existingLearner.PlannedOTJTrainingHours = request.PlannedOTJTrainingHours;
-
-        await dbContext.SaveChangesAsync(cancellationToken);
-
-        return new SaveLearnerCommandResponse { Id = existingLearner.Id, Result = SaveLearnerResult.Updated };
     }
 
     public async Task<SaveLearnerNewCommandResponse> AddLearner(SaveLearnerNewCommand request, CancellationToken cancellationToken)
