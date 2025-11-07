@@ -23,6 +23,7 @@ public record GetLearnerByIdResponse : LearnerResponse
     public DateTime ReceivedDate { get; set; }
     public Guid CorrelationId { get; set; }
     public string ConsumerReference { get; set; }
+    public long? ApprenticeshipId { get; set; }
 
     public static GetLearnerByIdResponse MapFrom(GetLearnerByIdResult result)
     {
@@ -49,7 +50,8 @@ public record GetLearnerByIdResponse : LearnerResponse
             ReceivedDate = result.ReceivedDate,
             StandardCode = result.StandardCode,
             IsFlexiJob = result.IsFlexiJob,
-            PlannedOTJTrainingHours = result.PlannedOTJTrainingHours
+            PlannedOTJTrainingHours = result.PlannedOTJTrainingHours,
+            ApprenticeshipId = result.ApprenticeshipId,
         };
     }
 }

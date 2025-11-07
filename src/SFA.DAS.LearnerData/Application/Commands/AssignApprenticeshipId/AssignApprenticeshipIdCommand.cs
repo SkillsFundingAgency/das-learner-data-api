@@ -6,5 +6,5 @@ public record AssignApprenticeshipIdCommand : IRequest
 {
     public long Ukprn { get; set; }
     public long LearnerDataId { get; set; }
-    public long ApprenticeshipId { get; set; }
+    public long? ApprenticeshipId { get; set; }
 }
