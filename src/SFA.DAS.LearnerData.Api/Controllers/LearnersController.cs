@@ -21,8 +21,7 @@ public class LearnersController(
     public async Task<IActionResult> GetAllLearners(
         [FromQuery] int page = 1,
         [FromQuery] int? pageSize = 100,
-        [FromQuery] bool excludeApproved = true,
-        [FromQuery] string maxStartDate = "")
+        [FromQuery] bool excludeApproved = true)
     {        
         if (pageSize > 1000) return BadRequest();
 
