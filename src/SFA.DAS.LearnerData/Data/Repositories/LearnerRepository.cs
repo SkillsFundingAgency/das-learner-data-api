@@ -1,10 +1,10 @@
+using System.Globalization;
+using System.Linq.Dynamic.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Data.Entities;
-using System.Globalization;
-using System.Linq.Dynamic.Core;
 
 namespace SFA.DAS.LearnerData.Data.Repositories;
 
