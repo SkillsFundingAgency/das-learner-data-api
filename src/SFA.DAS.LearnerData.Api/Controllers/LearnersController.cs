@@ -22,7 +22,7 @@ public class LearnersController(
         [FromQuery] int page = 1,
         [FromQuery] int? pageSize = 100,
         [FromQuery] bool excludeApproved = true)
-    {        
+    {
         if (pageSize > 1000) return BadRequest();
 
         var query = new GetAllLearnersQuery(page, pageSize, excludeApproved);
