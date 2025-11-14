@@ -6,7 +6,8 @@ namespace SFA.DAS.LearnerData.Messages;
 public class ChangeSummary
 {
     public List<IChange> Changes { get; init; } = new();
-    public bool HasChanges => Changes.Count > 0;
+    public bool HasLearnerChanges => Changes.Count > 0;
+    public bool HasMaterialChanges { get; init; } = false;
 }
 
 public enum ChangeType
@@ -18,7 +19,9 @@ public enum ChangeType
     StartDateChange,
     PlannedEndDateChange,
     EpaoPriceChange,
-    TrainingPriceChange
+    TrainingPriceChange,
+    StandardCodeChange,
+    IsFlexiJob
 }
 
 [JsonConverter(typeof(ChangeJsonConverter))]
@@ -83,6 +86,20 @@ public class TrainingPriceChange : IChange
     public int? NewValue { get; init; }
 }
 
+public class StandardCodeChange : IChange
+{
+    public ChangeType ChangeType => ChangeType.StandardCodeChange;
+    public int? OldValue { get; init; }
+    public int? NewValue { get; init; }
+}
+
+public class IsFlexiJobChange : IChange
+{
+    public ChangeType ChangeType => ChangeType.IsFlexiJob;
+    public bool? OldValue { get; init; }
+    public bool? NewValue { get; init; }
+}
+
 public class ChangeJsonConverter : JsonConverter<IChange>
 {
     public override IChange? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -108,6 +125,8 @@ public class ChangeJsonConverter : JsonConverter<IChange>
             ChangeType.PlannedEndDateChange => JsonSerializer.Deserialize<PlannedEndDateChange>(root.GetRawText(), options),
             ChangeType.EpaoPriceChange => JsonSerializer.Deserialize<EpaoPriceChange>(root.GetRawText(), options),
             ChangeType.TrainingPriceChange => JsonSerializer.Deserialize<TrainingPriceChange>(root.GetRawText(), options),
+            ChangeType.StandardCodeChange => JsonSerializer.Deserialize<StandardCodeChange>(root.GetRawText(), options),
+            ChangeType.IsFlexiJob => JsonSerializer.Deserialize<IsFlexiJobChange>(root.GetRawText(), options),
             _ => throw new JsonException($"Unknown change type: {changeType}")
         };
     }

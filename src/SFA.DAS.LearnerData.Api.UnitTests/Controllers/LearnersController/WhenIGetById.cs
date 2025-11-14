@@ -18,7 +18,7 @@ public class WhenIGetById
         long ukprn,
         GetLearnerByIdResult queryResult,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         sender
@@ -43,7 +43,7 @@ public class WhenIGetById
         long ukprn,
         GetLearnerByIdResult queryResult,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         sender

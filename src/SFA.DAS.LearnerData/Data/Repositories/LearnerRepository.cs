@@ -11,14 +11,15 @@ namespace SFA.DAS.LearnerData.Data.Repositories;
 public interface ILearnerRepository
 {
     Task<Learner?> GetById(long id, CancellationToken cancellationToken);
-    Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken);
+    Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
-
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
         string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate,
         CancellationToken cancellationToken);
+    Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
-    Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken);
+    Task<SaveLearnerNewCommandResponse> AddLearner(SaveLearnerNewCommand request, CancellationToken cancellationToken);
+    Task<SaveLearnerNewCommandResponse> UpdateLearner(Learner existingLearner, SaveLearnerNewCommand request, CancellationToken cancellationToken);
     Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken);
 }
 
@@ -29,13 +30,11 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         return await dbContext.Learners.FindAsync(keyValues: [id], cancellationToken);
     }
 
-    public async Task<Learner?> Get(long ukPrn, long uln, int standardCode, int academicYear, CancellationToken cancellationToken)
+    public async Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken)
     {
-        return await dbContext.Learners
-            .SingleOrDefaultAsync(learner => learner.Ukprn == ukPrn
+        return await dbContext.Learners.OrderBy(x=>x.Ukprn).ThenBy(x=>x.Uln).ThenByDescending(x=>x.Id)
+            .FirstOrDefaultAsync(learner => learner.Ukprn == ukPrn
                                              && learner.Uln == uln
-                                             && learner.StandardCode == standardCode
-                                             && learner.AcademicYear == academicYear
                 , cancellationToken);
     }
 
@@ -113,6 +112,36 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         };
     }
 
+    public async Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken)
+    {
+        var query = dbContext.Learners
+            .AsNoTracking();
+
+        if (excludeApproved)
+        {
+            query = query.Where(x => x.ApprenticeshipId == null);
+        }
+
+        query = query.OrderBy(x => x.Id);
+
+        var totalItems = await query.CountAsync(cancellationToken);
+        var totalPages = (int)Math.Ceiling((double)totalItems / pageSize.GetValueOrDefault());
+
+        var result = await query
+            .Skip(offset)
+            .Take(limit)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<Learner>
+        {
+            Data = result,
+            TotalItems = totalItems,
+            TotalPages = totalPages,
+            PageSize = pageSize ?? int.MaxValue,
+            Page = page,
+        };
+    }
+
     private static string GetOrderNamesByField(string fieldName, bool sortDescending)
     {
         var sort = sortDescending ? "descending" : "ascending";
@@ -150,19 +179,17 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
     }
 
-    public async Task<SaveLearnerCommandResponse> Save(SaveLearnerCommand request, CancellationToken cancellationToken)
+    public async Task<SaveLearnerNewCommandResponse> AddLearner(SaveLearnerNewCommand request, CancellationToken cancellationToken)
     {
-        var existingLearner = await Get(request.Ukprn, request.Uln, request.StandardCode, request.AcademicYear,
-            cancellationToken);
+        var learner = Learner.From(request);
+        await dbContext.Learners.AddAsync(learner, cancellationToken);
+        await dbContext.SaveChangesAsync(cancellationToken);
 
-        if (existingLearner == null)
-        {
-            var learner = Learner.From(request);
-            await dbContext.Learners.AddAsync(learner, cancellationToken);
-            await dbContext.SaveChangesAsync(cancellationToken);
+        return new SaveLearnerNewCommandResponse { Id = learner.Id, Result = SaveLearnerNewResult.Created };
+    }
 
-            return new SaveLearnerCommandResponse { Id = learner.Id, Result = SaveLearnerResult.Created };
-        }
+    public async Task<SaveLearnerNewCommandResponse> UpdateLearner(Learner existingLearner, SaveLearnerNewCommand request, CancellationToken cancellationToken)
+    {
 
         if (existingLearner.ApprenticeshipId != null)
         {
@@ -192,7 +219,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        return new SaveLearnerCommandResponse { Id = existingLearner.Id, Result = SaveLearnerResult.Updated };
+        return new SaveLearnerNewCommandResponse { Id = existingLearner.Id, Result = SaveLearnerNewResult.Updated };
     }
 
     public async Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken)

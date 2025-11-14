@@ -20,13 +20,13 @@ public class WhenISave
         int academicYear,
         int id,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         request.Uln = uln;
         request.AcademicYear = academicYear;
 
-        var result = await sut.Save(ukprn, uln, academicYear, request);
+        var result = await sut.Save(ukprn, uln, request);
 
         var actionResult = result as BadRequestResult;
         actionResult.Should().NotBeNull();
@@ -40,33 +40,13 @@ public class WhenISave
         int academicYear,
         int id,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         request.Ukprn = ukprn;
         request.AcademicYear = academicYear;
 
-        var result = await sut.Save(ukprn, uln, academicYear, request);
-
-        var actionResult = result as BadRequestResult;
-        actionResult.Should().NotBeNull();
-    }
-
-    [Test, MoqAutoData]
-    public async Task Then_BadRequest_Response_Is_Returned_When_AcademicYear_Does_Not_Match(
-        SaveLearnerRequest request,
-        long ukprn,
-        long uln,
-        int academicYear,
-        int id,
-        [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
-    )
-    {
-        request.Ukprn = ukprn;
-        request.Uln = uln;
-
-        var result = await sut.Save(ukprn, uln, academicYear, request);
+        var result = await sut.Save(ukprn, uln, request);
 
         var actionResult = result as BadRequestResult;
         actionResult.Should().NotBeNull();
@@ -80,17 +60,17 @@ public class WhenISave
         int academicYear,
         int id,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         request.Ukprn = ukprn;
         request.Uln = uln;
         request.AcademicYear = academicYear;
 
-        var response = new SaveLearnerCommandResponse { Id = id, Result = SaveLearnerResult.Updated };
+        var response = new SaveLearnerNewCommandResponse { Id = id, Result = SaveLearnerNewResult.Updated };
 
         sender
-            .Setup(x => x.Send(It.Is<SaveLearnerCommand>(ctx =>
+            .Setup(x => x.Send(It.Is<SaveLearnerNewCommand>(ctx =>
                 ctx.AcademicYear == request.AcademicYear
                 && ctx.Uln == request.Uln
                 && ctx.Ukprn == request.Ukprn
@@ -114,7 +94,7 @@ public class WhenISave
             .ReturnsAsync(response)
             .Verifiable();
 
-        var result = await sut.Save(ukprn, uln, academicYear, request);
+        var result = await sut.Save(ukprn, uln, request);
         result.Should().NotBeNull();
 
         var actionResult = result as OkResult;
@@ -131,17 +111,17 @@ public class WhenISave
         int academicYear,
         int id,
         [Frozen] Mock<ISender> sender,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         request.Ukprn = ukprn;
         request.Uln = uln;
         request.AcademicYear = academicYear;
 
-        var response = new SaveLearnerCommandResponse { Id = id, Result = SaveLearnerResult.Created };
+        var response = new SaveLearnerNewCommandResponse { Id = id, Result = SaveLearnerNewResult.Created };
 
         sender
-            .Setup(x => x.Send(It.Is<SaveLearnerCommand>(ctx =>
+            .Setup(x => x.Send(It.Is<SaveLearnerNewCommand>(ctx =>
                 ctx.AcademicYear == request.AcademicYear
                 && ctx.Uln == request.Uln
                 && ctx.Ukprn == request.Ukprn
@@ -165,7 +145,7 @@ public class WhenISave
             .ReturnsAsync(response)
             .Verifiable();
 
-        var result = await sut.Save(ukprn, uln, academicYear, request);
+        var result = await sut.Save(ukprn, uln, request);
         result.Should().NotBeNull();
 
         var actionResult = result as CreatedAtActionResult;

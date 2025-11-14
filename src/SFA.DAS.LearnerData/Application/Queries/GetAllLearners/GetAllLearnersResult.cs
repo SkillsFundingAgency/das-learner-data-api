@@ -1,9 +1,10 @@
-using MediatR;
+namespace SFA.DAS.LearnerData.Application.Queries.GetAllLearners;
 
-namespace SFA.DAS.LearnerData.Application.Commands.SaveLearner;
+public record GetAllLearnersResult : PagedQueryResult<GetAllLearnersResultItem>;
 
-public record SaveLearnerCommand : IRequest<SaveLearnerCommandResponse>
+public record GetAllLearnersResultItem : LearnerResult
 {
+    public long Id { get; set; }
     public long Uln { get; set; }
     public long Ukprn { get; set; }
     public string FirstName { get; set; }

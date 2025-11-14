@@ -1,8 +1,9 @@
-namespace SFA.DAS.LearnerData.Application.Queries.GetLearner;
+using MediatR;
 
-public record GetLearnerResult : LearnerResult
+namespace SFA.DAS.LearnerData.Application.Commands.SaveLearner;
+
+public record SaveLearnerNewCommand : IRequest<SaveLearnerNewCommandResponse>
 {
-    public bool Found => Id > 0;
     public long Uln { get; set; }
     public long Ukprn { get; set; }
     public string FirstName { get; set; }

@@ -21,7 +21,7 @@ public class WhenIGetSearch
         GetSearchResult queryResult,
         [Frozen] Mock<ISender> sender,
         [Frozen] Mock<IPagedLinkHeaderService> pagedLinkService,
-        [Greedy] Api.Controllers.LearnersController sut
+        [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         sender
