@@ -33,9 +33,10 @@ public class ProviderLearnersController(
         [FromQuery] bool sortDescending = false,
         [FromQuery] string filter = "",
         [FromQuery] bool excludeApproved = true,
+        [FromQuery] string maxStartDate = "",
         [FromQuery] string excludeUlns = "")
     {
-        var query = new GetSearchQuery(ukprn, page, pageSize, sortColumn, sortDescending, filter, excludeApproved, startMonth, startYear, excludeUlns);
+        var query = new GetSearchQuery(ukprn, page, pageSize, sortColumn, sortDescending, filter, excludeApproved, startMonth, startYear, maxStartDate, excludeUlns);
 
         var result = await sender.Send(query);
 
