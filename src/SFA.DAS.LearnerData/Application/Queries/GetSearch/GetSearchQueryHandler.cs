@@ -12,8 +12,11 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
     public bool ExcludeApproved { get; }
     public int? StartMonth { get; }
     public int StartYear { get; }
+    public string ExcludeUlns { get; }
 
-    public GetSearchQuery(long ukPrn, int page, int? pageSize, string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear)
+    public string MaxStartDate { get; }
+
+    public GetSearchQuery(long ukPrn, int page, int? pageSize, string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns)
     {
         UkPrn = ukPrn;
         SortColumn = sortColumn;
@@ -24,6 +27,8 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
         ExcludeApproved = excludeApproved;
         StartMonth = startMonth;
         StartYear = startYear;
+        MaxStartDate = maxStartDate;
+        ExcludeUlns = excludeUlns;
     }
 }
 
@@ -43,6 +48,8 @@ public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandl
             request.ExcludeApproved,
             request.StartMonth,
             request.StartYear,
+            request.MaxStartDate,
+            request.ExcludeUlns,
             cancellationToken);
 
         DateTime? lastSubmissionDate = null;
