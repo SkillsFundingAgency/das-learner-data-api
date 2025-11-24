@@ -1,10 +1,10 @@
-﻿using System.Net;
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Queries.GetAllLearners;
 using SFA.DAS.LearnerData.Services;
+using System.Net;
 
 namespace SFA.DAS.LearnerData.Api.Controllers;
 
