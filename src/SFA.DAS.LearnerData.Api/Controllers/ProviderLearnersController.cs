@@ -7,6 +7,7 @@ using SFA.DAS.LearnerData.Api.Models.Requests;
 using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
+using SFA.DAS.LearnerData.Application.Queries.GetCourseCodesByUkprn;
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
 using SFA.DAS.LearnerData.Application.Queries.GetSearch;
 using SFA.DAS.LearnerData.Services;
@@ -22,7 +23,7 @@ public class ProviderLearnersController(
     ILogger<ProviderLearnersController> logger) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType((int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     public async Task<IActionResult> Search(
         long ukprn,
         [FromQuery] int? startMonth,
@@ -34,9 +35,10 @@ public class ProviderLearnersController(
         [FromQuery] string filter = "",
         [FromQuery] bool excludeApproved = true,
         [FromQuery] string maxStartDate = "",
-        [FromQuery] string excludeUlns = "")
+        [FromQuery] string excludeUlns = "",
+        [FromQuery] int? courseCode = null)
     {
-        var query = new GetSearchQuery(ukprn, page, pageSize, sortColumn, sortDescending, filter, excludeApproved, startMonth, startYear, maxStartDate, excludeUlns);
+        var query = new GetSearchQuery(ukprn, page, pageSize, sortColumn, sortDescending, filter, excludeApproved, startMonth, startYear, maxStartDate, excludeUlns, courseCode);
 
         var result = await sender.Send(query);
 
@@ -94,8 +96,8 @@ public class ProviderLearnersController(
     }
 
     [HttpGet]
-    [ProducesResponseType((int) HttpStatusCode.OK)]
-    [ProducesResponseType((int) HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [Route("{id:long}")]
     public async Task<IActionResult> GetById(long ukprn, long id)
     {
@@ -112,7 +114,7 @@ public class ProviderLearnersController(
     }
 
     [HttpPatch]
-    [ProducesResponseType((int) HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
     [Route("{id:long}/apprenticeshipId")]
     public async Task<IActionResult> PatchApprenticeshipId(long ukprn, long id, [FromBody] PatchLearnerDataApprenticeshipIdRequest request)
     {
@@ -131,7 +133,6 @@ public class ProviderLearnersController(
         {
             logger.LogError(ex, ex.Message);
             return NotFound();
-
         }
         catch (Exception ex)
         {
@@ -141,5 +142,16 @@ public class ProviderLearnersController(
 
         return Ok();
     }
-	
+
+    [HttpGet]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [Route("coursecodes")]
+    public async Task<IActionResult> GetCourseCodesByUkprn(long ukprn)
+    {
+        var command = new GetCourseCodesByUkprnQuery(ukprn);
+
+        var result = await sender.Send(command);
+
+        return Ok(result);
+    }
 }

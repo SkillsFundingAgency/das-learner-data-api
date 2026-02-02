@@ -16,12 +16,14 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
 
     public string MaxStartDate { get; }
 
-    public GetSearchQuery(long ukPrn, int page, int? pageSize, string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns)
+    public int? CourseCode { get; }
+
+    public GetSearchQuery(long ukPrn, int page, int? pageSize, string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, int? courseCode)
     {
         UkPrn = ukPrn;
         SortColumn = sortColumn;
         SortDescending = sortDescending;
-        Filter = filter;        
+        Filter = filter;
         Page = page;
         PageSize = pageSize;
         ExcludeApproved = excludeApproved;
@@ -29,10 +31,11 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
         StartYear = startYear;
         MaxStartDate = maxStartDate;
         ExcludeUlns = excludeUlns;
+        CourseCode = courseCode;
     }
 }
 
-public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandler<GetSearchQuery, GetSearchResult>
+public class GetSearchQueryHandler(ILearnerRepository repository) : IRequestHandler<GetSearchQuery, GetSearchResult>
 {
     public async Task<GetSearchResult> Handle(GetSearchQuery request, CancellationToken cancellationToken)
     {
@@ -50,11 +53,12 @@ public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandl
             request.StartYear,
             request.MaxStartDate,
             request.ExcludeUlns,
+            request.CourseCode,
             cancellationToken);
 
         DateTime? lastSubmissionDate = null;
 
-        lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, cancellationToken);            
+        lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, cancellationToken);
 
         return new GetSearchResult
         {

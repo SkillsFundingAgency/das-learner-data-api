@@ -11,16 +11,26 @@ namespace SFA.DAS.LearnerData.Data.Repositories;
 public interface ILearnerRepository
 {
     Task<Learner?> GetById(long id, CancellationToken cancellationToken);
+
     Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken);
+
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
+
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
-        string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns,
+        string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, int? courseCode,
         CancellationToken cancellationToken);
+
     Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken);
+
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
+
     Task<SaveLearnerNewCommandResponse> AddLearner(SaveLearnerNewCommand request, CancellationToken cancellationToken);
+
     Task<SaveLearnerNewCommandResponse> UpdateLearner(Learner existingLearner, SaveLearnerNewCommand request, CancellationToken cancellationToken);
+
     Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken);
+
+    Task<List<int>> GetCourseCodesByUkprn(long ukprn, CancellationToken cancellationToken);
 }
 
 public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRepository> logger) : ILearnerRepository
@@ -32,7 +42,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
     public async Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken)
     {
-        return await dbContext.Learners.OrderBy(x=>x.Ukprn).ThenBy(x=>x.Uln).ThenByDescending(x=>x.Id)
+        return await dbContext.Learners.OrderBy(x => x.Ukprn).ThenBy(x => x.Uln).ThenByDescending(x => x.Id)
             .FirstOrDefaultAsync(learner => learner.Ukprn == ukPrn
                                              && learner.Uln == uln
                 , cancellationToken);
@@ -46,8 +56,8 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn, 
-        bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, CancellationToken cancellationToken)
+    public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn,
+        bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, int? courseCode, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
@@ -81,6 +91,11 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         if (startYear > 0)
         {
             query = query.Where(x => x.StartDate.Year == startYear);
+        }
+
+        if (courseCode.HasValue)
+        {
+            query = query.Where(x => x.StandardCode == courseCode);
         }
 
         if (string.IsNullOrEmpty(sortColumn))
@@ -196,7 +211,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
     public async Task<SaveLearnerNewCommandResponse> UpdateLearner(Learner existingLearner, SaveLearnerNewCommand request, CancellationToken cancellationToken)
     {
-
         if (existingLearner.ApprenticeshipId != null)
         {
             logger.LogError("Learner record {0} cannot be updated as it already has an ApprenticeshipId assigned", existingLearner.Id);
@@ -247,5 +261,10 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
         learner.ApprenticeshipId = request.ApprenticeshipId;
         await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<List<int>> GetCourseCodesByUkprn(long ukprn, CancellationToken cancellationToken)
+    {
+        return await dbContext.Learners.AsNoTracking().Where(t => t.Ukprn == ukprn).Select(t => t.StandardCode).Distinct().ToListAsync(cancellationToken);
     }
 }
