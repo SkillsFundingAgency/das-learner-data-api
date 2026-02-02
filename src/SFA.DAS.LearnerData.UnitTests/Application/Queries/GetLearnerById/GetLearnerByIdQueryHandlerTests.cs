@@ -1,3 +1,4 @@
+using AutoFixture;
 using AutoFixture.NUnit3;
 using FluentAssertions;
 using Moq;
@@ -19,17 +20,63 @@ public class GetLearnerByIdQueryHandlerTests
         GetLearnerByIdQueryHandler sut
     )
     {
-        learner.Ukprn = query.ukprn; // Ensure the learner's UKPRN matches the query's UKPRN
+        learner.Ukprn = query.Ukprn; // Ensure the learner's UKPRN matches the query's UKPRN
         repository
             .Setup(x => x.GetById(query.Id, It.IsAny<CancellationToken>())).ReturnsAsync(learner)
             .Verifiable();
 
         var result = await sut.Handle(query, CancellationToken.None);
         result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(learner, options => options.ExcludingMissingMembers());
+        result.Id.Should().Be(learner.Id);
+        result.Uln.Should().Be(learner.Uln);
+        result.Ukprn.Should().Be(learner.Ukprn);
+        result.FirstName.Should().Be(learner.FirstName);
+        result.LastName.Should().Be(learner.LastName);
+        result.Email.Should().Be(learner.Email);
+        result.Dob.Should().Be(learner.Dob);
+        result.AcademicYear.Should().Be(learner.AcademicYear);
+        result.StartDate.Should().Be(learner.StartDate);
+        result.PercentageLearningToBeDelivered.Should().Be(learner.PercentageLearningToBeDelivered);
+        result.EpaoPrice.Should().Be(learner.EpaoPrice);
+        result.TrainingPrice.Should().Be(learner.TrainingPrice);
+        result.AgreementId.Should().Be(learner.AgreementId);
+        result.StandardCode.Should().Be(learner.StandardCode);
+        result.TrainingCode.Should().Be(learner.TrainingCode);
+        result.TrainingName.Should().Be(learner.TrainingName);
+        result.LearningType.Should().Be(learner.LearningType);
+        result.IsFlexiJob.Should().Be(learner.IsFlexiJob);
+        result.PlannedOTJTrainingHours.Should().Be(learner.PlannedOTJTrainingHours);
+        result.ReceivedDate.Should().Be(learner.ReceivedDate);
+        result.CorrelationId.Should().Be(learner.CorrelationId);
+        result.ConsumerReference.Should().Be(learner.ConsumerReference);
+        result.ApprenticeshipId.Should().Be(learner.ApprenticeshipId);
         result.Found.Should().BeTrue();
         
         repository.Verify();
+    }
+
+    [Test]
+    public async Task Handle_GetById_And_Validate_Mapping_Of_LearningType_When_Null()
+    {
+        var fixture = new Fixture();
+
+        var query = fixture.Create<GetLearnerByIdQuery>();
+        var learner = fixture.Build<Learner>()
+            .Without(x => x.LearningType)
+            .With(x => x.Id, query.Id)
+            .With(x => x.Ukprn, query.Ukprn)
+            .Create();
+
+        var repository = new Mock<ILearnerRepository>();
+        GetLearnerByIdQueryHandler sut = new GetLearnerByIdQueryHandler(repository.Object);
+ 
+        repository
+            .Setup(x => x.GetById(query.Id, It.IsAny<CancellationToken>())).ReturnsAsync(learner)
+            .Verifiable();
+
+        var result = await sut.Handle(query, CancellationToken.None);
+        result.Should().NotBeNull();
+        result.LearningType.Should().BeNull();
     }
 
     [Test, MoqAutoData]
@@ -40,7 +87,7 @@ public class GetLearnerByIdQueryHandlerTests
         GetLearnerByIdQueryHandler sut
     )
     {
-        learner.Ukprn = query.ukprn + 1; // Ensure the learner's UKPRN matches the query's UKPRN
+        learner.Ukprn = query.Ukprn + 1; // Ensure the learner's UKPRN matches the query's UKPRN
         repository
             .Setup(x => x.GetById(query.Id, It.IsAny<CancellationToken>())).ReturnsAsync(learner)
             .Verifiable();
