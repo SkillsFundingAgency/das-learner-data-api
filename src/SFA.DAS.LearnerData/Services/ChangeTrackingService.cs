@@ -54,6 +54,16 @@ public class ChangeTrackingService : IChangeTrackingService
             changes.Add(new StandardCodeChange { OldValue = existingLearner.StandardCode, NewValue = newLearner.StandardCode });
         }
 
+        if (!Equals(existingLearner.TrainingCode, newLearner.TrainingCode))
+        {
+            changes.Add(new TrainingCodeChange { OldValue = existingLearner.TrainingCode, NewValue = newLearner.TrainingCode });
+        }
+
+        if (!Equals(existingLearner.LearningType, newLearner.LearningType))
+        {
+            changes.Add(new LearningTypeChange { OldValue = existingLearner.LearningType, NewValue = newLearner.LearningType });
+        }
+
         if (!Equals(existingLearner.IsFlexiJob, newLearner.IsFlexiJob))
         {
             changes.Add(new IsFlexiJobChange { OldValue = existingLearner.IsFlexiJob, NewValue = newLearner.IsFlexiJob });
@@ -63,8 +73,6 @@ public class ChangeTrackingService : IChangeTrackingService
             !Equals(existingLearner.PercentageLearningToBeDelivered, newLearner.PercentageLearningToBeDelivered) ||
             !Equals(existingLearner.AgreementId, newLearner.AgreementId) ||
             !Equals(existingLearner.PlannedOTJTrainingHours, newLearner.PlannedOTJTrainingHours);
-
-
         return new ChangeSummary
         {
             HasMaterialChanges = changes.Any() || otherFieldsChanged,

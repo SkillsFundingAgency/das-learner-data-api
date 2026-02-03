@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.LearnerData.Data.Entities;
+﻿namespace SFA.DAS.LearnerData.Messages;
 public enum LearningType : byte
 {
     Apprenticeship = 0,

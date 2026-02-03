@@ -92,6 +92,8 @@ public class ChangeTrackingServiceTests
             TrainingPrice = 15000,
             AgreementId = "ABC123",
             StandardCode = 123,
+            TrainingCode = "123",
+            LearningType = LearningType.Apprenticeship,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = DateTime.UtcNow,
@@ -116,6 +118,8 @@ public class ChangeTrackingServiceTests
             TrainingPrice = 16000,
             AgreementId = "XYZ789",
             StandardCode = 456,
+            TrainingCode = "456",
+            LearningType = LearningType.ApprenticeshipUnit,
             IsFlexiJob = true,
             PlannedOTJTrainingHours = 1400,
             ReceivedDate = DateTime.UtcNow.AddDays(1),
@@ -129,7 +133,7 @@ public class ChangeTrackingServiceTests
         // Assert
         result.Should().NotBeNull();
         result.HasLearnerChanges.Should().BeTrue();
-        result.Changes.Should().HaveCount(10);
+        result.Changes.Should().HaveCount(12);
 
         // Verify each change type
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.FirstNameChange);
@@ -141,6 +145,8 @@ public class ChangeTrackingServiceTests
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.EpaoPriceChange);
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.TrainingPriceChange);
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.StandardCodeChange);
+        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.TrainingCodeChange);
+        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.LearningTypeChange);
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.IsFlexiJob);
 
         // All tracked fields should have changes since we changed all of them
