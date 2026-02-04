@@ -111,7 +111,7 @@ public class WhenISave
                 && ctx.CorrelationId == request.CorrelationId
                 && ctx.ReceivedDate == request.ReceivedDate
                 && ctx.StandardCode == request.StandardCode
-                && ctx.TrainingCode == request.TrainingCode
+                && ctx.TrainingCode == request.LarsCode
                 && ctx.TrainingName == request.TrainingName
                 && ctx.LearningType == request.LearningType
                 && ctx.IsFlexiJob == request.IsFlexiJob
@@ -165,7 +165,7 @@ public class WhenISave
                 && ctx.CorrelationId == request.CorrelationId
                 && ctx.ReceivedDate == request.ReceivedDate
                 && ctx.StandardCode == request.StandardCode
-                && ctx.TrainingCode == request.TrainingCode
+                && ctx.TrainingCode == request.LarsCode
                 && ctx.TrainingName == request.TrainingName
                 && ctx.LearningType == request.LearningType
                 && ctx.IsFlexiJob == request.IsFlexiJob

@@ -76,7 +76,7 @@ public class ProviderLearnersController(
             CorrelationId = request.CorrelationId,
             ReceivedDate = request.ReceivedDate,
             StandardCode = request.StandardCode,
-            TrainingCode = request.TrainingCode,
+            TrainingCode = request.LarsCode,
             TrainingName = request.TrainingName,
             LearningType = request.LearningType.Value,
             IsFlexiJob = request.IsFlexiJob,
