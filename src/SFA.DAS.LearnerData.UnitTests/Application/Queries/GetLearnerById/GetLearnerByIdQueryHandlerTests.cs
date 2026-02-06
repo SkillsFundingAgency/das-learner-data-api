@@ -40,7 +40,6 @@ public class GetLearnerByIdQueryHandlerTests
         result.EpaoPrice.Should().Be(learner.EpaoPrice);
         result.TrainingPrice.Should().Be(learner.TrainingPrice);
         result.AgreementId.Should().Be(learner.AgreementId);
-        result.StandardCode.Should().Be(learner.StandardCode);
         result.TrainingCode.Should().Be(learner.TrainingCode);
         result.TrainingName.Should().Be(learner.TrainingName);
         result.LearningType.Should().Be(learner.LearningType);

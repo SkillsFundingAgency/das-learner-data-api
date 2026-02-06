@@ -38,7 +38,6 @@ public class GetLearnerByIdQueryHandler(ILearnerRepository repository) : IReques
             ConsumerReference = learner.ConsumerReference,
             CorrelationId = learner.CorrelationId,
             ReceivedDate = learner.ReceivedDate,
-            StandardCode = learner.StandardCode,
             TrainingCode = learner.TrainingCode,
             TrainingName = learner.TrainingName,
             LearningType = learner.LearningType,

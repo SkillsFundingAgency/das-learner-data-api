@@ -18,7 +18,6 @@ public class Learner : Entity
     public int EpaoPrice { get; set; }
     public int TrainingPrice { get; set; }
     public string? AgreementId { get; set; }
-    public int StandardCode { get; set; }
     public string? TrainingCode { get; set; }
     public string? TrainingName { get; set; }
     public LearningType? LearningType { get; set; }
@@ -49,7 +48,6 @@ public class Learner : Entity
             ConsumerReference = command.ConsumerReference,
             CorrelationId = command.CorrelationId,
             ReceivedDate = command.ReceivedDate,
-            StandardCode = command.StandardCode,
             TrainingCode = command.TrainingCode,
             TrainingName = command.TrainingName,
             LearningType = command.LearningType,

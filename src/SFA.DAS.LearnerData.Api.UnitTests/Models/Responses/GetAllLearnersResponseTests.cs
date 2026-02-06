@@ -53,7 +53,7 @@ public class GetAllLearnersResponseTests
         firstResponseItem.ConsumerReference.Should().Be(firstResultItem.ConsumerReference);
         firstResponseItem.CorrelationId.Should().Be(firstResultItem.CorrelationId);
         firstResponseItem.ReceivedDate.Should().Be(firstResultItem.ReceivedDate);
-        firstResponseItem.StandardCode.Should().Be(firstResultItem.StandardCode);
+        firstResponseItem.TrainingCode.Should().Be(firstResultItem.TrainingCode);
         firstResponseItem.IsFlexiJob.Should().Be(firstResultItem.IsFlexiJob);
         firstResponseItem.PlannedOTJTrainingHours.Should().Be(firstResultItem.PlannedOTJTrainingHours);
     }

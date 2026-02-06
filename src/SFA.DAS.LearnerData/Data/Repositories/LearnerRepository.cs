@@ -165,7 +165,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             nameof(Learner.PlannedOTJTrainingHours) => $"PlannedOTJTrainingHours  {sort}",
             nameof(Learner.PlannedEndDate) => $"PlannedEndDate  {sort}",
             nameof(Learner.ReceivedDate) => $"ReceivedDate  {sort}",
-            nameof(Learner.StandardCode) => $"StandardCode  {sort}",
+            nameof(Learner.TrainingCode) => $"TrainingCode  {sort}",
             nameof(Learner.StartDate) => $"StartDate  {sort}, Firstname  {sort}, Lastname  {sort}, ULN  {sort}",
             nameof(Learner.TrainingPrice) => $"TrainingPrice  {sort}",
             nameof(Learner.Uln) => $"Uln  {sort}",
@@ -219,7 +219,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         existingLearner.ConsumerReference = request.ConsumerReference;
         existingLearner.CorrelationId = request.CorrelationId;
         existingLearner.ReceivedDate = request.ReceivedDate;
-        existingLearner.StandardCode = request.StandardCode;
         existingLearner.TrainingCode = request.TrainingCode;
         existingLearner.TrainingName = request.TrainingName;
         existingLearner.LearningType = request.LearningType;

@@ -75,7 +75,6 @@ public class ProviderLearnersController(
             ConsumerReference = request.ConsumerReference,
             CorrelationId = request.CorrelationId,
             ReceivedDate = request.ReceivedDate,
-            StandardCode = request.StandardCode,
             TrainingCode = request.LarsCode,
             TrainingName = request.TrainingName,
             LearningType = request.LearningType.Value,

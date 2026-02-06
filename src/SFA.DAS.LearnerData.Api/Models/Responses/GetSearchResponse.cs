@@ -32,7 +32,7 @@ public record GetSearchResponse : PagedResponse<GetSearchResponseItem>
                 ConsumerReference = item.ConsumerReference,
                 CorrelationId = item.CorrelationId,
                 ReceivedDate = item.ReceivedDate,
-                StandardCode = item.StandardCode,
+                TrainingCode = item.TrainingCode,
                 IsFlexiJob = item.IsFlexiJob,
                 PlannedOTJTrainingHours = item.PlannedOTJTrainingHours
             }),
@@ -59,7 +59,7 @@ public record GetSearchResponseItem : LearnerResponse
     public int EpaoPrice { get; set; }
     public int TrainingPrice { get; set; }
     public string? AgreementId { get; set; }
-    public int StandardCode { get; set; }
+    public string TrainingCode { get; set; }
     public bool IsFlexiJob { get; set; }
     public int PlannedOTJTrainingHours { get; set; }
     public DateTime ReceivedDate { get; set; }

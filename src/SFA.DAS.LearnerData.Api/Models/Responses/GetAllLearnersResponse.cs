@@ -34,7 +34,6 @@ public class GetAllLearnersResponse
                 ConsumerReference = item.ConsumerReference,
                 CorrelationId = item.CorrelationId,
                 ReceivedDate = item.ReceivedDate,
-                StandardCode = item.StandardCode,
                 TrainingCode = item.TrainingCode,
                 TrainingName = item.TrainingName,
                 LearningType = item.LearningType?.GetEnumDescription(),
@@ -70,7 +69,6 @@ public class GetAllLearnersResponseItem
     public string ConsumerReference { get; set; } = string.Empty;
     public Guid CorrelationId { get; set; }
     public DateTime ReceivedDate { get; set; }
-    public int StandardCode { get; set; }
     public string? TrainingCode { get; set; }
     public string? TrainingName { get; set; }
     public string? LearningType { get; set; }

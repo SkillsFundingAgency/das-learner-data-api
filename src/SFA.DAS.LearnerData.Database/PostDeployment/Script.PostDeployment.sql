@@ -15,8 +15,3 @@ IF OBJECT_ID('dbo.Learner', 'U') IS NOT NULL
 BEGIN
     DROP TABLE dbo.Learner;
 END
-
--- Migrate existing TrainingCode data from StandardCode
-UPDATE dbo.LearnerData SET 
-    TrainingCode = CAST(StandardCode AS NVARCHAR(20)) 
-WHERE TrainingCode IS NULL;

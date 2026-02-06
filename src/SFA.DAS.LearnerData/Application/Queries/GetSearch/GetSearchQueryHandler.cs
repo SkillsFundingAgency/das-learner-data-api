@@ -77,10 +77,10 @@ public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandl
                 EpaoPrice = learner.EpaoPrice,
                 TrainingPrice = learner.TrainingPrice,
                 AgreementId = learner.AgreementId,
+                TrainingCode = learner.TrainingCode,
                 ConsumerReference = learner.ConsumerReference,
                 CorrelationId = learner.CorrelationId,
                 ReceivedDate = learner.ReceivedDate,
-                StandardCode = learner.StandardCode,
                 IsFlexiJob = learner.IsFlexiJob,
                 PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours
             }),
