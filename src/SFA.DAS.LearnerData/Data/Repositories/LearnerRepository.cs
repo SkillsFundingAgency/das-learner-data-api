@@ -265,6 +265,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
     public async Task<List<int>> GetCourseCodesByUkprn(long ukprn, CancellationToken cancellationToken)
     {
-        return await dbContext.Learners.AsNoTracking().Where(t => t.Ukprn == ukprn).Select(t => t.StandardCode).Distinct().ToListAsync(cancellationToken);
+        return await dbContext.Learners.AsNoTracking().Where(t => t.Ukprn == ukprn).
+            Select(t => t.StandardCode).Distinct().ToListAsync(cancellationToken);
     }
 }
