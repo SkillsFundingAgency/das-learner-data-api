@@ -14,7 +14,6 @@ public class GetCourseCodesByUkprnHandlerTests
     public async Task Handle_GetCourseCodesByUkprn(
        GetCourseCodesByUkprnQuery query,
        List<int> courseCodes,
-       DateTime? lastSubmissionDate,
        [Frozen] Mock<ILearnerRepository> repository,
        GetCourseCodesByUkprnQueryHandler sut)
     {
@@ -32,8 +31,6 @@ public class GetCourseCodesByUkprnHandlerTests
     [Test, MoqAutoData]
     public async Task Handle_Returns_Empty_Result_When_Nocourses_Exists(
        GetCourseCodesByUkprnQuery query,
-       List<int> courseCodes,
-       DateTime? lastSubmissionDate,
        [Frozen] Mock<ILearnerRepository> repository,
        GetCourseCodesByUkprnQueryHandler sut)
     {

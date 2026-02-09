@@ -26,19 +26,9 @@ public class ProviderLearnersController(
     [ProducesResponseType((int)HttpStatusCode.OK)]
     public async Task<IActionResult> Search(
         long ukprn,
-        [FromQuery] int? startMonth,
-        [FromQuery] int startYear,
-        [FromQuery] int page = 1,
-        [FromQuery] int? pageSize = 20,
-        [FromQuery] string sortColumn = "",
-        [FromQuery] bool sortDescending = false,
-        [FromQuery] string filter = "",
-        [FromQuery] bool excludeApproved = true,
-        [FromQuery] string maxStartDate = "",
-        [FromQuery] string excludeUlns = "",
-        [FromQuery] int? courseCode = null)
+        [FromQuery] SearchLearnersRequest request)
     {
-        var query = new GetSearchQuery(ukprn, page, pageSize, sortColumn, sortDescending, filter, excludeApproved, startMonth, startYear, maxStartDate, excludeUlns, courseCode);
+        var query = new GetSearchQuery(ukprn,request);
 
         var result = await sender.Send(query);
 
@@ -148,9 +138,9 @@ public class ProviderLearnersController(
     [Route("coursecodes")]
     public async Task<IActionResult> GetCourseCodesByUkprn(long ukprn)
     {
-        var command = new GetCourseCodesByUkprnQuery(ukprn);
+        var query = new GetCourseCodesByUkprnQuery(ukprn);
 
-        var result = await sender.Send(command);
+        var result = await sender.Send(query);
 
         return Ok(result);
     }

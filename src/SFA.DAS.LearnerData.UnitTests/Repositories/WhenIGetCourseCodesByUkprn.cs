@@ -50,9 +50,16 @@ public class WhenIGetCourseCodesByUkprn
 
     [Test, MoqAutoData]
     public async Task Then_Returns_CourseCodes_Give_Ukprn(
-        long ukprn,
-        List<Learner> learners)
+        long ukprn)
     {
+        var learners = new List<Learner>()
+        {
+            new() { Ukprn = ukprn , StandardCode = 1},
+            new() { Ukprn = ukprn , StandardCode = 1},
+            new() { Ukprn = ukprn , StandardCode = 2},
+            new() { Ukprn = ukprn , StandardCode = 3},
+        };
+
         learners.ForEach(t => t.Ukprn = ukprn);
         _dbContext.Learners.AddRange(learners);
         await _dbContext.SaveChangesAsync();
@@ -62,6 +69,6 @@ public class WhenIGetCourseCodesByUkprn
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(learners.Where(t => t.Ukprn == ukprn).Select(t => t.StandardCode));
+        result.Should().BeEquivalentTo(learners.Where(t => t.Ukprn == ukprn).Select(t => t.StandardCode).Distinct());
     }
 }

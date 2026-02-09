@@ -18,20 +18,20 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
 
     public int? CourseCode { get; }
 
-    public GetSearchQuery(long ukPrn, int page, int? pageSize, string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, int? courseCode)
+    public GetSearchQuery(long ukprn, SearchLearnersRequest request)
     {
-        UkPrn = ukPrn;
-        SortColumn = sortColumn;
-        SortDescending = sortDescending;
-        Filter = filter;
-        Page = page;
-        PageSize = pageSize;
-        ExcludeApproved = excludeApproved;
-        StartMonth = startMonth;
-        StartYear = startYear;
-        MaxStartDate = maxStartDate;
-        ExcludeUlns = excludeUlns;
-        CourseCode = courseCode;
+        UkPrn = ukprn;
+        SortColumn = request.SortColumn;
+        SortDescending = request.SortDescending;
+        Filter = request.Filter;
+        Page = request.Page;
+        PageSize = request.PageSize;
+        ExcludeApproved = request.ExcludeApproved;
+        StartMonth = request.StartMonth;
+        StartYear = request.StartYear;
+        MaxStartDate = request.MaxStartDate;
+        ExcludeUlns = request.ExcludeUlns;
+        CourseCode = request.CourseCode;
     }
 }
 
