@@ -33,7 +33,6 @@ public class WhenIGetById
         okResult.Should().NotBeNull();
         
         var response = okResult.Value as GetLearnerByIdResponse;
-
         response.Should().NotBeNull();
         response.Id.Should().Be(learner.Id);
         response.Uln.Should().Be(learner.Uln);
