@@ -71,6 +71,9 @@ public class GetAllLearnersQueryHandlerTests
         firstResultItem.CorrelationId.Should().Be(firstLearner.CorrelationId);
         firstResultItem.ReceivedDate.Should().Be(firstLearner.ReceivedDate);
         firstResultItem.StandardCode.Should().Be(firstLearner.StandardCode);
+        firstResultItem.TrainingCode.Should().Be(firstLearner.TrainingCode);
+        firstResultItem.TrainingName.Should().Be(firstLearner.TrainingName);
+        firstResultItem.LearningType.Should().Be(firstLearner.LearningType);
         firstResultItem.IsFlexiJob.Should().Be(firstLearner.IsFlexiJob);
         firstResultItem.PlannedOTJTrainingHours.Should().Be(firstLearner.PlannedOTJTrainingHours);
 

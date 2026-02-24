@@ -1,9 +1,10 @@
 using MediatR;
 using SFA.DAS.LearnerData.Data.Repositories;
+using SFA.DAS.LearnerData.Extensions;
 
 namespace SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
 
-public record GetLearnerByIdQuery(long ukprn, long Id) : IRequest<GetLearnerByIdResult>;
+public record GetLearnerByIdQuery(long Ukprn, long Id) : IRequest<GetLearnerByIdResult>;
 
 public class GetLearnerByIdQueryHandler(ILearnerRepository repository) : IRequestHandler<GetLearnerByIdQuery, GetLearnerByIdResult>
 {
@@ -11,7 +12,7 @@ public class GetLearnerByIdQueryHandler(ILearnerRepository repository) : IReques
     {
         var learner = await repository.GetById(request.Id, cancellationToken);
 
-        if (learner == null || learner.Ukprn != request.ukprn)
+        if (learner == null || learner.Ukprn != request.Ukprn)
         {
             return new GetLearnerByIdResult();
         }
@@ -38,6 +39,9 @@ public class GetLearnerByIdQueryHandler(ILearnerRepository repository) : IReques
             CorrelationId = learner.CorrelationId,
             ReceivedDate = learner.ReceivedDate,
             StandardCode = learner.StandardCode,
+            TrainingCode = learner.TrainingCode,
+            TrainingName = learner.TrainingName,
+            LearningType = learner.LearningType,
             IsFlexiJob = learner.IsFlexiJob,
             PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours,
             ApprenticeshipId = learner.ApprenticeshipId

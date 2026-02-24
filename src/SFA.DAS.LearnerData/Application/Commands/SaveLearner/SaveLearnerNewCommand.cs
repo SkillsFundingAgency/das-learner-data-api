@@ -1,4 +1,5 @@
 using MediatR;
+using SFA.DAS.LearnerData.Messages;
 
 namespace SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 
@@ -18,6 +19,9 @@ public record SaveLearnerNewCommand : IRequest<SaveLearnerNewCommandResponse>
     public int TrainingPrice { get; set; }
     public string? AgreementId { get; set; }
     public int StandardCode { get; set; }
+    public string TrainingCode { get; set; }
+    public string TrainingName { get; set; }
+    public LearningType LearningType { get; set; }
     public bool IsFlexiJob { get; set; }
     public int PlannedOTJTrainingHours { get; set; }
     public DateTime ReceivedDate { get; set; }

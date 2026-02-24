@@ -52,7 +52,7 @@ public class ProviderLearnersController(
     [Route("{uln:long}")]
     public async Task<IActionResult> Save(long ukprn, long uln, [FromBody] SaveLearnerRequest request)
     {
-        if (ukprn != request.Ukprn | uln != request.Uln)
+        if (ukprn != request.Ukprn || uln != request.Uln || request.LearningType == null)
         {
             return BadRequest();
         }
@@ -76,6 +76,9 @@ public class ProviderLearnersController(
             CorrelationId = request.CorrelationId,
             ReceivedDate = request.ReceivedDate,
             StandardCode = request.StandardCode,
+            TrainingCode = request.LarsCode,
+            TrainingName = request.TrainingName,
+            LearningType = request.LearningType.Value,
             IsFlexiJob = request.IsFlexiJob,
             PlannedOTJTrainingHours = request.PlannedOTJTrainingHours
         };

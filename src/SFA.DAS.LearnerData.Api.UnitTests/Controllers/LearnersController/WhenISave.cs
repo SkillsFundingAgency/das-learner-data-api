@@ -53,6 +53,28 @@ public class WhenISave
     }
 
     [Test, MoqAutoData]
+    public async Task Then_BadRequest_Response_Is_Returned_When_LearningType_Is_Null(
+        SaveLearnerRequest request,
+        long ukprn,
+        long uln,
+        int academicYear,
+        int id,
+        [Frozen] Mock<ISender> sender,
+        [Greedy] Api.Controllers.ProviderLearnersController sut
+    )
+    {
+        request.Ukprn = ukprn;
+        request.Uln = uln;
+        request.AcademicYear = academicYear;
+        request.LearningType = null;
+
+        var result = await sut.Save(ukprn, uln, request);
+
+        var actionResult = result as BadRequestResult;
+        actionResult.Should().NotBeNull();
+    }
+
+    [Test, MoqAutoData]
     public async Task Then_Ok_Response_Is_Returned_When_Learner_Exists(
         SaveLearnerRequest request,
         long ukprn,
@@ -89,6 +111,9 @@ public class WhenISave
                 && ctx.CorrelationId == request.CorrelationId
                 && ctx.ReceivedDate == request.ReceivedDate
                 && ctx.StandardCode == request.StandardCode
+                && ctx.TrainingCode == request.LarsCode
+                && ctx.TrainingName == request.TrainingName
+                && ctx.LearningType == request.LearningType
                 && ctx.IsFlexiJob == request.IsFlexiJob
                 && ctx.PlannedOTJTrainingHours == request.PlannedOTJTrainingHours), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response)
@@ -140,6 +165,9 @@ public class WhenISave
                 && ctx.CorrelationId == request.CorrelationId
                 && ctx.ReceivedDate == request.ReceivedDate
                 && ctx.StandardCode == request.StandardCode
+                && ctx.TrainingCode == request.LarsCode
+                && ctx.TrainingName == request.TrainingName
+                && ctx.LearningType == request.LearningType
                 && ctx.IsFlexiJob == request.IsFlexiJob
                 && ctx.PlannedOTJTrainingHours == request.PlannedOTJTrainingHours), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response)

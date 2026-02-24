@@ -1,4 +1,5 @@
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
+using SFA.DAS.LearnerData.Extensions;
 
 namespace SFA.DAS.LearnerData.Api.Models.Responses;
 
@@ -18,6 +19,9 @@ public record GetLearnerByIdResponse : LearnerResponse
     public int TrainingPrice { get; set; }
     public string? AgreementId { get; set; }
     public int StandardCode { get; set; }
+    public string? TrainingCode { get; set; }
+    public string? TrainingName { get; set; }
+    public string? LearningType { get; set; }
     public bool IsFlexiJob { get; set; }
     public int PlannedOTJTrainingHours { get; set; }
     public DateTime ReceivedDate { get; set; }
@@ -49,6 +53,9 @@ public record GetLearnerByIdResponse : LearnerResponse
             CorrelationId = result.CorrelationId,
             ReceivedDate = result.ReceivedDate,
             StandardCode = result.StandardCode,
+            TrainingCode = result.TrainingCode,
+            TrainingName = result.TrainingName,
+            LearningType = result.LearningType?.GetEnumDescription(),
             IsFlexiJob = result.IsFlexiJob,
             PlannedOTJTrainingHours = result.PlannedOTJTrainingHours,
             ApprenticeshipId = result.ApprenticeshipId,

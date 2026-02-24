@@ -220,6 +220,9 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         existingLearner.CorrelationId = request.CorrelationId;
         existingLearner.ReceivedDate = request.ReceivedDate;
         existingLearner.StandardCode = request.StandardCode;
+        existingLearner.TrainingCode = request.TrainingCode;
+        existingLearner.TrainingName = request.TrainingName;
+        existingLearner.LearningType = request.LearningType;
         existingLearner.IsFlexiJob = request.IsFlexiJob;
         existingLearner.PlannedOTJTrainingHours = request.PlannedOTJTrainingHours;
 

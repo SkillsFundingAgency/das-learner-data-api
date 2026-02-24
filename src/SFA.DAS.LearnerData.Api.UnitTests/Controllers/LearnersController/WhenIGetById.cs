@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
+using SFA.DAS.LearnerData.Extensions;
 using SFA.DAS.Testing.AutoFixture;
 
 namespace SFA.DAS.LearnerData.Api.UnitTests.Controllers.LearnersController;
@@ -16,13 +17,13 @@ public class WhenIGetById
     public async Task Then_Ok_Response_Is_Returned_When_Learner_Exists(
         long id,
         long ukprn,
-        GetLearnerByIdResult queryResult,
+        GetLearnerByIdResult learner,
         [Frozen] Mock<ISender> sender,
         [Greedy] Api.Controllers.ProviderLearnersController sut
     )
     {
         sender
-            .Setup(x => x.Send(It.Is<GetLearnerByIdQuery>(ctx => ctx.Id == id && ctx.ukprn == ukprn), It.IsAny<CancellationToken>())).ReturnsAsync(queryResult)
+            .Setup(x => x.Send(It.Is<GetLearnerByIdQuery>(ctx => ctx.Id == id && ctx.Ukprn == ukprn), It.IsAny<CancellationToken>())).ReturnsAsync(learner)
             .Verifiable();
 
         var result = await sut.GetById(ukprn, id);
@@ -32,8 +33,32 @@ public class WhenIGetById
         okResult.Should().NotBeNull();
         
         var response = okResult.Value as GetLearnerByIdResponse;
-        response.Should().BeEquivalentTo(queryResult, options => options.ExcludingMissingMembers());
-        
+
+        response.Should().NotBeNull();
+        response.Id.Should().Be(learner.Id);
+        response.Uln.Should().Be(learner.Uln);
+        response.Ukprn.Should().Be(learner.Ukprn);
+        response.FirstName.Should().Be(learner.FirstName);
+        response.LastName.Should().Be(learner.LastName);
+        response.Email.Should().Be(learner.Email);
+        response.Dob.Should().Be(learner.Dob);
+        response.AcademicYear.Should().Be(learner.AcademicYear);
+        response.StartDate.Should().Be(learner.StartDate);
+        response.PercentageLearningToBeDelivered.Should().Be(learner.PercentageLearningToBeDelivered);
+        response.EpaoPrice.Should().Be(learner.EpaoPrice);
+        response.TrainingPrice.Should().Be(learner.TrainingPrice);
+        response.AgreementId.Should().Be(learner.AgreementId);
+        response.StandardCode.Should().Be(learner.StandardCode);
+        response.TrainingCode.Should().Be(learner.TrainingCode);
+        response.TrainingName.Should().Be(learner.TrainingName);
+        response.LearningType.Should().Be(learner.LearningType?.GetEnumDescription());
+        response.IsFlexiJob.Should().Be(learner.IsFlexiJob);
+        response.PlannedOTJTrainingHours.Should().Be(learner.PlannedOTJTrainingHours);
+        response.ReceivedDate.Should().Be(learner.ReceivedDate);
+        response.CorrelationId.Should().Be(learner.CorrelationId);
+        response.ConsumerReference.Should().Be(learner.ConsumerReference);
+        response.ApprenticeshipId.Should().Be(learner.ApprenticeshipId);
+
         sender.Verify();
     }
     
@@ -47,7 +72,7 @@ public class WhenIGetById
     )
     {
         sender
-            .Setup(x => x.Send(It.Is<GetLearnerByIdQuery>(ctx => ctx.Id == id && ctx.ukprn == ukprn), It.IsAny<CancellationToken>())).ReturnsAsync(new GetLearnerByIdResult())
+            .Setup(x => x.Send(It.Is<GetLearnerByIdQuery>(ctx => ctx.Id == id && ctx.Ukprn == ukprn), It.IsAny<CancellationToken>())).ReturnsAsync(new GetLearnerByIdResult())
             .Verifiable();
 
         var result = await sut.GetById(ukprn, id);

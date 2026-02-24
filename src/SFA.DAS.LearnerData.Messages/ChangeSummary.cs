@@ -21,6 +21,8 @@ public enum ChangeType
     EpaoPriceChange,
     TrainingPriceChange,
     StandardCodeChange,
+    TrainingCodeChange,
+    LearningTypeChange,
     IsFlexiJob
 }
 
@@ -91,6 +93,20 @@ public class StandardCodeChange : IChange
     public ChangeType ChangeType => ChangeType.StandardCodeChange;
     public int? OldValue { get; init; }
     public int? NewValue { get; init; }
+}
+
+public class TrainingCodeChange : IChange
+{
+    public ChangeType ChangeType => ChangeType.TrainingCodeChange;
+    public string? OldValue { get; init; }
+    public string? NewValue { get; init; }
+}
+
+public class LearningTypeChange : IChange
+{
+    public ChangeType ChangeType => ChangeType.LearningTypeChange;
+    public LearningType? OldValue { get; init; }
+    public LearningType? NewValue { get; init; }
 }
 
 public class IsFlexiJobChange : IChange
