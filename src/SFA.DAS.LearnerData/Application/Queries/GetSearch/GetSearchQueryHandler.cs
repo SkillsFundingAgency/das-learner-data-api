@@ -81,6 +81,9 @@ public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandl
                 CorrelationId = learner.CorrelationId,
                 ReceivedDate = learner.ReceivedDate,
                 StandardCode = learner.StandardCode,
+                TrainingCode = learner.TrainingCode,
+                TrainingName = learner.TrainingName,
+                LearningType = learner.LearningType,
                 IsFlexiJob = learner.IsFlexiJob,
                 PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours
             }),
