@@ -24,7 +24,7 @@ WHERE TrainingCode IS NULL;
 -- update LearningType for existing records - FoundationApprenticeship
 UPDATE dbo.LearnerData SET 
     LearningType = 1 
-WHERE LearningType IS NULL AND TrainingCode in (805,806,807,808,809,810,811);
+WHERE LearningType IS NULL AND TrainingCode in ('805','806','807','808','809','810','811');
 
 -- update LearningType for existing records - Apprenticeship
 UPDATE dbo.LearnerData SET 
