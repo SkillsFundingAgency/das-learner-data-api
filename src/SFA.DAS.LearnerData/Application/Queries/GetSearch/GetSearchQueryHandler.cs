@@ -16,23 +16,26 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
 
     public string MaxStartDate { get; }
 
-    public GetSearchQuery(long ukPrn, int page, int? pageSize, string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns)
+    public int? CourseCode { get; }
+
+    public GetSearchQuery(long ukprn, SearchLearnersRequest request)
     {
-        UkPrn = ukPrn;
-        SortColumn = sortColumn;
-        SortDescending = sortDescending;
-        Filter = filter;        
-        Page = page;
-        PageSize = pageSize;
-        ExcludeApproved = excludeApproved;
-        StartMonth = startMonth;
-        StartYear = startYear;
-        MaxStartDate = maxStartDate;
-        ExcludeUlns = excludeUlns;
+        UkPrn = ukprn;
+        SortColumn = request.SortColumn;
+        SortDescending = request.SortDescending;
+        Filter = request.Filter;
+        Page = request.Page;
+        PageSize = request.PageSize;
+        ExcludeApproved = request.ExcludeApproved;
+        StartMonth = request.StartMonth;
+        StartYear = request.StartYear;
+        MaxStartDate = request.MaxStartDate;
+        ExcludeUlns = request.ExcludeUlns;
+        CourseCode = request.CourseCode;
     }
 }
 
-public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandler<GetSearchQuery, GetSearchResult>
+public class GetSearchQueryHandler(ILearnerRepository repository) : IRequestHandler<GetSearchQuery, GetSearchResult>
 {
     public async Task<GetSearchResult> Handle(GetSearchQuery request, CancellationToken cancellationToken)
     {
@@ -50,11 +53,12 @@ public class GetSearchQueryHandler(ILearnerRepository repository): IRequestHandl
             request.StartYear,
             request.MaxStartDate,
             request.ExcludeUlns,
+            request.CourseCode,
             cancellationToken);
 
         DateTime? lastSubmissionDate = null;
 
-        lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, cancellationToken);            
+        lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, cancellationToken);
 
         return new GetSearchResult
         {
