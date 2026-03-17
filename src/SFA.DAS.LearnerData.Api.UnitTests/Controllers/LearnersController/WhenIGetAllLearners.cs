@@ -1,6 +1,7 @@
 using AutoFixture.NUnit3;
 using FluentAssertions;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Moq;
@@ -36,6 +37,8 @@ public class WhenIGetAllLearners
             q.ExcludeApproved == excludeApproved), It.IsAny<CancellationToken>()))
             .ReturnsAsync(queryResult)
             .Verifiable();
+
+        sut.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
         // Act
         var result = await sut.GetAllLearners(page, pageSize, excludeApproved);
@@ -75,6 +78,8 @@ public class WhenIGetAllLearners
             q.ExcludeApproved == true), It.IsAny<CancellationToken>()))
             .ReturnsAsync(queryResult)
             .Verifiable();
+
+        sut.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
         // Act
         var result = await sut.GetAllLearners();
@@ -136,6 +141,8 @@ public class WhenIGetAllLearners
             .ReturnsAsync(queryResult)
             .Verifiable();
 
+        sut.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
+
         // Act
         var result = await sut.GetAllLearners(page, pageSize, excludeApproved);
 
@@ -179,6 +186,8 @@ public class WhenIGetAllLearners
             q.ExcludeApproved == excludeApproved), It.IsAny<CancellationToken>()))
             .ReturnsAsync(emptyResult)
             .Verifiable();
+
+        sut.ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() };
 
         // Act
         var result = await sut.GetAllLearners(page, pageSize, excludeApproved);

@@ -1,10 +1,10 @@
-﻿using Asp.Versioning;
+﻿using System.Net;
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Queries.GetAllLearners;
 using SFA.DAS.LearnerData.Services;
-using System.Net;
 
 namespace SFA.DAS.LearnerData.Api.Controllers;
 
@@ -13,8 +13,7 @@ namespace SFA.DAS.LearnerData.Api.Controllers;
 [ApiController]
 public class LearnersController(
     ISender sender,
-    IPagedLinkHeaderService pagedLinkHeaderService,
-    ILogger<LearnersController> logger) : ControllerBase
+    IPagedLinkHeaderService pagedLinkHeaderService) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
@@ -31,7 +30,7 @@ public class LearnersController(
 
         var pageLinks = pagedLinkHeaderService.GetPageLinks(query, result);
 
-        Response?.Headers.Add(pageLinks);
+        Response.Headers.Add(pageLinks);
 
         return Ok(GetAllLearnersResponse.MapFrom(result));
     }
