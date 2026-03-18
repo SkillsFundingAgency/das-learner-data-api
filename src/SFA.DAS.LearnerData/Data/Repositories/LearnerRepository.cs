@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Data.Entities;
+using SFA.DAS.LearnerData.Messages;
 
 namespace SFA.DAS.LearnerData.Data.Repositories;
 
@@ -17,8 +18,8 @@ public interface ILearnerRepository
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
-        string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, int? courseCode,
-        CancellationToken cancellationToken);
+        string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns,
+        int? courseCode, string learningType, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken);
 
@@ -57,7 +58,8 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
     }
 
     public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn,
-        bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, int? courseCode, CancellationToken cancellationToken)
+        bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, int? courseCode,
+        string learningType, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
@@ -110,6 +112,14 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             if (DateTime.TryParse(maxStartDate, CultureInfo.InvariantCulture, out maxDate))
             {
                 query = query.Where(x => x.StartDate < maxDate);
+            }
+        }
+
+        if(!string.IsNullOrEmpty(learningType))
+        {
+            if (Enum.TryParse<LearningType>(learningType, true, out var learningTypeEnum))
+            {
+                query = query.Where(x => x.LearningType == learningTypeEnum);
             }
         }
 
