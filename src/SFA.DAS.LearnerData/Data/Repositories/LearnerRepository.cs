@@ -65,7 +65,12 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
         if (!string.IsNullOrEmpty(excludeUlns))
         {
-            List<long> excludeUlnList = excludeUlns.Split(',').Select(long.Parse).ToList();
+            var excludeUlnList = excludeUlns
+                .Split(',')
+                .Select(s => s.Trim())
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Select(long.Parse);
+            
             query = query.Where(x => !excludeUlnList.Contains(x.Uln));
         }
 
