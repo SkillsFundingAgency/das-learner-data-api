@@ -1,4 +1,8 @@
-﻿namespace SFA.DAS.LearnerData.Application.Queries.GetSearch;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using SFA.DAS.LearnerData.Messages;
+
+namespace SFA.DAS.LearnerData.Application.Queries.GetSearch;
 
 public class SearchLearnersRequest
 {
@@ -13,5 +17,6 @@ public class SearchLearnersRequest
     public string? MaxStartDate { get; set; } = string.Empty;
     public string? ExcludeUlns { get; set; } = string.Empty;
     public int? CourseCode { get; set; } = null;
-    public string? LearningType { get; set; } = string.Empty;
+    [JsonConverter(typeof(StringEnumConverter))]
+    public LearningType? LearningType { get; set; }
 }

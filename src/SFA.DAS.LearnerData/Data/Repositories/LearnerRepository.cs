@@ -19,7 +19,7 @@ public interface ILearnerRepository
 
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
         string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns,
-        int? courseCode, string learningType, CancellationToken cancellationToken);
+        int? courseCode, LearningType? learningType, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken);
 
@@ -59,7 +59,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
     public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn,
         bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, int? courseCode,
-        string learningType, CancellationToken cancellationToken)
+        LearningType? learningType, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
@@ -120,12 +120,9 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             }
         }
 
-        if(!string.IsNullOrEmpty(learningType))
+        if (learningType.HasValue)
         {
-            if (Enum.TryParse<LearningType>(learningType, true, out var learningTypeEnum))
-            {
-                query = query.Where(x => x.LearningType == learningTypeEnum);
-            }
+            query = query.Where(x => x.LearningType == learningType);
         }
 
         query = query.OrderBy(GetOrderNamesByField(sortColumn, sortDescending));

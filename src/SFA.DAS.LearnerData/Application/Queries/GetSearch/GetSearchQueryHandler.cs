@@ -1,5 +1,6 @@
 using MediatR;
 using SFA.DAS.LearnerData.Data.Repositories;
+using SFA.DAS.LearnerData.Messages;
 
 namespace SFA.DAS.LearnerData.Application.Queries.GetSearch;
 
@@ -17,7 +18,7 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
     public string MaxStartDate { get; }
 
     public int? CourseCode { get; }
-    public string LearningType { get; }
+    public LearningType? LearningType { get; }
 
     public GetSearchQuery(long ukprn, SearchLearnersRequest request)
     {
