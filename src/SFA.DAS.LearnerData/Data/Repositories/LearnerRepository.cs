@@ -17,7 +17,7 @@ public interface ILearnerRepository
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
-        string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, int? courseCode,
+        string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, string courseCode,
         CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken);
@@ -57,7 +57,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
     }
 
     public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn,
-        bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, int? courseCode, CancellationToken cancellationToken)
+        bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, string courseCode, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
@@ -98,9 +98,9 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             query = query.Where(x => x.StartDate.Year == startYear);
         }
 
-        if (courseCode.HasValue)
+        if (!string.IsNullOrEmpty(courseCode))
         {
-            query = query.Where(x => x.StandardCode == courseCode);
+            query = query.Where(x => x.TrainingCode == courseCode);
         }
 
         if (string.IsNullOrEmpty(sortColumn))

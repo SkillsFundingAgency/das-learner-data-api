@@ -12,5 +12,5 @@ public class SearchLearnersRequest
     public bool ExcludeApproved { get; set; } = true;
     public string? MaxStartDate { get; set; } = string.Empty;
     public string? ExcludeUlns { get; set; } = string.Empty;
-    public int? CourseCode { get; set; } = null;
+    public string? CourseCode { get; set; } = null;
 }
