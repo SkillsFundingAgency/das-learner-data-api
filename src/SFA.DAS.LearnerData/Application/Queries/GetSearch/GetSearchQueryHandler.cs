@@ -16,7 +16,7 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
 
     public string MaxStartDate { get; }
 
-    public int? CourseCode { get; }
+    public string CourseCode { get; }
 
     public GetSearchQuery(long ukprn, SearchLearnersRequest request)
     {
