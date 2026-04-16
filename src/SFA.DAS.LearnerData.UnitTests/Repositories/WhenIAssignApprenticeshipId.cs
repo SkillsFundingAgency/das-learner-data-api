@@ -305,14 +305,14 @@ public class WhenIAssignApprenticeshipId
     public async Task When_Learner_Search_Should_Include_Learners_When_CourseCode_Matches(
        AssignApprenticeshipIdCommand command,
        long providerId,
-       int courseCode,
+       string courseCode,
        List<Learner> learners)
     {
         learners.ForEach(x =>
         {
             x.Ukprn = providerId;
             x.StartDate = new DateTime(2025, 05, 01);
-            x.StandardCode = courseCode;
+            x.TrainingCode = courseCode;
         });
 
         _dbContext.Learners.AddRange(learners);
@@ -327,7 +327,7 @@ public class WhenIAssignApprenticeshipId
     public async Task When_Learner_Search_Should_Not_Include_Learners_When_CourseCode_Not_Matches(
        AssignApprenticeshipIdCommand command,
        long providerId,
-       int courseCode,
+       string courseCode,
        List<Learner> learners)
     {
         learners.ForEach(x =>
