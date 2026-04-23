@@ -109,6 +109,7 @@ stages:
   variables:
   - group: PreProd Management Resources
   - group: PreProd Shared Resources
+  - group: PREPROD das-learner-data-api
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
@@ -138,6 +139,7 @@ stages:
   variables:
   - group: MO Management Resources
   - group: MO Shared Resources
+  - group: MO das-learner-data-api
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
@@ -152,6 +154,7 @@ stages:
   variables:
   - group: DevTest Management Resources
   - group: DEMO DevTest Shared Resources
+  - group: DEMO das-learner-data-api
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
