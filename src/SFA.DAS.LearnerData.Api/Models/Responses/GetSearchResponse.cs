@@ -1,4 +1,5 @@
 using SFA.DAS.LearnerData.Application.Queries.GetSearch;
+using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Extensions;
 
 namespace SFA.DAS.LearnerData.Api.Models.Responses;
@@ -6,12 +7,14 @@ namespace SFA.DAS.LearnerData.Api.Models.Responses;
 public record GetSearchResponse : PagedResponse<GetSearchResponseItem>
 {
     public DateTime? LastSubmissionDate { get; set; }
-    
+    public List<Course> Courses { get; set; } = [];
+
     public static GetSearchResponse MapFrom(GetSearchResult result)
     {
         return new GetSearchResponse
         {
             LastSubmissionDate = result.LastSubmissionDate,
+            Courses = result.Courses,
             Data = result.Items.Select(item => new GetSearchResponseItem
             {
                 Id = item.Id,

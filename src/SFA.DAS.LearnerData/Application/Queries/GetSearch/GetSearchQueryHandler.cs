@@ -59,11 +59,13 @@ public class GetSearchQueryHandler(ILearnerRepository repository) : IRequestHand
         DateTime? lastSubmissionDate = null;
 
         lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, cancellationToken);
+        var courses = await repository.GetCourseList(request.UkPrn, request.ExcludeApproved, request.MaxStartDate, request.ExcludeUlns, cancellationToken);
 
         return new GetSearchResult
         {
-            LastSubmissionDate = lastSubmissionDate,
-            Items = result.Data.Select(learner => new GetByAcademicYearResultItem
+           LastSubmissionDate = lastSubmissionDate,
+           Courses = courses,
+           Items = result.Data.Select(learner => new GetByAcademicYearResultItem
             {
                 Id = learner.Id,
                 CreatedDate = learner.CreatedDate,

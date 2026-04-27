@@ -1,3 +1,4 @@
+using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Messages;
 
 namespace SFA.DAS.LearnerData.Application.Queries.GetSearch;
@@ -5,6 +6,7 @@ namespace SFA.DAS.LearnerData.Application.Queries.GetSearch;
 public record GetSearchResult : PagedQueryResult<GetByAcademicYearResultItem>
 {
     public DateTime? LastSubmissionDate { get; set; }
+    public List<Course> Courses { get; set; } = [];
 }
 
 public record GetByAcademicYearResultItem : LearnerResult
