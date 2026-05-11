@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Data.Entities;
+using SFA.DAS.LearnerData.Messages;
 
 namespace SFA.DAS.LearnerData.Data.Repositories;
 
@@ -15,7 +16,8 @@ public interface ILearnerRepository
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
         string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, string courseCode,
-        CancellationToken cancellationToken);
+        LearningType? learningType, CancellationToken cancellationToken);
+
     Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
     Task<SaveLearnerNewCommandResponse> AddLearner(SaveLearnerNewCommand request, CancellationToken cancellationToken);
@@ -48,7 +50,8 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
     }
 
     public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn,
-        bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, string courseCode, CancellationToken cancellationToken)
+        bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, string courseCode,
+        LearningType? learningType, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
@@ -95,6 +98,11 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             {
                 query = query.Where(x => x.StartDate < maxDate);
             }
+        }
+
+        if (learningType.HasValue)
+        {
+            query = query.Where(x => x.LearningType == learningType);
         }
 
         query = query.OrderBy(GetOrderNamesByField(sortColumn, sortDescending));
