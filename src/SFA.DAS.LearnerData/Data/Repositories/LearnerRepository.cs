@@ -66,6 +66,11 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
         query = ExcludeLearnerAfterStartDate(query, excludeUlns);
 
+        if (!string.IsNullOrEmpty(filter))
+        {
+            query = query.Where(x => x.LastName.Contains(filter) || x.FirstName.Contains(filter) || x.Uln.ToString() == filter);
+        }
+
         if (startMonth.HasValue)
         {
             var month = startMonth.Value;
