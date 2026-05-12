@@ -13,7 +13,7 @@ CREATE TABLE [dbo].[LearnerData](
     [EpaoPrice] [int] NOT NULL,
     [TrainingPrice] [int] NOT NULL,
     [AgreementId] [nvarchar](20) NULL,
-    [StandardCode] [int] NOT NULL,
+    [StandardCode] [int] NOT NULL DEFAULT 0,
     [TrainingCode] [nvarchar](20) NULL,
     [TrainingName] [nvarchar](126) NULL,
     [LearningType] [tinyint] NULL,
