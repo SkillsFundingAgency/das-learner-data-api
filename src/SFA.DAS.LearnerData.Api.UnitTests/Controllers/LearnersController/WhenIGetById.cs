@@ -6,7 +6,6 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
-using SFA.DAS.LearnerData.Extensions;
 using SFA.DAS.Testing.AutoFixture;
 
 namespace SFA.DAS.LearnerData.Api.UnitTests.Controllers.LearnersController;
@@ -51,7 +50,7 @@ public class WhenIGetById
         response.StandardCode.Should().Be(learner.StandardCode);
         response.TrainingCode.Should().Be(learner.TrainingCode);
         response.TrainingName.Should().Be(learner.TrainingName);
-        response.LearningType.Should().Be(learner.LearningType?.GetEnumDescription());
+        response.LearningType.Should().Be(learner.LearningType);
         response.IsFlexiJob.Should().Be(learner.IsFlexiJob);
         response.PlannedOTJTrainingHours.Should().Be(learner.PlannedOTJTrainingHours);
         response.ReceivedDate.Should().Be(learner.ReceivedDate);
