@@ -1,6 +1,9 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using SFA.DAS.LearnerData.Application.Queries.GetSearch;
 using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Extensions;
+using SFA.DAS.LearnerData.Messages;
 
 namespace SFA.DAS.LearnerData.Api.Models.Responses;
 
@@ -38,7 +41,7 @@ public record GetSearchResponse : PagedResponse<GetSearchResponseItem>
                 ReceivedDate = item.ReceivedDate,
                 TrainingCode = item.TrainingCode,
                 TrainingName = item.TrainingName,
-                LearningType = item.LearningType?.GetEnumDescription(),
+                LearningType = item.LearningType,
                 IsFlexiJob = item.IsFlexiJob,
                 PlannedOTJTrainingHours = item.PlannedOTJTrainingHours
             }),
@@ -67,7 +70,9 @@ public record GetSearchResponseItem : LearnerResponse
     public string? AgreementId { get; set; }
     public string? TrainingCode { get; set; }
     public string? TrainingName { get; set; }
-    public string? LearningType { get; set; }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public LearningType? LearningType { get; set; }
     public bool IsFlexiJob { get; set; }
     public int PlannedOTJTrainingHours { get; set; }
     public DateTime ReceivedDate { get; set; }
