@@ -18,7 +18,7 @@ public interface ILearnerRepository
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
-        string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, string courseCode,
+        string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, List<long> excludeUlns, string courseCode,
         LearningType? learningType, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken);
@@ -58,22 +58,16 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
     }
 
     public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn,
-        bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, string excludeUlns, string courseCode,
+        bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, List<long> excludeUlns, string courseCode,
         LearningType? learningType, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
             .Where(x => x.Ukprn == ukprn);
 
-        if (!string.IsNullOrEmpty(excludeUlns))
+        if (excludeUlns.Count > 0)
         {
-            var excludeUlnList = excludeUlns
-                .Split(',')
-                .Select(s => s.Trim())
-                .Where(s => !string.IsNullOrWhiteSpace(s))
-                .Select(long.Parse);
-            
-            query = query.Where(x => !excludeUlnList.Contains(x.Uln));
+            query = query.Where(x => !excludeUlns.Contains(x.Uln));
         }
 
         if (excludeApproved)

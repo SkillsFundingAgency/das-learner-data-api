@@ -38,11 +38,11 @@ public class WhenISearchExcludeUlns
     }
 
     [Test]
-    public async Task Then_Excludes_Ulns_When_List_Has_Spaces_After_Commas()
+    public async Task Then_Excludes_Ulns_From_Result()
     {
-        var ulnIncluded = 1000000001L;
-        var ulnExcludedA = 1000000002L;
-        var ulnExcludedB = 1000000003L;
+        var ulnIncluded = 1000000001;
+        var ulnExcludedA = 1000000002;
+        var ulnExcludedB = 1000000003;
 
         _dbContext.Learners.AddRange(
             CreateLearner(Ukprn, ulnIncluded),
@@ -54,61 +54,11 @@ public class WhenISearchExcludeUlns
             Ukprn, 1, 100, 100, 0,
             nameof(Learner.StartDate), true, "", false,
             null, 0, "",
-            $"{ulnExcludedA}, {ulnExcludedB}",
+            [ulnExcludedA, ulnExcludedB],
             null,null,
             _cancellationToken);
 
         result.Data.Should().ContainSingle(l => l.Uln == ulnIncluded);
-        result.TotalItems.Should().Be(1);
-    }
-
-    [Test]
-    public async Task Then_Excludes_Ulns_When_List_Has_Trailing_Or_Leading_Commas_And_Empty_Segments()
-    {
-        var ulnIncluded = 2000000001L;
-        var ulnExcluded = 2000000002L;
-
-        _dbContext.Learners.AddRange(
-            CreateLearner(Ukprn, ulnIncluded),
-            CreateLearner(Ukprn, ulnExcluded));
-        await _dbContext.SaveChangesAsync();
-
-        var excludeUlns = $", {ulnExcluded} , , ";
-
-        var result = await _repository.Search(
-            Ukprn, 1, 100, 100, 0,
-            nameof(Learner.StartDate), true, "", false,
-            null, 0, "",
-            excludeUlns,
-            null,null,
-            _cancellationToken);
-
-        result.Data.Should().ContainSingle(l => l.Uln == ulnIncluded);
-        result.TotalItems.Should().Be(1);
-    }
-
-    [Test]
-    public async Task Then_Excludes_Multiple_Ulns_With_Mixed_Whitespace()
-    {
-        var a = 3000000001L;
-        var b = 3000000002L;
-        var c = 3000000003L;
-
-        _dbContext.Learners.AddRange(
-            CreateLearner(Ukprn, a),
-            CreateLearner(Ukprn, b),
-            CreateLearner(Ukprn, c));
-        await _dbContext.SaveChangesAsync();
-
-        var result = await _repository.Search(
-            Ukprn, 1, 100, 100, 0,
-            nameof(Learner.StartDate), true, "", false,
-            null, 0, "",
-            $"  {a}  ,\t{b}\r\n",
-            null,null,
-            _cancellationToken);
-
-        result.Data.Should().ContainSingle(l => l.Uln == c);
         result.TotalItems.Should().Be(1);
     }
 
