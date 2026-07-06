@@ -81,7 +81,7 @@ public class Startup(IConfiguration configuration, IWebHostEnvironment environme
 
         services.AddApiVersioning(opt => { opt.ApiVersionReader = new HeaderApiVersionReader("X-Version"); });
 
-        services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions { EnableAdaptiveSampling = false });
+        services.AddApplicationInsightsTelemetry();
 
         _endpointInstance = services.AddNServiceBus(_configuration);
     }
