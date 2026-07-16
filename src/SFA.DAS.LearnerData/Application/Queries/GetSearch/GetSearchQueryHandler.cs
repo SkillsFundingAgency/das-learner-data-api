@@ -13,7 +13,7 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
     public bool ExcludeApproved { get; }
     public int? StartMonth { get; }
     public int StartYear { get; }
-    public string ExcludeUlns { get; }
+    public List<long> ExcludeUlns { get; }
 
     public string MaxStartDate { get; }
 

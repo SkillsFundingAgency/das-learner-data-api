@@ -15,7 +15,7 @@ public class SearchLearnersRequest
     public string? Filter { get; set; } = string.Empty;
     public bool ExcludeApproved { get; set; } = true;
     public string? MaxStartDate { get; set; } = string.Empty;
-    public string? ExcludeUlns { get; set; } = string.Empty;
+    public List<long> ExcludeUlns { get; set; } = new();
     public string? CourseCode { get; set; } = null;
     [JsonConverter(typeof(StringEnumConverter))]
     public LearningType? LearningType { get; set; }

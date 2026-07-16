@@ -38,7 +38,7 @@ public class WhenIGetCourseListForUkprn
 
     [Test, MoqAutoData]
     public async Task Then_Returns_Empty_Result_When_No_CourseCodes_Exist(
-        long ukprn, bool excludeApproved, string maxStartDate, string excludeUlns)
+        long ukprn, bool excludeApproved, string maxStartDate, List<long> excludeUlns)
     {
         // Act
         var result = await _repository.GetCourseList(ukprn, excludeApproved, maxStartDate, excludeUlns, _cancellationToken);
@@ -54,8 +54,9 @@ public class WhenIGetCourseListForUkprn
     [TestCase(100, false, "2026-08-01", null, 4)]
     [TestCase(100, false, null, "123456789,123456788", 3)]
     public async Task Then_Returns_Courses_For_Query(
-        long ukprn, bool excludeApproved, string? maxStartDate, string? excludeUlns, int expectedCount)
+        long ukprn, bool excludeApproved, string? maxStartDate, string? stringExcludeUlns, int expectedCount)
     {
+        var excludeUlns = stringExcludeUlns == null ? new List<long>() : stringExcludeUlns.Split(',').Select(long.Parse).ToList();
 
         var learners = new List<Learner>()
         {

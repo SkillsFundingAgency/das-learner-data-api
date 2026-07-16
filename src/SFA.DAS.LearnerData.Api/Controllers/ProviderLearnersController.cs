@@ -21,11 +21,11 @@ public class ProviderLearnersController(
     IPagedLinkHeaderService pagedLinkHeaderService,
     ILogger<ProviderLearnersController> logger) : ControllerBase
 {
-    [HttpGet]
+    [HttpPost]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     public async Task<IActionResult> Search(
         long ukprn,
-        [FromQuery] SearchLearnersRequest request)
+        SearchLearnersRequest request)
     {
         var query = new GetSearchQuery(ukprn,request);
 
