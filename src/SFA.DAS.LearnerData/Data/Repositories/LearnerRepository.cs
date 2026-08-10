@@ -12,26 +12,18 @@ namespace SFA.DAS.LearnerData.Data.Repositories;
 public interface ILearnerRepository
 {
     Task<Learner?> GetById(long id, CancellationToken cancellationToken);
-
     Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken);
-
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
-
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
         string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, List<long> excludeUlns, string courseCode,
         LearningType? learningType, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken);
-
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
-
     Task<SaveLearnerNewCommandResponse> AddLearner(SaveLearnerNewCommand request, CancellationToken cancellationToken);
-
     Task<SaveLearnerNewCommandResponse> UpdateLearner(Learner existingLearner, SaveLearnerNewCommand request, CancellationToken cancellationToken);
-
     Task AssignApprenticeshipId(AssignApprenticeshipIdCommand request, CancellationToken cancellationToken);
-
-    Task<List<int>> GetCourseCodesByUkprn(long ukprn, CancellationToken cancellationToken);
+    Task<List<Course>> GetCourseList(long ukprn, bool excludeApproved, string maxStartDate, List<long> excludeUlns, CancellationToken cancellationToken);
 }
 
 public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRepository> logger) : ILearnerRepository
@@ -70,10 +62,14 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             query = query.Where(x => !excludeUlns.Contains(x.Uln));
         }
 
+        query = ExcludeUlnsFromQuery(query, excludeUlns);
+
         if (excludeApproved)
         {
             query = query.Where(x => x.ApprenticeshipId == null);
         }
+
+        query = ExcludeLearnerAfterStartDate(query, maxStartDate);
 
         if (!string.IsNullOrEmpty(filter))
         {
@@ -186,7 +182,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
             nameof(Learner.PlannedOTJTrainingHours) => $"PlannedOTJTrainingHours  {sort}",
             nameof(Learner.PlannedEndDate) => $"PlannedEndDate  {sort}",
             nameof(Learner.ReceivedDate) => $"ReceivedDate  {sort}",
-            nameof(Learner.StandardCode) => $"StandardCode  {sort}",
+            nameof(Learner.TrainingCode) => $"TrainingCode  {sort}",
             nameof(Learner.StartDate) => $"StartDate  {sort}, Firstname  {sort}, Lastname  {sort}, ULN  {sort}",
             nameof(Learner.TrainingPrice) => $"TrainingPrice  {sort}",
             nameof(Learner.Uln) => $"Uln  {sort}",
@@ -239,7 +235,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         existingLearner.ConsumerReference = request.ConsumerReference;
         existingLearner.CorrelationId = request.CorrelationId;
         existingLearner.ReceivedDate = request.ReceivedDate;
-        existingLearner.StandardCode = request.StandardCode;
         existingLearner.TrainingCode = request.TrainingCode;
         existingLearner.TrainingName = request.TrainingName;
         existingLearner.LearningType = request.LearningType;
@@ -272,9 +267,41 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<List<int>> GetCourseCodesByUkprn(long ukprn, CancellationToken cancellationToken)
+    public async Task<List<Course>> GetCourseList(long ukprn, bool excludeApproved, string maxStartDate, List<long> excludeUlns, CancellationToken cancellationToken)
     {
-        return await dbContext.Learners.AsNoTracking().Where(t => t.Ukprn == ukprn).
-            Select(t => t.StandardCode).Distinct().ToListAsync(cancellationToken);
+        var query = dbContext.Learners
+            .AsNoTracking()
+            .Where(x => x.Ukprn == ukprn);
+
+        query = ExcludeUlnsFromQuery(query, excludeUlns);
+
+        if (excludeApproved)
+        {
+            query = query.Where(x => x.ApprenticeshipId == null);
+        }
+
+        query = ExcludeLearnerAfterStartDate(query, maxStartDate);
+
+        return await query.GroupBy(l => l.TrainingCode).Select(g => new Course { TrainingCode = g.Key, TrainingName = g.Max(t => t.TrainingName) }).ToListAsync(cancellationToken);
     }
+
+    private static IQueryable<Learner> ExcludeUlnsFromQuery(IQueryable<Learner> query, List<long> excludeUlns)
+    {
+        query = query.Where(x => !excludeUlns.Contains(x.Uln));
+        return query;
+    }
+
+    private static IQueryable<Learner> ExcludeLearnerAfterStartDate(IQueryable<Learner> query, string maxStartDate)
+    {
+        if (!string.IsNullOrEmpty(maxStartDate))
+        {
+            DateTime maxDate;
+            if (DateTime.TryParse(maxStartDate, CultureInfo.InvariantCulture, out maxDate))
+            {
+                query = query.Where(x => x.StartDate < maxDate);
+            }
+        }
+        return query;
+    }
+
 }

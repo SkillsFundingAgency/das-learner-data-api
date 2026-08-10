@@ -21,7 +21,6 @@ public record GetLearnerByIdResponse : LearnerResponse
     public int EpaoPrice { get; set; }
     public int TrainingPrice { get; set; }
     public string? AgreementId { get; set; }
-    public int StandardCode { get; set; }
     public string? TrainingCode { get; set; }
     public string? TrainingName { get; set; }
 
@@ -57,7 +56,6 @@ public record GetLearnerByIdResponse : LearnerResponse
             ConsumerReference = result.ConsumerReference,
             CorrelationId = result.CorrelationId,
             ReceivedDate = result.ReceivedDate,
-            StandardCode = result.StandardCode,
             TrainingCode = result.TrainingCode,
             TrainingName = result.TrainingName,
             LearningType = result.LearningType,

@@ -30,7 +30,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = DateTime.UtcNow,
@@ -54,7 +53,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = existingLearner.ReceivedDate,
@@ -91,7 +89,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             TrainingCode = "123",
             LearningType = LearningType.Apprenticeship,
             IsFlexiJob = false,
@@ -117,7 +114,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 600,
             TrainingPrice = 16000,
             AgreementId = "XYZ789",
-            StandardCode = 456,
             TrainingCode = "456",
             LearningType = LearningType.ApprenticeshipUnit,
             IsFlexiJob = true,
@@ -133,7 +129,7 @@ public class ChangeTrackingServiceTests
         // Assert
         result.Should().NotBeNull();
         result.HasLearnerChanges.Should().BeTrue();
-        result.Changes.Should().HaveCount(12);
+        result.Changes.Should().HaveCount(11);
 
         // Verify each change type
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.FirstNameChange);
@@ -144,7 +140,6 @@ public class ChangeTrackingServiceTests
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.PlannedEndDateChange);
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.EpaoPriceChange);
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.TrainingPriceChange);
-        result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.StandardCodeChange);
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.TrainingCodeChange);
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.LearningTypeChange);
         result.Changes.Should().ContainSingle(c => c.ChangeType == ChangeType.IsFlexiJob);
@@ -172,7 +167,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = DateTime.UtcNow,
@@ -196,7 +190,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = DateTime.UtcNow.AddDays(1),
@@ -233,7 +226,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1100,
             ReceivedDate = DateTime.UtcNow,
@@ -257,7 +249,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = DateTime.UtcNow.AddDays(1),
@@ -295,7 +286,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = DateTime.UtcNow,
@@ -319,7 +309,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = existingLearner.ReceivedDate,
@@ -358,7 +347,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = DateTime.UtcNow,
@@ -382,7 +370,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = existingLearner.ReceivedDate,
@@ -428,7 +415,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = DateTime.UtcNow,
@@ -452,7 +438,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = existingLearner.ReceivedDate,
@@ -492,7 +477,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = DateTime.UtcNow,
@@ -516,7 +500,6 @@ public class ChangeTrackingServiceTests
             EpaoPrice = 500,
             TrainingPrice = 15000,
             AgreementId = "ABC123",
-            StandardCode = 123,
             IsFlexiJob = false,
             PlannedOTJTrainingHours = 1200,
             ReceivedDate = existingLearner.ReceivedDate,

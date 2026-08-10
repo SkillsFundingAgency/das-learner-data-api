@@ -39,7 +39,6 @@ public class GetForProviderQueryHandler(ILearnerRepository repository): IRequest
                 ConsumerReference = learner.ConsumerReference,
                 CorrelationId = learner.CorrelationId,
                 ReceivedDate = learner.ReceivedDate,
-                StandardCode = learner.StandardCode,
                 IsFlexiJob = learner.IsFlexiJob,
                 PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours
             }).ToList()

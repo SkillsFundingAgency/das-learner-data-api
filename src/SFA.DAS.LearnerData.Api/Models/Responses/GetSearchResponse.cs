@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SFA.DAS.LearnerData.Application.Queries.GetSearch;
+using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Extensions;
 using SFA.DAS.LearnerData.Messages;
 
@@ -9,12 +10,14 @@ namespace SFA.DAS.LearnerData.Api.Models.Responses;
 public record GetSearchResponse : PagedResponse<GetSearchResponseItem>
 {
     public DateTime? LastSubmissionDate { get; set; }
-    
+    public List<Course> Courses { get; set; } = [];
+
     public static GetSearchResponse MapFrom(GetSearchResult result)
     {
         return new GetSearchResponse
         {
             LastSubmissionDate = result.LastSubmissionDate,
+            Courses = result.Courses,
             Data = result.Items.Select(item => new GetSearchResponseItem
             {
                 Id = item.Id,
@@ -36,7 +39,6 @@ public record GetSearchResponse : PagedResponse<GetSearchResponseItem>
                 ConsumerReference = item.ConsumerReference,
                 CorrelationId = item.CorrelationId,
                 ReceivedDate = item.ReceivedDate,
-                StandardCode = item.StandardCode,
                 TrainingCode = item.TrainingCode,
                 TrainingName = item.TrainingName,
                 LearningType = item.LearningType,
@@ -66,7 +68,6 @@ public record GetSearchResponseItem : LearnerResponse
     public int EpaoPrice { get; set; }
     public int TrainingPrice { get; set; }
     public string? AgreementId { get; set; }
-    public int StandardCode { get; set; }
     public string? TrainingCode { get; set; }
     public string? TrainingName { get; set; }
 

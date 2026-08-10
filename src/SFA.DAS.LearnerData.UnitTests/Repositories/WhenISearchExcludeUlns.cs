@@ -76,7 +76,7 @@ public class WhenISearchExcludeUlns
             PlannedEndDate = new DateTime(2026, 7, 1),
             EpaoPrice = 0,
             TrainingPrice = 0,
-            StandardCode = 1,
+            TrainingCode = "1",
             ReceivedDate = DateTime.UtcNow,
             CorrelationId = Guid.NewGuid(),
         };

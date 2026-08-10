@@ -1,3 +1,4 @@
+using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Messages;
 
 namespace SFA.DAS.LearnerData.Application.Queries.GetSearch;
@@ -5,6 +6,7 @@ namespace SFA.DAS.LearnerData.Application.Queries.GetSearch;
 public record GetSearchResult : PagedQueryResult<GetByAcademicYearResultItem>
 {
     public DateTime? LastSubmissionDate { get; set; }
+    public List<Course> Courses { get; set; } = [];
 }
 
 public record GetByAcademicYearResultItem : LearnerResult
@@ -23,7 +25,6 @@ public record GetByAcademicYearResultItem : LearnerResult
     public int EpaoPrice { get; set; }
     public int TrainingPrice { get; set; }
     public string? AgreementId { get; set; }
-    public int StandardCode { get; set; }
     public string? TrainingCode { get; set; }
     public string? TrainingName { get; set; }
     public LearningType? LearningType { get; set; }

@@ -20,7 +20,6 @@ public enum ChangeType
     PlannedEndDateChange,
     EpaoPriceChange,
     TrainingPriceChange,
-    StandardCodeChange,
     TrainingCodeChange,
     LearningTypeChange,
     IsFlexiJob
@@ -88,13 +87,6 @@ public class TrainingPriceChange : IChange
     public int? NewValue { get; init; }
 }
 
-public class StandardCodeChange : IChange
-{
-    public ChangeType ChangeType => ChangeType.StandardCodeChange;
-    public int? OldValue { get; init; }
-    public int? NewValue { get; init; }
-}
-
 public class TrainingCodeChange : IChange
 {
     public ChangeType ChangeType => ChangeType.TrainingCodeChange;
@@ -141,7 +133,6 @@ public class ChangeJsonConverter : JsonConverter<IChange>
             ChangeType.PlannedEndDateChange => JsonSerializer.Deserialize<PlannedEndDateChange>(root.GetRawText(), options),
             ChangeType.EpaoPriceChange => JsonSerializer.Deserialize<EpaoPriceChange>(root.GetRawText(), options),
             ChangeType.TrainingPriceChange => JsonSerializer.Deserialize<TrainingPriceChange>(root.GetRawText(), options),
-            ChangeType.StandardCodeChange => JsonSerializer.Deserialize<StandardCodeChange>(root.GetRawText(), options),
             ChangeType.IsFlexiJob => JsonSerializer.Deserialize<IsFlexiJobChange>(root.GetRawText(), options),
             _ => throw new JsonException($"Unknown change type: {changeType}")
         };

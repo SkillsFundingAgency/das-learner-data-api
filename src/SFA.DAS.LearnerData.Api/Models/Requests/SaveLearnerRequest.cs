@@ -17,7 +17,6 @@ public record SaveLearnerRequest
     public int EpaoPrice { get; set; }
     public int TrainingPrice { get; set; }
     public string? AgreementId { get; set; }
-    public int StandardCode { get; set; }
     public string? LarsCode { get; set; }
     public string? TrainingName { get; set; }
     public LearningType? LearningType { get; set; }

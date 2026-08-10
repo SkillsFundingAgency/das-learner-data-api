@@ -32,7 +32,6 @@ public class WhenIGetById
         okResult.Should().NotBeNull();
         
         var response = okResult.Value as GetLearnerByIdResponse;
-
         response.Should().NotBeNull();
         response.Id.Should().Be(learner.Id);
         response.Uln.Should().Be(learner.Uln);
@@ -47,7 +46,6 @@ public class WhenIGetById
         response.EpaoPrice.Should().Be(learner.EpaoPrice);
         response.TrainingPrice.Should().Be(learner.TrainingPrice);
         response.AgreementId.Should().Be(learner.AgreementId);
-        response.StandardCode.Should().Be(learner.StandardCode);
         response.TrainingCode.Should().Be(learner.TrainingCode);
         response.TrainingName.Should().Be(learner.TrainingName);
         response.LearningType.Should().Be(learner.LearningType);

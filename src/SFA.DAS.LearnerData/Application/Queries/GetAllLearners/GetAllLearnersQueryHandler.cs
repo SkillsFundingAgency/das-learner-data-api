@@ -1,5 +1,6 @@
 using MediatR;
 using SFA.DAS.LearnerData.Data.Repositories;
+using SFA.DAS.LearnerData.Extensions;
 
 namespace SFA.DAS.LearnerData.Application.Queries.GetAllLearners;
 
@@ -38,7 +39,6 @@ public class GetAllLearnersQueryHandler(ILearnerRepository repository) : IReques
                 ConsumerReference = learner.ConsumerReference,
                 CorrelationId = learner.CorrelationId,
                 ReceivedDate = learner.ReceivedDate,
-                StandardCode = learner.StandardCode,
                 TrainingCode = learner.TrainingCode,
                 TrainingName = learner.TrainingName,
                 LearningType = learner.LearningType,

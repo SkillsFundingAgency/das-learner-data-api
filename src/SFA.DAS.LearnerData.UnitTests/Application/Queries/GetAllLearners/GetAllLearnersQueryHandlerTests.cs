@@ -6,6 +6,7 @@ using SFA.DAS.LearnerData.Application.Queries.GetAllLearners;
 using SFA.DAS.LearnerData.Data;
 using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Data.Repositories;
+using SFA.DAS.LearnerData.Extensions;
 using SFA.DAS.Testing.AutoFixture;
 
 namespace SFA.DAS.LearnerData.UnitTests.Application.Queries.GetAllLearners;
@@ -70,7 +71,6 @@ public class GetAllLearnersQueryHandlerTests
         firstResultItem.ConsumerReference.Should().Be(firstLearner.ConsumerReference);
         firstResultItem.CorrelationId.Should().Be(firstLearner.CorrelationId);
         firstResultItem.ReceivedDate.Should().Be(firstLearner.ReceivedDate);
-        firstResultItem.StandardCode.Should().Be(firstLearner.StandardCode);
         firstResultItem.TrainingCode.Should().Be(firstLearner.TrainingCode);
         firstResultItem.TrainingName.Should().Be(firstLearner.TrainingName);
         firstResultItem.LearningType.Should().Be(firstLearner.LearningType);

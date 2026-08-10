@@ -17,6 +17,7 @@ public class GetSearchQueryHandlerTests
         GetSearchQuery query,
         PagedResult<Learner> learners,
         DateTime? lastSubmissionDate,
+        List<Course> courses,
         [Frozen] Mock<ILearnerRepository> repository,
         GetSearchQueryHandler sut
     )
@@ -35,6 +36,10 @@ public class GetSearchQueryHandlerTests
             .Setup(x => x.GetLastSubmissionDate(query.UkPrn, It.IsAny<CancellationToken>())).ReturnsAsync(lastSubmissionDate)
             .Verifiable();
 
+        repository
+            .Setup(x => x.GetCourseList(query.UkPrn, query.ExcludeApproved, query.MaxStartDate, query.ExcludeUlns, It.IsAny<CancellationToken>())).ReturnsAsync(courses)
+            .Verifiable();
+
         var result = await sut.Handle(query, CancellationToken.None);
         result.Should().NotBeNull();
         result.Items.Should().BeEquivalentTo(learners.Data, options => options.ExcludingMissingMembers());
@@ -43,6 +48,7 @@ public class GetSearchQueryHandlerTests
         result.PageSize.Should().Be(query.PageSize);
         result.TotalItems.Should().Be(learners.TotalItems);
         result.LastSubmissionDate.Should().Be(lastSubmissionDate);
+        result.Courses.Should().BeEquivalentTo(courses);
 
         repository.Verify();
     }
