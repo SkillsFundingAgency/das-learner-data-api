@@ -107,7 +107,6 @@ public class ProviderLearnersController(
 
     [HttpPost]
     [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [Route("by-ids")]
     public async Task<IActionResult> GetLearnersById(long ukprn,
         GetLearnersByIdRequest request)
@@ -115,11 +114,6 @@ public class ProviderLearnersController(
         var command = new GetLearnersByIdQuery(ukprn, request.Ids);
 
         var result = await sender.Send(command);
-
-        if (result.Count == 0)
-        {
-            return new NotFoundResult();
-        }
 
         return Ok(GetLearnersByIdResponseItem.MapFrom(result));
     }
