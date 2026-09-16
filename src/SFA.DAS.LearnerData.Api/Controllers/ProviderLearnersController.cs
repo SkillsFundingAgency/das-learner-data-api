@@ -8,6 +8,7 @@ using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
+using SFA.DAS.LearnerData.Application.Queries.GetLearnersById;
 using SFA.DAS.LearnerData.Application.Queries.GetSearch;
 using SFA.DAS.LearnerData.Services;
 
@@ -102,6 +103,19 @@ public class ProviderLearnersController(
         }
 
         return Ok(GetLearnerByIdResponse.MapFrom(result));
+    }
+
+    [HttpPost]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [Route("by-ids")]
+    public async Task<IActionResult> GetLearnersById(long ukprn,
+        GetLearnersByIdRequest request)
+    {
+        var command = new GetLearnersByIdQuery(ukprn, request.LearnerIds);
+
+        var result = await sender.Send(command);
+
+        return Ok(GetLearnersByIdResponseItem.MapFrom(result));
     }
 
     [HttpPatch]
