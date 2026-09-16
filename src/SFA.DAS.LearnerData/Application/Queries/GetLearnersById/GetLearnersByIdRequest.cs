@@ -2,5 +2,5 @@
 
 public class GetLearnersByIdRequest
 {
-    public List<long> Ids { get; set; } = new();
+    public List<long> LearnerIds { get; set; } = new();
 }

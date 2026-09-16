@@ -111,7 +111,7 @@ public class ProviderLearnersController(
     public async Task<IActionResult> GetLearnersById(long ukprn,
         GetLearnersByIdRequest request)
     {
-        var command = new GetLearnersByIdQuery(ukprn, request.Ids);
+        var command = new GetLearnersByIdQuery(ukprn, request.LearnerIds);
 
         var result = await sender.Send(command);
 
