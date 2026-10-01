@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.LearnerData.Application.Queries.GetSearch;
+namespace SFA.DAS.LearnerData.Api.Models.Requests;
 
 public class GetLearnersByIdRequest
 {

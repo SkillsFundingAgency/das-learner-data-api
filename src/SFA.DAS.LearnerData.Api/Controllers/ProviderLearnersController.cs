@@ -107,15 +107,35 @@ public class ProviderLearnersController(
 
     [HttpPost]
     [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [Route("by-ids")]
     public async Task<IActionResult> GetLearnersById(long ukprn,
         GetLearnersByIdRequest request)
     {
-        var command = new GetLearnersByIdQuery(ukprn, request.LearnerIds);
+        var learnerIds = request?.LearnerIds?.Distinct().ToList() ?? [];
+
+        if (learnerIds.Count == 0)
+        {
+            return BadRequest();
+        }
+
+        if (learnerIds.Count > 100)
+        {
+            return BadRequest();
+        }
+
+        var command = new GetLearnersByIdQuery(ukprn, learnerIds);
 
         var result = await sender.Send(command);
 
-        return Ok(GetLearnersByIdResponseItem.MapFrom(result));
+        if (result.Count != learnerIds.Count)
+        {
+            var foundIds = result.Select(x => x.Id).ToHashSet();
+            var missingIds = learnerIds.Where(id => !foundIds.Contains(id)).ToList();
+            return BadRequest(new { MissingIds = missingIds });
+        }
+
+        return Ok(GetLearnersByIdResponseMapper.MapFrom(result));
     }
 
     [HttpPatch]
