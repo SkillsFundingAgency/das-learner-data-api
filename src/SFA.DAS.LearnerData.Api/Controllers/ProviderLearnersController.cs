@@ -8,6 +8,7 @@ using SFA.DAS.LearnerData.Api.Models.Responses;
 using SFA.DAS.LearnerData.Application.Commands.AssignApprenticeshipId;
 using SFA.DAS.LearnerData.Application.Commands.SaveLearner;
 using SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
+using SFA.DAS.LearnerData.Application.Queries.GetLearnersById;
 using SFA.DAS.LearnerData.Application.Queries.GetSearch;
 using SFA.DAS.LearnerData.Services;
 
@@ -102,6 +103,39 @@ public class ProviderLearnersController(
         }
 
         return Ok(GetLearnerByIdResponse.MapFrom(result));
+    }
+
+    [HttpPost]
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [Route("by-ids")]
+    public async Task<IActionResult> GetLearnersById(long ukprn,
+        GetLearnersByIdRequest request)
+    {
+        var learnerIds = request?.LearnerIds?.Distinct().ToList() ?? [];
+
+        if (learnerIds.Count == 0)
+        {
+            return BadRequest();
+        }
+
+        if (learnerIds.Count > 100)
+        {
+            return BadRequest();
+        }
+
+        var command = new GetLearnersByIdQuery(ukprn, learnerIds);
+
+        var result = await sender.Send(command);
+
+        if (result.Count != learnerIds.Count)
+        {
+            var foundIds = result.Select(x => x.Id).ToHashSet();
+            var missingIds = learnerIds.Where(id => !foundIds.Contains(id)).ToList();
+            return BadRequest(new { MissingIds = missingIds });
+        }
+
+        return Ok(GetLearnersByIdResponseMapper.MapFrom(result));
     }
 
     [HttpPatch]

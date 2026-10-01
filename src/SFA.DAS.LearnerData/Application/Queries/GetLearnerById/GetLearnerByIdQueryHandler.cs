@@ -1,6 +1,5 @@
 using MediatR;
 using SFA.DAS.LearnerData.Data.Repositories;
-using SFA.DAS.LearnerData.Extensions;
 
 namespace SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
 
@@ -17,33 +16,6 @@ public class GetLearnerByIdQueryHandler(ILearnerRepository repository) : IReques
             return new GetLearnerByIdResult();
         }
 
-        return new GetLearnerByIdResult
-        {
-            Id = learner.Id,                
-            CreatedDate = learner.CreatedDate,
-            UpdatedDate = learner.UpdatedDate,
-            Uln = learner.Uln,
-            Ukprn = learner.Ukprn,
-            FirstName = learner.FirstName,
-            LastName = learner.LastName,
-            Email = learner.Email,
-            Dob = learner.Dob,
-            AcademicYear = learner.AcademicYear,
-            StartDate = learner.StartDate,
-            PlannedEndDate = learner.PlannedEndDate,
-            PercentageLearningToBeDelivered = learner.PercentageLearningToBeDelivered,
-            EpaoPrice = learner.EpaoPrice,
-            TrainingPrice = learner.TrainingPrice,
-            AgreementId = learner.AgreementId,
-            ConsumerReference = learner.ConsumerReference,
-            CorrelationId = learner.CorrelationId,
-            ReceivedDate = learner.ReceivedDate,
-            TrainingCode = learner.TrainingCode,
-            TrainingName = learner.TrainingName,
-            LearningType = learner.LearningType,
-            IsFlexiJob = learner.IsFlexiJob,
-            PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours,
-            ApprenticeshipId = learner.ApprenticeshipId
-        };
+        return GetLearnerByIdResult.MapFrom(learner);
     }
 }

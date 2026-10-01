@@ -12,6 +12,7 @@ namespace SFA.DAS.LearnerData.Data.Repositories;
 public interface ILearnerRepository
 {
     Task<Learner?> GetById(long id, CancellationToken cancellationToken);
+    Task<List<Learner>> GetByIds(long ukprn, IEnumerable<long> ids, CancellationToken cancellationToken);
     Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken);
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
@@ -31,6 +32,13 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
     public async Task<Learner?> GetById(long id, CancellationToken cancellationToken)
     {
         return await dbContext.Learners.FindAsync(keyValues: [id], cancellationToken);
+    }
+    public async Task<List<Learner>> GetByIds(long ukprn, IEnumerable<long> ids, CancellationToken cancellationToken)
+    {
+        return await dbContext.Learners
+            .AsNoTracking()
+            .Where(x => x.Ukprn == ukprn && ids.Contains(x.Id))
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<Learner?> Get(long ukPrn, long uln, CancellationToken cancellationToken)

@@ -1,3 +1,4 @@
+using SFA.DAS.LearnerData.Data.Entities;
 using SFA.DAS.LearnerData.Messages;
 
 namespace SFA.DAS.LearnerData.Application.Queries.GetLearnerById;
@@ -27,4 +28,36 @@ public record GetLearnerByIdResult : LearnerResult
     public Guid CorrelationId { get; set; }
     public string ConsumerReference { get; set; }
     public long? ApprenticeshipId { get; set; }
+
+    public static GetLearnerByIdResult MapFrom(Learner learner)
+    {
+        return new GetLearnerByIdResult
+        {
+            Id = learner.Id,
+            CreatedDate = learner.CreatedDate,
+            UpdatedDate = learner.UpdatedDate,
+            Uln = learner.Uln,
+            Ukprn = learner.Ukprn,
+            FirstName = learner.FirstName,
+            LastName = learner.LastName,
+            Email = learner.Email,
+            Dob = learner.Dob,
+            AcademicYear = learner.AcademicYear,
+            StartDate = learner.StartDate,
+            PlannedEndDate = learner.PlannedEndDate,
+            PercentageLearningToBeDelivered = learner.PercentageLearningToBeDelivered,
+            EpaoPrice = learner.EpaoPrice,
+            TrainingPrice = learner.TrainingPrice,
+            AgreementId = learner.AgreementId,
+            ConsumerReference = learner.ConsumerReference,
+            CorrelationId = learner.CorrelationId,
+            ReceivedDate = learner.ReceivedDate,
+            TrainingCode = learner.TrainingCode,
+            TrainingName = learner.TrainingName,
+            LearningType = learner.LearningType,
+            IsFlexiJob = learner.IsFlexiJob,
+            PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours,
+            ApprenticeshipId = learner.ApprenticeshipId
+        };
+    }
 }
