@@ -7,6 +7,7 @@ public record GetSearchResult : PagedQueryResult<GetByAcademicYearResultItem>
 {
     public DateTime? LastSubmissionDate { get; set; }
     public List<Course> Courses { get; set; } = [];
+    public List<string> AgreementIds { get; set; } = [];
 }
 
 public record GetByAcademicYearResultItem : LearnerResult

@@ -11,6 +11,7 @@ public record GetSearchResponse : PagedResponse<GetSearchResponseItem>
 {
     public DateTime? LastSubmissionDate { get; set; }
     public List<Course> Courses { get; set; } = [];
+    public List<string> AgreementIds { get; set; } = [];
 
     public static GetSearchResponse MapFrom(GetSearchResult result)
     {
@@ -18,6 +19,7 @@ public record GetSearchResponse : PagedResponse<GetSearchResponseItem>
         {
             LastSubmissionDate = result.LastSubmissionDate,
             Courses = result.Courses,
+            AgreementIds = result.AgreementIds,
             Data = result.Items.Select(item => new GetSearchResponseItem
             {
                 Id = item.Id,

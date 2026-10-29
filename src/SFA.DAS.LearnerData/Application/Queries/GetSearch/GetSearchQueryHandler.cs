@@ -65,10 +65,14 @@ public class GetSearchQueryHandler(ILearnerRepository repository) : IRequestHand
         lastSubmissionDate = await repository.GetLastSubmissionDate(request.UkPrn, cancellationToken);
         var courses = await repository.GetCourseList(request.UkPrn, request.ExcludeApproved, request.MaxStartDate, request.ExcludeUlns, cancellationToken);
 
+        var providerLearners = await repository.GetForProvider(request.UkPrn, cancellationToken);
+        var agreementIds = await repository.GetAgreementIds(request.UkPrn, request.Filter, request.ExcludeApproved, request.StartMonth, request.StartYear, request.MaxStartDate, request.ExcludeUlns, request.CourseCode, request.LearningType, cancellationToken);
+
         return new GetSearchResult
         {
-           LastSubmissionDate = lastSubmissionDate,
+            LastSubmissionDate = lastSubmissionDate,
            Courses = courses,
+           AgreementIds = agreementIds,
            Items = result.Data.Select(learner => new GetByAcademicYearResultItem
             {
                 Id = learner.Id,
