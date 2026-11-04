@@ -19,7 +19,7 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
 
     public string CourseCode { get; }
     public LearningType? LearningType { get; }
-    public string AgreementId { get; set; }
+    public string? AgreementId { get; }
 
     public GetSearchQuery(long ukprn, SearchLearnersRequest request)
     {

@@ -19,5 +19,5 @@ public class SearchLearnersRequest
     public string? CourseCode { get; set; } = null;
     [JsonConverter(typeof(StringEnumConverter))]
     public LearningType? LearningType { get; set; }
-    public string AgreementId { get; set; }
+    public string? AgreementId { get; set; }
 }

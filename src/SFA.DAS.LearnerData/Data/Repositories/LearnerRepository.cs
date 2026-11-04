@@ -17,7 +17,7 @@ public interface ILearnerRepository
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
         string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, List<long> excludeUlns, string courseCode,
-        LearningType? learningType, string agreementId, CancellationToken cancellationToken);
+        LearningType? learningType, string? agreementId, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
@@ -59,7 +59,7 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
     public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn,
         bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, List<long> excludeUlns, string courseCode,
-        LearningType? learningType, string agreementId, CancellationToken cancellationToken)
+        LearningType? learningType, string? agreementId, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
