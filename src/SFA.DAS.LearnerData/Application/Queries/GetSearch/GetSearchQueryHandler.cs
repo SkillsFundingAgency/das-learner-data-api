@@ -19,6 +19,7 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
 
     public string CourseCode { get; }
     public LearningType? LearningType { get; }
+    public string? AgreementId { get; }
 
     public GetSearchQuery(long ukprn, SearchLearnersRequest request)
     {
@@ -35,6 +36,7 @@ public record GetSearchQuery : PagedQuery, IRequest<GetSearchResult>
         ExcludeUlns = request.ExcludeUlns;
         CourseCode = request.CourseCode;
         LearningType = request.LearningType;
+        AgreementId = request.AgreementId;
     }
 }
 
@@ -58,6 +60,7 @@ public class GetSearchQueryHandler(ILearnerRepository repository) : IRequestHand
             request.ExcludeUlns,
             request.CourseCode,
             request.LearningType,
+            request.AgreementId,
             cancellationToken);
 
         DateTime? lastSubmissionDate = null;
