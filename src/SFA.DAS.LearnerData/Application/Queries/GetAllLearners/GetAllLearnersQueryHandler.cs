@@ -1,6 +1,5 @@
 using MediatR;
 using SFA.DAS.LearnerData.Data.Repositories;
-using SFA.DAS.LearnerData.Extensions;
 
 namespace SFA.DAS.LearnerData.Application.Queries.GetAllLearners;
 
@@ -43,7 +42,8 @@ public class GetAllLearnersQueryHandler(ILearnerRepository repository) : IReques
                 TrainingName = learner.TrainingName,
                 LearningType = learner.LearningType,
                 IsFlexiJob = learner.IsFlexiJob,
-                PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours
+                PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours,
+                OnServicePayments = learner.OnServicePayments
             }),
             PageSize = result.PageSize,
             Page = result.Page,

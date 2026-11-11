@@ -24,6 +24,7 @@ CREATE TABLE [dbo].[LearnerData](
     [CorrelationId] UNIQUEIDENTIFIER NOT NULL,
     [ConsumerReference] [nvarchar](100) NULL,
     [ApprenticeshipId] BIGINT NULL, 
+    [OnServicePayments ] BIT NULL, 
     CONSTRAINT [PK_LearnerData] PRIMARY KEY CLUSTERED
 (
 [Id] ASC

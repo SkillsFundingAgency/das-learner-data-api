@@ -31,6 +31,7 @@ public record GetLearnerByIdResponse : LearnerResponse
     public DateTime ReceivedDate { get; set; }
     public Guid CorrelationId { get; set; }
     public string ConsumerReference { get; set; }
+    public bool? OnServicePayments { get; set; }
     public long? ApprenticeshipId { get; set; }
 
     public static GetLearnerByIdResponse MapFrom(GetLearnerByIdResult result)
@@ -61,7 +62,8 @@ public record GetLearnerByIdResponse : LearnerResponse
             LearningType = result.LearningType,
             IsFlexiJob = result.IsFlexiJob,
             PlannedOTJTrainingHours = result.PlannedOTJTrainingHours,
-            ApprenticeshipId = result.ApprenticeshipId,
+            OnServicePayments = result.OnServicePayments,
+            ApprenticeshipId = result.ApprenticeshipId
         };
     }
 }

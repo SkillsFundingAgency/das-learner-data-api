@@ -48,6 +48,7 @@ public class GetLearnerByIdQueryHandlerTests
         result.ReceivedDate.Should().Be(learner.ReceivedDate);
         result.CorrelationId.Should().Be(learner.CorrelationId);
         result.ConsumerReference.Should().Be(learner.ConsumerReference);
+        result.OnServicePayments.Should().Be(learner.OnServicePayments);
         result.ApprenticeshipId.Should().Be(learner.ApprenticeshipId);
         result.Found.Should().BeTrue();
         

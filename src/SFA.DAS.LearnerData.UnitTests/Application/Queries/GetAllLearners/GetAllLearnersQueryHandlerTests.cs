@@ -76,6 +76,7 @@ public class GetAllLearnersQueryHandlerTests
         firstResultItem.LearningType.Should().Be(firstLearner.LearningType);
         firstResultItem.IsFlexiJob.Should().Be(firstLearner.IsFlexiJob);
         firstResultItem.PlannedOTJTrainingHours.Should().Be(firstLearner.PlannedOTJTrainingHours);
+        firstResultItem.OnServicePayments.Should().Be(firstLearner.OnServicePayments);
 
         repository.Verify();
     }
