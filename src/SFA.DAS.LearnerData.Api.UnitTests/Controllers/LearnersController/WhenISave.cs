@@ -114,7 +114,8 @@ public class WhenISave
                 && ctx.TrainingName == request.TrainingName
                 && ctx.LearningType == request.LearningType
                 && ctx.IsFlexiJob == request.IsFlexiJob
-                && ctx.PlannedOTJTrainingHours == request.PlannedOTJTrainingHours), It.IsAny<CancellationToken>()))
+                && ctx.PlannedOTJTrainingHours == request.PlannedOTJTrainingHours
+                && ctx.OnServicePayments == request.OnServicePayments), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response)
             .Verifiable();
 
@@ -167,7 +168,8 @@ public class WhenISave
                 && ctx.TrainingName == request.TrainingName
                 && ctx.LearningType == request.LearningType
                 && ctx.IsFlexiJob == request.IsFlexiJob
-                && ctx.PlannedOTJTrainingHours == request.PlannedOTJTrainingHours), It.IsAny<CancellationToken>()))
+                && ctx.PlannedOTJTrainingHours == request.PlannedOTJTrainingHours
+                && ctx.OnServicePayments == request.OnServicePayments), It.IsAny<CancellationToken>()))
             .ReturnsAsync(response)
             .Verifiable();
 

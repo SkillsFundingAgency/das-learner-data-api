@@ -249,6 +249,15 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         existingLearner.IsFlexiJob = request.IsFlexiJob;
         existingLearner.PlannedOTJTrainingHours = request.PlannedOTJTrainingHours;
 
+        if(existingLearner.OnServicePayments != request.OnServicePayments)
+        {
+            if (existingLearner.OnServicePayments != null)
+            {
+                logger.LogInformation("Unexpected change of OnServicePayments for learner {LearnerId} from {OldValue} to {NewValue}", existingLearner.Id, existingLearner.OnServicePayments, request.OnServicePayments);
+            }
+        }
+        existingLearner.OnServicePayments = request.OnServicePayments;
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return new SaveLearnerNewCommandResponse { Id = existingLearner.Id, Result = SaveLearnerNewResult.Updated };

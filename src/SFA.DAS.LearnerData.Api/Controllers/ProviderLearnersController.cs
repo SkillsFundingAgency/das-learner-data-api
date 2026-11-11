@@ -71,7 +71,8 @@ public class ProviderLearnersController(
             TrainingName = request.TrainingName,
             LearningType = request.LearningType.Value,
             IsFlexiJob = request.IsFlexiJob,
-            PlannedOTJTrainingHours = request.PlannedOTJTrainingHours
+            PlannedOTJTrainingHours = request.PlannedOTJTrainingHours,
+            OnServicePayments = request.OnServicePayments
         };
 
         var response = await sender.Send(command);
