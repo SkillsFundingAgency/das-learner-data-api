@@ -25,4 +25,5 @@ public record SaveLearnerRequest
     public DateTime ReceivedDate { get; set; }
     public Guid CorrelationId { get; set; }
     public string ConsumerReference { get; set; }
+    public bool? OnServicePayments { get; set; }
 }

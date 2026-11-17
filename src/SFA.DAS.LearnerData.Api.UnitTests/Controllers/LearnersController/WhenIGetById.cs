@@ -54,6 +54,7 @@ public class WhenIGetById
         response.ReceivedDate.Should().Be(learner.ReceivedDate);
         response.CorrelationId.Should().Be(learner.CorrelationId);
         response.ConsumerReference.Should().Be(learner.ConsumerReference);
+        response.OnServicePayments.Should().Be(learner.OnServicePayments);
         response.ApprenticeshipId.Should().Be(learner.ApprenticeshipId);
 
         sender.Verify();

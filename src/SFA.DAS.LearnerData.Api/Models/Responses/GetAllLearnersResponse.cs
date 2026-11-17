@@ -39,6 +39,7 @@ public class GetAllLearnersResponse
                 LearningType = item.LearningType?.GetEnumDescription(),
                 IsFlexiJob = item.IsFlexiJob,
                 PlannedOTJTrainingHours = item.PlannedOTJTrainingHours,
+                OnServicePayments = item.OnServicePayments,
                 CreatedDate = item.CreatedDate,
                 UpdatedDate = item.UpdatedDate
             }),
@@ -74,6 +75,7 @@ public class GetAllLearnersResponseItem
     public string? LearningType { get; set; }
     public bool IsFlexiJob { get; set; }
     public int PlannedOTJTrainingHours { get; set; }
+    public bool? OnServicePayments { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime? UpdatedDate { get; set; }
 }
