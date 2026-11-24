@@ -55,7 +55,7 @@ public class WhenISearchExcludeUlns
             nameof(Learner.StartDate), true, "", false,
             null, 0, "",
             [ulnExcludedA, ulnExcludedB],
-            null,null,
+            null,null,null,
             _cancellationToken);
 
         result.Data.Should().ContainSingle(l => l.Uln == ulnIncluded);

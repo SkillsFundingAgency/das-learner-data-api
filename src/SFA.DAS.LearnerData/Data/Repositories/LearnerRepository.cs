@@ -17,7 +17,7 @@ public interface ILearnerRepository
     Task<List<Learner>> GetForProvider(long ukprn, CancellationToken cancellationToken);
     Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset,
         string sortColumn, bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, List<long> excludeUlns, string courseCode,
-        LearningType? learningType, CancellationToken cancellationToken);
+        LearningType? learningType, string? agreementId, CancellationToken cancellationToken);
 
     Task<PagedResult<Learner>> GetAllLearners(int page, int? pageSize, int limit, int offset, bool excludeApproved, CancellationToken cancellationToken);
     Task<DateTime?> GetLastSubmissionDate(long ukprn, CancellationToken cancellationToken);
@@ -59,18 +59,18 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
 
     public async Task<PagedResult<Learner>> Search(long ukprn, int page, int? pageSize, int limit, int offset, string sortColumn,
         bool sortDescending, string filter, bool excludeApproved, int? startMonth, int startYear, string maxStartDate, List<long> excludeUlns, string courseCode,
-        LearningType? learningType, CancellationToken cancellationToken)
+        LearningType? learningType, string? agreementId, CancellationToken cancellationToken)
     {
         var query = dbContext.Learners
             .AsNoTracking()
             .Where(x => x.Ukprn == ukprn);
 
-        if (excludeUlns.Count > 0)
-        {
-            query = query.Where(x => !excludeUlns.Contains(x.Uln));
-        }
-
         query = ExcludeUlnsFromQuery(query, excludeUlns);
+
+        if (!string.IsNullOrEmpty(agreementId))
+        {
+            query = query.Where(x => x.AgreementId == agreementId);
+        }
 
         if (excludeApproved)
         {
@@ -107,15 +107,6 @@ public class LearnerRepository(LearnerDataDbContext dbContext, ILogger<LearnerRe
         {
             sortColumn = nameof(Learner.StartDate);
             sortDescending = true;
-        }
-
-        if (!string.IsNullOrEmpty(maxStartDate))
-        {
-            DateTime maxDate;
-            if (DateTime.TryParse(maxStartDate, CultureInfo.InvariantCulture, out maxDate))
-            {
-                query = query.Where(x => x.StartDate < maxDate);
-            }
         }
 
         if (learningType.HasValue)
