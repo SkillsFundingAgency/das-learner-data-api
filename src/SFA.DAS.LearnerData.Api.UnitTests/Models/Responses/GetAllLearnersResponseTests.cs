@@ -56,6 +56,7 @@ public class GetAllLearnersResponseTests
         firstResponseItem.TrainingCode.Should().Be(firstResultItem.TrainingCode);
         firstResponseItem.IsFlexiJob.Should().Be(firstResultItem.IsFlexiJob);
         firstResponseItem.PlannedOTJTrainingHours.Should().Be(firstResultItem.PlannedOTJTrainingHours);
+        firstResponseItem.OnServicePayments.Should().Be(firstResultItem.OnServicePayments);
     }
 
     [Test, MoqAutoData]

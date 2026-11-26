@@ -97,7 +97,8 @@ public class GetSearchQueryHandler(ILearnerRepository repository) : IRequestHand
                 TrainingName = learner.TrainingName,
                 LearningType = learner.LearningType,
                 IsFlexiJob = learner.IsFlexiJob,
-                PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours
+                PlannedOTJTrainingHours = learner.PlannedOTJTrainingHours,
+                OnServicePayments = learner.OnServicePayments
             }),
             PageSize = result.PageSize,
             Page = result.Page,
